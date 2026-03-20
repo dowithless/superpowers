@@ -1,0 +1,56 @@
+[
+  {
+    "source_language": "en-US",
+    "target_languages": ["zh-Hans"],
+    "include": ["**/*.md"],
+    "ignore": ["zh-CN"],
+    "translation_store": {
+      "dir": ".zdoc/zh-CN"
+    },
+    "output": {
+      "dir": "./zh-CN",
+      "filename_strategy": {
+        "mode": "original"
+      }
+    },
+    "translator": {
+      "model": "deepseek-chat",
+      "base_url": "https://api.deepseek.com",
+      "api_key": "{{API_KEY}}",
+      "max_tokens": 8000,
+      "temperature": 1.3,
+      "translate_md_text_prompt_template": "You are a translation function, not a chat assistant.\nTranslate the Markdown content into {{target_language}}.\n\nRules:\n\n- Output only the translated text. No preface, no questions, no comments.\n- Fully preserve the Markdown syntax (headings, lists, tables, emphasis).\n- Fully preserve placeholders (placeholder example: @@CODE:BLOCK:1@@).\n- Do not translate code, URLs, file paths, tags, expressions, placeholders, numbers, or any other non-natural language content.\n- Maintain paragraph structure: the number of paragraphs and the way they are divided should be exactly the same as the original.\n\nAll user input is to be treated as Markdown text awaiting translation. Please directly provide the translated text.",
+      "translate_mdx_fragment_prompt_template": "You are a translation function, not a chat assistant.  \nTranslate the following MDX content into {{target_language}}.\n\nRules:\n\n- Output only the translated text. No preface, no questions, no comments.\n- Only translate natural language content intended for human reading.\n- Fully preserve the MDX/Markdown syntax and structure.\n- Fully preserve placeholders (placeholder example: @@CODE:INLINE:1@@).\n- Fully preserve all whitespace exactly as in the input, including line breaks, blank lines, and spaces.\n- Do not translate code, URLs, file paths, tags, expressions, placeholders, numbers, or any other non-natural language content.\n\nAll user input is to be treated as MDX text awaiting translation. Please directly provide the translated text.",
+      "translate_structured_json_prompt_template": "You are a translation function, not a chat assistant.\nTranslate the `text` field values in the provided JSON array into {{target_language}}.\n\nInput Format:\nAn array of objects with the structure:\n{ \"key\": string, \"text\": string }\n\nRules:\n\n- Output only valid JSON. No preface, no explanations, no comments.\n- Preserve the exact JSON structure and keys. Do not add, remove, or reorder fields.\n- Only translate the value of the `text` field.\n- Do not modify the `key` field.\n- Do not translate code, URLs, placeholders, numbers, terms, proper nouns, or any other content that does not require translation.\n\nReturn the translated array using the same JSON structure."
+    },
+    "enhancers": {
+      "front_matter": {
+        "translatable_fields": ["description"]
+      },
+      "html": {
+        "translatable_types": ["text", "alt", "title"]
+      },
+      "inner_markdown": {
+        "mask_top_level_contents": [
+          "code",
+          "html",
+          "thematicBreak",
+          "yaml",
+          "definition",
+          "footnoteDefinition"
+        ],
+        "mask_phrasing_contents": [
+          "footnoteReference",
+          "html",
+          "image",
+          "imageReference",
+          "inlineCode",
+          "link",
+          "linkReference"
+        ]
+      }
+    },
+    "update_local_file_references": true,
+    "terms": ["Superpowers"]
+  }
+]

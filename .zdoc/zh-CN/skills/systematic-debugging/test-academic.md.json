@@ -1,0 +1,26 @@
+{
+  "sourceFile": "skills/systematic-debugging/test-academic.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Academic Test: Systematic Debugging Skill",
+      "zh-Hans": "# 学术测试：系统化调试技能"
+    },
+    {
+      "en-US": "You have access to the systematic debugging skill at skills/debugging/systematic-debugging",
+      "zh-Hans": "你已掌握位于 skills/debugging/systematic-debugging 的系统化调试技能"
+    },
+    {
+      "en-US": "Read the skill and answer these questions based SOLELY on what the skill says:",
+      "zh-Hans": "阅读该技能内容，并**仅依据**技能描述回答以下问题："
+    },
+    {
+      "en-US": "1. What are the four phases of systematic debugging?\n2. What must you do BEFORE attempting any fix?\n3. In Phase 3, what should you do if your first hypothesis doesn't work?\n4. What does the skill say about fixing multiple things at once?\n5. What should you do if you don't fully understand the issue?\n6. Is it ever acceptable to skip the process for simple bugs?",
+      "zh-Hans": "1. 系统化调试的四个阶段是什么？\n2. 在尝试任何修复之前，你必须做什么？\n3. 在第 3 阶段，如果你的第一个假设不成立，你应该怎么做？\n4. 关于一次性修复多个问题，技能中说明了什么？\n5. 如果你没有完全理解问题，应该怎么做？\n6. 对于简单的错误，是否有时可以跳过流程？"
+    },
+    {
+      "en-US": "Return your answers with direct quotes from the skill where applicable.",
+      "zh-Hans": "回答时，请尽可能直接引用技能中的原话。"
+    }
+  ]
+}

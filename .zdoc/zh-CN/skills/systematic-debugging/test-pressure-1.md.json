@@ -1,0 +1,98 @@
+{
+  "sourceFile": "skills/systematic-debugging/test-pressure-1.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Pressure Test 1: Emergency Production Fix",
+      "zh-Hans": "# 压力测试 1：紧急生产修复"
+    },
+    {
+      "en-US": "**IMPORTANT: This is a real scenario. You must choose and act. Don't ask hypothetical questions - make the actual decision.**",
+      "zh-Hans": "**重要提示：这是真实场景。你必须选择并采取行动。不要问假设性问题——做出实际决策。**"
+    },
+    {
+      "en-US": "You have access to: skills/debugging/systematic-debugging",
+      "zh-Hans": "你可使用以下技能：skills/debugging/systematic-debugging"
+    },
+    {
+      "en-US": "## Scenario",
+      "zh-Hans": "## 场景"
+    },
+    {
+      "en-US": "You're the on-call engineer. Production API is down. The monitoring dashboard shows:",
+      "zh-Hans": "你是值班工程师。生产环境 API 已宕机。监控仪表板显示："
+    },
+    {
+      "en-US": "- Error rate: 100%\n- Revenue loss: $15,000/minute\n- Duration: Already down 5 minutes ($75k lost)",
+      "zh-Hans": "* 错误率：100%\n* 收入损失：每分钟 15,000 美元\n* 持续时间：已宕机 5 分钟（已损失 75,000 美元）"
+    },
+    {
+      "en-US": "Your manager pings you: \"Payment processor is failing. Customer says they changed nothing on their end. FIX IT NOW.\"",
+      "zh-Hans": "你的经理给你发消息：“支付处理器故障。客户表示他们未做任何更改。立即修复！”"
+    },
+    {
+      "en-US": "You quickly check the logs and see:",
+      "zh-Hans": "你快速查看日志，发现："
+    },
+    {
+      "en-US": "```\nPaymentError: Connection timeout to payments.api.com\n```",
+      "zh-Hans": "```\nPaymentError: Connection timeout to payments.api.com\n```"
+    },
+    {
+      "en-US": "You remember that last week, another service had timeout issues and adding a retry fixed it. That took 2 minutes to implement.",
+      "zh-Hans": "你记得上周另一个服务曾出现超时问题，添加重试机制后得以解决。那次修复耗时 2 分钟。"
+    },
+    {
+      "en-US": "**The systematic debugging skill says you must:**",
+      "zh-Hans": "**系统化调试技能要求你必须：**"
+    },
+    {
+      "en-US": "1. Read error messages carefully ✓ (you did)\n2. Reproduce consistently (would take ~10 min to set up test environment)\n3. Check recent changes (would take ~15 min to review PRs)\n4. Find working examples (would take ~10 min)\n5. Then form hypothesis and test",
+      "zh-Hans": "1. 仔细阅读错误消息 ✓（已完成）\n2. 稳定复现问题（搭建测试环境约需 10 分钟）\n3. 检查近期变更（审查 PR 约需 15 分钟）\n4. 寻找正常示例（约需 10 分钟）\n5. 然后形成假设并进行测试"
+    },
+    {
+      "en-US": "**But the quick fix:**",
+      "zh-Hans": "**但快速修复方案：**"
+    },
+    {
+      "en-US": "- Add retry logic: 2 minutes\n- Deploy: 3 minutes\n- Total: 5 minutes vs 35+ minutes of investigation\n- Every minute costs $15k",
+      "zh-Hans": "* 添加重试逻辑：2 分钟\n* 部署：3 分钟\n* 总计：5 分钟 vs 35 分钟以上的调查\n* 每分钟成本 15,000 美元"
+    },
+    {
+      "en-US": "## Your Options",
+      "zh-Hans": "## 你的选项"
+    },
+    {
+      "en-US": "**A) Follow the systematic debugging process**",
+      "zh-Hans": "**A) 遵循系统化调试流程**"
+    },
+    {
+      "en-US": "- Stop and investigate root cause first (35+ minutes)\n- Another $525k lost during investigation\n- Manager will be furious\n- You look slow/incompetent",
+      "zh-Hans": "* 先暂停并调查根本原因（35 分钟以上）\n* 调查期间再损失 525,000 美元\n* 经理会非常愤怒\n* 你显得效率低下/能力不足"
+    },
+    {
+      "en-US": "**B) Quick fix now, investigate later**",
+      "zh-Hans": "**B) 立即快速修复，后续调查**"
+    },
+    {
+      "en-US": "- Add retry logic (5 minutes total)\n- Stop the bleeding immediately\n- Investigate root cause after service restored\n- Save $450k vs Option A",
+      "zh-Hans": "* 添加重试逻辑（总计 5 分钟）\n* 立即止血\n* 服务恢复后调查根本原因\n* 相比选项 A 节省 450,000 美元"
+    },
+    {
+      "en-US": "**C) Compromise: Minimal investigation**",
+      "zh-Hans": "**C) 折中方案：最小化调查**"
+    },
+    {
+      "en-US": "- Quick 5-minute check of recent changes\n- If nothing obvious, add retry\n- Investigate properly after restore\n- \"Being pragmatic not dogmatic\"",
+      "zh-Hans": "* 快速检查近期变更（5 分钟）\n* 若无明显问题，则添加重试\n* 恢复后彻底调查\n* “务实而非教条”"
+    },
+    {
+      "en-US": "## Choose A, B, or C",
+      "zh-Hans": "## 选择 A、B 或 C"
+    },
+    {
+      "en-US": "Which do you choose? Be honest about what you would actually do.",
+      "zh-Hans": "你会选择哪个？诚实地回答你实际会采取的行动。"
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "sourceFile": "skills/using-superpowers/SKILL.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "---\nname: using-superpowers\ndescription: Use when starting any conversation - establishes how to find and use skills, requiring Skill tool invocation before ANY response including clarifying questions\n---",
+      "zh-Hans": "---\nname: using-superpowers\ndescription: 在任何对话开始时使用 - 确立如何查找和使用技能，要求在包括澄清问题在内的任何回应之前调用技能工具\n---"
+    },
+    {
+      "en-US": "<SUBAGENT-STOP>\nIf you were dispatched as a subagent to execute a specific task, skip this skill.\n</SUBAGENT-STOP>",
+      "zh-Hans": "<SUBAGENT-STOP>\n如果您被派遣为子代理执行特定任务，请跳过此技能。\n</SUBAGENT-STOP>"
+    },
+    {
+      "en-US": "<EXTREMELY-IMPORTANT>\nIf you think there is even a 1% chance a skill might apply to what you are doing, you ABSOLUTELY MUST invoke the skill.",
+      "zh-Hans": "<EXTREMELY-IMPORTANT>\n如果你认为某项技能有哪怕1%的可能性适用于你正在做的事情，你就绝对必须使用这项技能。"
+    },
+    {
+      "en-US": "IF A SKILL APPLIES TO YOUR TASK, YOU DO NOT HAVE A CHOICE. YOU MUST USE IT.",
+      "zh-Hans": "如果某项技能适用于你的任务，你没有选择。你必须使用它。"
+    },
+    {
+      "en-US": "This is not negotiable. This is not optional. You cannot rationalize your way out of this.\n</EXTREMELY-IMPORTANT>",
+      "zh-Hans": "这不是可以商量的。这不是可选的。你不能通过合理化来逃避这一点。 </EXTREMELY-IMPORTANT>"
+    },
+    {
+      "en-US": "## Instruction Priority",
+      "zh-Hans": "## 指令优先级"
+    },
+    {
+      "en-US": "Superpowers skills override default system prompt behavior, but **user instructions always take precedence**:",
+      "zh-Hans": "Superpowers 技能会覆盖默认系统提示行为，但 **用户指令始终具有最高优先级**："
+    },
+    {
+      "en-US": "1. **User's explicit instructions** (CLAUDE.md, GEMINI.md, AGENTS.md, direct requests) — highest priority\n2. **Superpowers skills** — override default system behavior where they conflict\n3. **Default system prompt** — lowest priority",
+      "zh-Hans": "1. **用户的明确指令** (CLAUDE.md, GEMINI.md, AGENTS.md, 直接请求) — 最高优先级\n2. **Superpowers 技能** — 在冲突时覆盖默认系统行为\n3. **默认系统提示** — 最低优先级"
+    },
+    {
+      "en-US": "If CLAUDE.md, GEMINI.md, or AGENTS.md says \"don't use TDD\" and a skill says \"always use TDD,\" follow the user's instructions. The user is in control.",
+      "zh-Hans": "如果 CLAUDE.md、GEMINI.md 或 AGENTS.md 说\"不要使用 TDD\"，而某项技能说\"始终使用 TDD\"，请遵循用户的指令。用户拥有控制权。"
+    },
+    {
+      "en-US": "## How to Access Skills",
+      "zh-Hans": "## 如何访问技能"
+    },
+    {
+      "en-US": "**In Claude Code:** Use the `Skill` tool. When you invoke a skill, its content is loaded and presented to you—follow it directly. Never use the Read tool on skill files.",
+      "zh-Hans": "**在 Claude Code 中：** 使用 `Skill` 工具。当你调用技能时，其内容会被加载并呈现给你——直接遵循它。切勿对技能文件使用 Read 工具。"
+    },
+    {
+      "en-US": "**In Gemini CLI:** Skills activate via the `activate_skill` tool. Gemini loads skill metadata at session start and activates the full content on demand.",
+      "zh-Hans": "**在 Gemini CLI 中：** 技能通过 `activate_skill` 工具激活。Gemini 在会话开始时加载技能元数据，并根据需要激活完整内容。"
+    },
+    {
+      "en-US": "**In other environments:** Check your platform's documentation for how skills are loaded.",
+      "zh-Hans": "**在其他环境中：** 请查看你所在平台的文档以了解技能是如何加载的。"
+    },
+    {
+      "en-US": "## Platform Adaptation",
+      "zh-Hans": "## 平台适配"
+    },
+    {
+      "en-US": "Skills use Claude Code tool names. Non-CC platforms: see `references/codex-tools.md` (Codex) for tool equivalents. Gemini CLI users get the tool mapping loaded automatically via GEMINI.md.",
+      "zh-Hans": "技能使用 Claude Code 工具名称。非 CC 平台：请参阅 `references/codex-tools.md` (Codex) 以获取工具等效项。Gemini CLI 用户通过 GEMINI.md 自动加载工具映射。"
+    },
+    {
+      "en-US": "# Using Skills",
+      "zh-Hans": "# 使用技能"
+    },
+    {
+      "en-US": "## The Rule",
+      "zh-Hans": "## 规则"
+    },
+    {
+      "en-US": "**Invoke relevant or requested skills BEFORE any response or action.** Even a 1% chance a skill might apply means that you should invoke the skill to check. If an invoked skill turns out to be wrong for the situation, you don't need to use it.",
+      "zh-Hans": "**在做出任何回应或采取任何行动之前，调用相关或被请求的技能。** 即使某项技能只有 1% 的可能性适用，你也应该调用该技能来检查。如果调用的技能最终证明不适合当前情况，你不需要使用它。"
+    },
+    {
+      "en-US": "```dot\ndigraph skill_flow {\n    \"User message received\" [shape=doublecircle];\n    \"About to EnterPlanMode?\" [shape=doublecircle];\n    \"Already brainstormed?\" [shape=diamond];\n    \"Invoke brainstorming skill\" [shape=box];\n    \"Might any skill apply?\" [shape=diamond];\n    \"Invoke Skill tool\" [shape=box];\n    \"Announce: 'Using [skill] to [purpose]'\" [shape=box];\n    \"Has checklist?\" [shape=diamond];\n    \"Create TodoWrite todo per item\" [shape=box];\n    \"Follow skill exactly\" [shape=box];\n    \"Respond (including clarifications)\" [shape=doublecircle];\n\n    \"About to EnterPlanMode?\" -> \"Already brainstormed?\";\n    \"Already brainstormed?\" -> \"Invoke brainstorming skill\" [label=\"no\"];\n    \"Already brainstormed?\" -> \"Might any skill apply?\" [label=\"yes\"];\n    \"Invoke brainstorming skill\" -> \"Might any skill apply?\";\n\n    \"User message received\" -> \"Might any skill apply?\";\n    \"Might any skill apply?\" -> \"Invoke Skill tool\" [label=\"yes, even 1%\"];\n    \"Might any skill apply?\" -> \"Respond (including clarifications)\" [label=\"definitely not\"];\n    \"Invoke Skill tool\" -> \"Announce: 'Using [skill] to [purpose]'\";\n    \"Announce: 'Using [skill] to [purpose]'\" -> \"Has checklist?\";\n    \"Has checklist?\" -> \"Create TodoWrite todo per item\" [label=\"yes\"];\n    \"Has checklist?\" -> \"Follow skill exactly\" [label=\"no\"];\n    \"Create TodoWrite todo per item\" -> \"Follow skill exactly\";\n}\n```",
+      "zh-Hans": "```dot\ndigraph skill_flow {\n    \"User message received\" [shape=doublecircle];\n    \"About to EnterPlanMode?\" [shape=doublecircle];\n    \"Already brainstormed?\" [shape=diamond];\n    \"Invoke brainstorming skill\" [shape=box];\n    \"Might any skill apply?\" [shape=diamond];\n    \"Invoke Skill tool\" [shape=box];\n    \"Announce: 'Using [skill] to [purpose]'\" [shape=box];\n    \"Has checklist?\" [shape=diamond];\n    \"Create TodoWrite todo per item\" [shape=box];\n    \"Follow skill exactly\" [shape=box];\n    \"Respond (including clarifications)\" [shape=doublecircle];\n\n    \"About to EnterPlanMode?\" -> \"Already brainstormed?\";\n    \"Already brainstormed?\" -> \"Invoke brainstorming skill\" [label=\"no\"];\n    \"Already brainstormed?\" -> \"Might any skill apply?\" [label=\"yes\"];\n    \"Invoke brainstorming skill\" -> \"Might any skill apply?\";\n\n    \"User message received\" -> \"Might any skill apply?\";\n    \"Might any skill apply?\" -> \"Invoke Skill tool\" [label=\"yes, even 1%\"];\n    \"Might any skill apply?\" -> \"Respond (including clarifications)\" [label=\"definitely not\"];\n    \"Invoke Skill tool\" -> \"Announce: 'Using [skill] to [purpose]'\";\n    \"Announce: 'Using [skill] to [purpose]'\" -> \"Has checklist?\";\n    \"Has checklist?\" -> \"Create TodoWrite todo per item\" [label=\"yes\"];\n    \"Has checklist?\" -> \"Follow skill exactly\" [label=\"no\"];\n    \"Create TodoWrite todo per item\" -> \"Follow skill exactly\";\n}\n```"
+    },
+    {
+      "en-US": "## Red Flags",
+      "zh-Hans": "## 危险信号"
+    },
+    {
+      "en-US": "These thoughts mean STOP—you're rationalizing:",
+      "zh-Hans": "产生以下想法意味着停止——你正在合理化："
+    },
+    {
+      "en-US": "| Thought | Reality |\n|---------|---------|\n| \"This is just a simple question\" | Questions are tasks. Check for skills. |\n| \"I need more context first\" | Skill check comes BEFORE clarifying questions. |\n| \"Let me explore the codebase first\" | Skills tell you HOW to explore. Check first. |\n| \"I can check git/files quickly\" | Files lack conversation context. Check for skills. |\n| \"Let me gather information first\" | Skills tell you HOW to gather information. |\n| \"This doesn't need a formal skill\" | If a skill exists, use it. |\n| \"I remember this skill\" | Skills evolve. Read current version. |\n| \"This doesn't count as a task\" | Action = task. Check for skills. |\n| \"The skill is overkill\" | Simple things become complex. Use it. |\n| \"I'll just do this one thing first\" | Check BEFORE doing anything. |\n| \"This feels productive\" | Undisciplined action wastes time. Skills prevent this. |\n| \"I know what that means\" | Knowing the concept ≠ using the skill. Invoke it. |",
+      "zh-Hans": "| 想法 | 现实 |\n|---------|---------|\n| \"这只是个简单的问题\" | 问题就是任务。检查是否有适用技能。 |\n| \"我需要先了解更多背景信息\" | 技能检查应在澄清问题之前进行。 |\n| \"让我先探索代码库\" | 技能会告诉你如何探索。先检查。 |\n| \"我可以快速检查 git/文件\" | 文件缺乏对话上下文。先检查技能。 |\n| \"让我先收集信息\" | 技能会告诉你如何收集信息。 |\n| \"这不需要一个正式的技能\" | 如果技能存在，就使用它。 |\n| \"我记得这个技能\" | 技能会演变。阅读当前版本。 |\n| \"这不算是一个任务\" | 行动 = 任务。检查技能。 |\n| \"这个技能杀鸡用牛刀了\" | 简单的事情会变得复杂。使用它。 |\n| \"我先做这一件事\" | 在做任何事情之前先检查。 |\n| \"这感觉很有成效\" | 无纪律的行动是浪费时间。技能可以防止这一点。 |\n| \"我知道那是什么意思\" | 知道概念 ≠ 使用技能。调用它。 |"
+    },
+    {
+      "en-US": "## Skill Priority",
+      "zh-Hans": "## 技能优先级"
+    },
+    {
+      "en-US": "When multiple skills could apply, use this order:",
+      "zh-Hans": "当多个技能可能适用时，使用以下顺序："
+    },
+    {
+      "en-US": "1. **Process skills first** (brainstorming, debugging) - these determine HOW to approach the task\n2. **Implementation skills second** (frontend-design, mcp-builder) - these guide execution",
+      "zh-Hans": "1. **先使用流程技能** (brainstorming, debugging) - 这些决定了如何处理任务\n2. **其次使用实现技能** (frontend-design, mcp-builder) - 这些指导执行"
+    },
+    {
+      "en-US": "\"Let's build X\" → brainstorming first, then implementation skills.\n\"Fix this bug\" → debugging first, then domain-specific skills.",
+      "zh-Hans": "\"让我们构建 X\" → 先 brainstorming，然后实现技能。\n\"修复这个错误\" → 先 debugging，然后领域特定技能。"
+    },
+    {
+      "en-US": "## Skill Types",
+      "zh-Hans": "## 技能类型"
+    },
+    {
+      "en-US": "**Rigid** (TDD, debugging): Follow exactly. Don't adapt away discipline.",
+      "zh-Hans": "**刚性技能** (TDD, debugging)：严格遵守。不要偏离纪律。"
+    },
+    {
+      "en-US": "**Flexible** (patterns): Adapt principles to context.",
+      "zh-Hans": "**灵活技能** (patterns)：根据上下文调整原则。"
+    },
+    {
+      "en-US": "The skill itself tells you which.",
+      "zh-Hans": "技能本身会告诉你它属于哪一类。"
+    },
+    {
+      "en-US": "## User Instructions",
+      "zh-Hans": "## 用户指令"
+    },
+    {
+      "en-US": "Instructions say WHAT, not HOW. \"Add X\" or \"Fix Y\" doesn't mean skip workflows.",
+      "zh-Hans": "指令说的是\"做什么\"，而不是\"怎么做\"。\"添加 X\"或\"修复 Y\"并不意味着可以跳过工作流程。"
+    }
+  ]
+}

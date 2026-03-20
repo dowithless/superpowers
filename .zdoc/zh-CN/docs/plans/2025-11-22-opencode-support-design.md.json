@@ -1,0 +1,186 @@
+{
+  "sourceFile": "docs/plans/2025-11-22-opencode-support-design.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# OpenCode Support Design",
+      "zh-Hans": "# OpenCode 支持设计"
+    },
+    {
+      "en-US": "**Date:** 2025-11-22\n**Author:** Bot & Jesse\n**Status:** Design Complete, Awaiting Implementation",
+      "zh-Hans": "**日期：** 2025-11-22\n**作者：** Bot & Jesse\n**状态：** 设计完成，待实施"
+    },
+    {
+      "en-US": "## Overview",
+      "zh-Hans": "## 概述"
+    },
+    {
+      "en-US": "Add full superpowers support for OpenCode.ai using a native OpenCode plugin architecture that shares core functionality with the existing Codex implementation.",
+      "zh-Hans": "通过使用与现有 Codex 实现共享核心功能的本机 OpenCode 插件架构，为 OpenCode.ai 添加完整的 superpowers 支持。"
+    },
+    {
+      "en-US": "## Background",
+      "zh-Hans": "## 背景"
+    },
+    {
+      "en-US": "OpenCode.ai is a coding agent similar to Claude Code and Codex. Previous attempts to port superpowers to OpenCode (PR #93, PR #116) used file-copying approaches. This design takes a different approach: building a native OpenCode plugin using their JavaScript/TypeScript plugin system while sharing code with the Codex implementation.",
+      "zh-Hans": "OpenCode.ai 是一个类似于 Claude Code 和 Codex 的编码代理。之前将 superpowers 移植到 OpenCode 的尝试（PR #93, PR #116）使用了文件复制方法。本设计采用不同的方法：使用 OpenCode 的 JavaScript/TypeScript 插件系统构建一个本机 OpenCode 插件，同时与 Codex 实现共享代码。"
+    },
+    {
+      "en-US": "### Key Differences Between Platforms",
+      "zh-Hans": "### 平台间的关键差异"
+    },
+    {
+      "en-US": "- **Claude Code**: Native Anthropic plugin system + file-based skills\n- **Codex**: No plugin system → bootstrap markdown + CLI script\n- **OpenCode**: JavaScript/TypeScript plugins with event hooks and custom tools API",
+      "zh-Hans": "* **Claude Code**：本机 Anthropic 插件系统 + 基于文件的技能\n* **Codex**：无插件系统 → 引导式 markdown + CLI 脚本\n* **OpenCode**：具有事件钩子和自定义工具 API 的 JavaScript/TypeScript 插件"
+    },
+    {
+      "en-US": "### OpenCode's Agent System",
+      "zh-Hans": "### OpenCode 的代理系统"
+    },
+    {
+      "en-US": "- **Primary agents**: Build (default, full access) and Plan (restricted, read-only)\n- **Subagents**: General (research, searching, multi-step tasks)\n- **Invocation**: Automatic dispatch by primary agents OR manual `@mention` syntax\n- **Configuration**: Custom agents in `opencode.json` or `~/.config/opencode/agent/`",
+      "zh-Hans": "* **主要代理**：构建（默认，完全访问）和计划（受限，只读）\n* **子代理**：通用（研究、搜索、多步骤任务）\n* **调用方式**：由主要代理自动分派 或 手动 `@mention` 语法\n* **配置**：在 `opencode.json` 或 `~/.config/opencode/agent/` 中配置自定义代理"
+    },
+    {
+      "en-US": "## Architecture",
+      "zh-Hans": "## 架构"
+    },
+    {
+      "en-US": "### High-Level Structure",
+      "zh-Hans": "### 高层次结构"
+    },
+    {
+      "en-US": "1. **Shared Core Module** (`lib/skills-core.js`)\n   - Common skill discovery and parsing logic\n   - Used by both Codex and OpenCode implementations\n\n2. **Platform-Specific Wrappers**\n   - Codex: CLI script (`.codex/superpowers-codex`)\n   - OpenCode: Plugin module (`.opencode/plugin/superpowers.js`)\n\n3. **Skill Directories**\n   - Core: `~/.config/opencode/superpowers/skills/` (or installed location)\n   - Personal: `~/.config/opencode/skills/` (shadows core skills)",
+      "zh-Hans": "1. **共享核心模块** (`lib/skills-core.js`)\n   * 通用的技能发现和解析逻辑\n   * 由 Codex 和 OpenCode 实现共同使用\n\n2. **平台特定包装器**\n   * Codex：CLI 脚本 (`.codex/superpowers-codex`)\n   * OpenCode：插件模块 (`.opencode/plugin/superpowers.js`)\n\n3. **技能目录**\n   * 核心：`~/.config/opencode/superpowers/skills/`（或安装位置）\n   * 个人：`~/.config/opencode/skills/`（覆盖核心技能）"
+    },
+    {
+      "en-US": "### Code Reuse Strategy",
+      "zh-Hans": "### 代码复用策略"
+    },
+    {
+      "en-US": "Extract common functionality from `.codex/superpowers-codex` into shared module:",
+      "zh-Hans": "从 `.codex/superpowers-codex` 中提取通用功能到共享模块："
+    },
+    {
+      "en-US": "```javascript\n// lib/skills-core.js\nmodule.exports = {\n  extractFrontmatter(filePath),      // Parse name + description from YAML\n  findSkillsInDir(dir, maxDepth),    // Recursive SKILL.md discovery\n  findAllSkills(dirs),                // Scan multiple directories\n  resolveSkillPath(skillName, dirs), // Handle shadowing (personal > core)\n  checkForUpdates(repoDir)           // Git fetch/status check\n};\n```",
+      "zh-Hans": "```javascript\n// lib/skills-core.js\nmodule.exports = {\n  extractFrontmatter(filePath),      // Parse name + description from YAML\n  findSkillsInDir(dir, maxDepth),    // Recursive SKILL.md discovery\n  findAllSkills(dirs),                // Scan multiple directories\n  resolveSkillPath(skillName, dirs), // Handle shadowing (personal > core)\n  checkForUpdates(repoDir)           // Git fetch/status check\n};\n```"
+    },
+    {
+      "en-US": "### Skill Frontmatter Format",
+      "zh-Hans": "### 技能 Frontmatter 格式"
+    },
+    {
+      "en-US": "Current format (no `when_to_use` field):",
+      "zh-Hans": "当前格式（无 `when_to_use` 字段）："
+    },
+    {
+      "en-US": "```yaml\n---\nname: skill-name\ndescription: Use when [condition] - [what it does]; [additional context]\n---\n```",
+      "zh-Hans": "```yaml\n---\nname: skill-name\ndescription: Use when [condition] - [what it does]; [additional context]\n---\n```"
+    },
+    {
+      "en-US": "## OpenCode Plugin Implementation",
+      "zh-Hans": "## OpenCode 插件实现"
+    },
+    {
+      "en-US": "### Custom Tools",
+      "zh-Hans": "### 自定义工具"
+    },
+    {
+      "en-US": "**Tool 1: `use_skill`**",
+      "zh-Hans": "**工具 1：`use_skill`**"
+    },
+    {
+      "en-US": "Loads a specific skill's content into the conversation (equivalent to Claude's Skill tool).",
+      "zh-Hans": "将特定技能的内容加载到对话中（相当于 Claude 的 Skill 工具）。"
+    },
+    {
+      "en-US": "```javascript\n{\n  name: 'use_skill',\n  description: 'Load and read a specific skill to guide your work',\n  schema: z.object({\n    skill_name: z.string().describe('Name of skill (e.g., \"superpowers:brainstorming\")')\n  }),\n  execute: async ({ skill_name }) => {\n    const { skillPath, content, frontmatter } = resolveAndReadSkill(skill_name);\n    const skillDir = path.dirname(skillPath);\n\n    return `# ${frontmatter.name}\n# ${frontmatter.description}\n# Supporting tools and docs are in ${skillDir}\n# ============================================\n\n${content}`;\n  }\n}\n```",
+      "zh-Hans": "```javascript\n{\n  name: 'use_skill',\n  description: 'Load and read a specific skill to guide your work',\n  schema: z.object({\n    skill_name: z.string().describe('Name of skill (e.g., \"superpowers:brainstorming\")')\n  }),\n  execute: async ({ skill_name }) => {\n    const { skillPath, content, frontmatter } = resolveAndReadSkill(skill_name);\n    const skillDir = path.dirname(skillPath);\n\n    return `# ${frontmatter.name}\n# ${frontmatter.description}\n# Supporting tools and docs are in ${skillDir}\n# ============================================\n\n${content}`;\n  }\n}\n```"
+    },
+    {
+      "en-US": "**Tool 2: `find_skills`**",
+      "zh-Hans": "**工具 2：`find_skills`**"
+    },
+    {
+      "en-US": "Lists all available skills with metadata.",
+      "zh-Hans": "列出所有可用技能及其元数据。"
+    },
+    {
+      "en-US": "```javascript\n{\n  name: 'find_skills',\n  description: 'List all available skills',\n  schema: z.object({}),\n  execute: async () => {\n    const skills = discoverAllSkills();\n    return skills.map(s =>\n      `${s.namespace}:${s.name}\n  ${s.description}\n  Directory: ${s.directory}\n`).join('\\n');\n  }\n}\n```",
+      "zh-Hans": "```javascript\n{\n  name: 'find_skills',\n  description: 'List all available skills',\n  schema: z.object({}),\n  execute: async () => {\n    const skills = discoverAllSkills();\n    return skills.map(s =>\n      `${s.namespace}:${s.name}\n  ${s.description}\n  Directory: ${s.directory}\n`).join('\\n');\n  }\n}\n```"
+    },
+    {
+      "en-US": "### Session Startup Hook",
+      "zh-Hans": "### 会话启动钩子"
+    },
+    {
+      "en-US": "When a new session starts (`session.started` event):",
+      "zh-Hans": "当新会话开始时（`session.started` 事件）："
+    },
+    {
+      "en-US": "1. **Inject using-superpowers content**\n   - Full content of the using-superpowers skill\n   - Establishes mandatory workflows\n\n2. **Run find_skills automatically**\n   - Display full list of available skills upfront\n   - Include skill directories for each\n\n3. **Inject tool mapping instructions**\n   ```markdown\n   **Tool Mapping for OpenCode:**\n   When skills reference tools you don't have, substitute:\n   - `TodoWrite` → `update_plan`\n   - `Task` with subagents → Use OpenCode subagent system (@mention)\n   - `Skill` tool → `use_skill` custom tool\n   - Read, Write, Edit, Bash → Your native equivalents\n\n   **Skill directories contain:**\n   - Supporting scripts (run with bash)\n   - Additional documentation (read with read tool)\n   - Utilities specific to that skill\n   ```\n\n4. **Check for updates** (non-blocking)\n   - Quick git fetch with timeout\n   - Notify if updates available",
+      "zh-Hans": "1. **注入 using-superpowers 内容**\n   * using-superpowers 技能的全部内容\n   * 建立强制性的工作流程\n\n2. **自动运行 find\\_skills**\n   * 预先显示完整的可用技能列表\n   * 包含每个技能的目录\n\n3. **注入工具映射说明**\n   ```markdown\n   **OpenCode 工具映射：**\n   当技能引用你未拥有的工具时，请替换为：\n   - `TodoWrite` → `update_plan`\n   - 带有子代理的 `Task` → 使用 OpenCode 子代理系统（@提及）\n   - `Skill` 工具 → `use_skill` 自定义工具\n   - Read、Write、Edit、Bash → 你的本机等效工具\n\n   **技能目录包含：**\n   - 支持脚本（使用 bash 运行）\n   - 附加文档（使用 read 工具读取）\n   - 该技能特定的实用程序\n   ```\n\n4. **检查更新**（非阻塞）\n   * 带超时的快速 git fetch\n   * 如有可用更新则通知"
+    },
+    {
+      "en-US": "### Plugin Structure",
+      "zh-Hans": "### 插件结构"
+    },
+    {
+      "en-US": "```javascript\n// .opencode/plugin/superpowers.js\nconst skillsCore = require('../../lib/skills-core');\nconst path = require('path');\nconst fs = require('fs');\nconst { z } = require('zod');\n\nexport const SuperpowersPlugin = async ({ client, directory, $ }) => {\n  const superpowersDir = path.join(process.env.HOME, '.config/opencode/superpowers');\n  const personalDir = path.join(process.env.HOME, '.config/opencode/skills');\n\n  return {\n    'session.started': async () => {\n      const usingSuperpowers = await readSkill('using-superpowers');\n      const skillsList = await findAllSkills();\n      const toolMapping = getToolMappingInstructions();\n\n      return {\n        context: `${usingSuperpowers}\\n\\n${skillsList}\\n\\n${toolMapping}`\n      };\n    },\n\n    tools: [\n      {\n        name: 'use_skill',\n        description: 'Load and read a specific skill',\n        schema: z.object({\n          skill_name: z.string()\n        }),\n        execute: async ({ skill_name }) => {\n          // Implementation using skillsCore\n        }\n      },\n      {\n        name: 'find_skills',\n        description: 'List all available skills',\n        schema: z.object({}),\n        execute: async () => {\n          // Implementation using skillsCore\n        }\n      }\n    ]\n  };\n};\n```",
+      "zh-Hans": "```javascript\n// .opencode/plugin/superpowers.js\nconst skillsCore = require('../../lib/skills-core');\nconst path = require('path');\nconst fs = require('fs');\nconst { z } = require('zod');\n\nexport const SuperpowersPlugin = async ({ client, directory, $ }) => {\n  const superpowersDir = path.join(process.env.HOME, '.config/opencode/superpowers');\n  const personalDir = path.join(process.env.HOME, '.config/opencode/skills');\n\n  return {\n    'session.started': async () => {\n      const usingSuperpowers = await readSkill('using-superpowers');\n      const skillsList = await findAllSkills();\n      const toolMapping = getToolMappingInstructions();\n\n      return {\n        context: `${usingSuperpowers}\\n\\n${skillsList}\\n\\n${toolMapping}`\n      };\n    },\n\n    tools: [\n      {\n        name: 'use_skill',\n        description: 'Load and read a specific skill',\n        schema: z.object({\n          skill_name: z.string()\n        }),\n        execute: async ({ skill_name }) => {\n          // Implementation using skillsCore\n        }\n      },\n      {\n        name: 'find_skills',\n        description: 'List all available skills',\n        schema: z.object({}),\n        execute: async () => {\n          // Implementation using skillsCore\n        }\n      }\n    ]\n  };\n};\n```"
+    },
+    {
+      "en-US": "## File Structure",
+      "zh-Hans": "## 文件结构"
+    },
+    {
+      "en-US": "```\nsuperpowers/\n├── lib/\n│   └── skills-core.js           # NEW: Shared skill logic\n├── .codex/\n│   ├── superpowers-codex        # UPDATED: Use skills-core\n│   ├── superpowers-bootstrap.md\n│   └── INSTALL.md\n├── .opencode/\n│   ├── plugin/\n│   │   └── superpowers.js       # NEW: OpenCode plugin\n│   └── INSTALL.md               # NEW: Installation guide\n└── skills/                       # Unchanged\n```",
+      "zh-Hans": "```\nsuperpowers/\n├── lib/\n│   └── skills-core.js           # NEW: Shared skill logic\n├── .codex/\n│   ├── superpowers-codex        # UPDATED: Use skills-core\n│   ├── superpowers-bootstrap.md\n│   └── INSTALL.md\n├── .opencode/\n│   ├── plugin/\n│   │   └── superpowers.js       # NEW: OpenCode plugin\n│   └── INSTALL.md               # NEW: Installation guide\n└── skills/                       # Unchanged\n```"
+    },
+    {
+      "en-US": "## Implementation Plan",
+      "zh-Hans": "## 实施计划"
+    },
+    {
+      "en-US": "### Phase 1: Refactor Shared Core",
+      "zh-Hans": "### 阶段 1：重构共享核心"
+    },
+    {
+      "en-US": "1. Create `lib/skills-core.js`\n   - Extract frontmatter parsing from `.codex/superpowers-codex`\n   - Extract skill discovery logic\n   - Extract path resolution (with shadowing)\n   - Update to use only `name` and `description` (no `when_to_use`)\n\n2. Update `.codex/superpowers-codex` to use shared core\n   - Import from `../lib/skills-core.js`\n   - Remove duplicated code\n   - Keep CLI wrapper logic\n\n3. Test Codex implementation still works\n   - Verify bootstrap command\n   - Verify use-skill command\n   - Verify find-skills command",
+      "zh-Hans": "1. 创建 `lib/skills-core.js`\n   * 从 `.codex/superpowers-codex` 中提取 frontmatter 解析逻辑\n   * 提取技能发现逻辑\n   * 提取路径解析逻辑（含覆盖机制）\n   * 更新为仅使用 `name` 和 `description`（不使用 `when_to_use`）\n\n2. 更新 `.codex/superpowers-codex` 以使用共享核心\n   * 从 `../lib/skills-core.js` 导入\n   * 移除重复代码\n   * 保留 CLI 包装器逻辑\n\n3. 测试 Codex 实现是否仍然有效\n   * 验证 bootstrap 命令\n   * 验证 use-skill 命令\n   * 验证 find-skills 命令"
+    },
+    {
+      "en-US": "### Phase 2: Build OpenCode Plugin",
+      "zh-Hans": "### 阶段 2：构建 OpenCode 插件"
+    },
+    {
+      "en-US": "1. Create `.opencode/plugin/superpowers.js`\n   - Import shared core from `../../lib/skills-core.js`\n   - Implement plugin function\n   - Define custom tools (use_skill, find_skills)\n   - Implement session.started hook\n\n2. Create `.opencode/INSTALL.md`\n   - Installation instructions\n   - Directory setup\n   - Configuration guidance\n\n3. Test OpenCode implementation\n   - Verify session startup bootstrap\n   - Verify use_skill tool works\n   - Verify find_skills tool works\n   - Verify skill directories are accessible",
+      "zh-Hans": "1. 创建 `.opencode/plugin/superpowers.js`\n   * 从 `../../lib/skills-core.js` 导入共享核心\n   * 实现插件函数\n   * 定义自定义工具（use\\_skill, find\\_skills）\n   * 实现 session.started 钩子\n\n2. 创建 `.opencode/INSTALL.md`\n   * 安装说明\n   * 目录设置\n   * 配置指南\n\n3. 测试 OpenCode 实现\n   * 验证会话启动引导\n   * 验证 use\\_skill 工具工作正常\n   * 验证 find\\_skills 工具工作正常\n   * 验证技能目录可访问"
+    },
+    {
+      "en-US": "### Phase 3: Documentation & Polish",
+      "zh-Hans": "### 阶段 3：文档与完善"
+    },
+    {
+      "en-US": "1. Update README with OpenCode support\n2. Add OpenCode installation to main docs\n3. Update RELEASE-NOTES\n4. Test both Codex and OpenCode work correctly",
+      "zh-Hans": "1. 更新 README，包含 OpenCode 支持\n2. 在主文档中添加 OpenCode 安装说明\n3. 更新 RELEASE-NOTES\n4. 测试 Codex 和 OpenCode 是否都能正常工作"
+    },
+    {
+      "en-US": "## Next Steps",
+      "zh-Hans": "## 后续步骤"
+    },
+    {
+      "en-US": "1. **Create isolated workspace** (using git worktrees)\n   - Branch: `feature/opencode-support`\n\n2. **Follow TDD where applicable**\n   - Test shared core functions\n   - Test skill discovery and parsing\n   - Integration tests for both platforms\n\n3. **Incremental implementation**\n   - Phase 1: Refactor shared core + update Codex\n   - Verify Codex still works before moving on\n   - Phase 2: Build OpenCode plugin\n   - Phase 3: Documentation and polish\n\n4. **Testing strategy**\n   - Manual testing with real OpenCode installation\n   - Verify skill loading, directories, scripts work\n   - Test both Codex and OpenCode side-by-side\n   - Verify tool mappings work correctly\n\n5. **PR and merge**\n   - Create PR with complete implementation\n   - Test in clean environment\n   - Merge to main",
+      "zh-Hans": "1. **创建独立工作区**（使用 git worktrees）\n   * 分支：`feature/opencode-support`\n\n2. **在适用处遵循 TDD**\n   * 测试共享核心函数\n   * 测试技能发现和解析\n   * 两个平台的集成测试\n\n3. **增量实施**\n   * 阶段 1：重构共享核心 + 更新 Codex\n   * 继续之前验证 Codex 是否仍有效\n   * 阶段 2：构建 OpenCode 插件\n   * 阶段 3：文档与完善\n\n4. **测试策略**\n   * 使用真实的 OpenCode 安装进行手动测试\n   * 验证技能加载、目录、脚本正常工作\n   * 并排测试 Codex 和 OpenCode\n   * 验证工具映射正常工作\n\n5. **PR 与合并**\n   * 创建包含完整实现的 PR\n   * 在干净环境中测试\n   * 合并到主分支"
+    },
+    {
+      "en-US": "## Benefits",
+      "zh-Hans": "## 优势"
+    },
+    {
+      "en-US": "- **Code reuse**: Single source of truth for skill discovery/parsing\n- **Maintainability**: Bug fixes apply to both platforms\n- **Extensibility**: Easy to add future platforms (Cursor, Windsurf, etc.)\n- **Native integration**: Uses OpenCode's plugin system properly\n- **Consistency**: Same skill experience across all platforms",
+      "zh-Hans": "* **代码复用**：技能发现/解析的单一事实来源\n* **可维护性**：错误修复适用于两个平台\n* **可扩展性**：易于添加未来平台（Cursor、Windsurf 等）\n* **本机集成**：正确使用 OpenCode 的插件系统\n* **一致性**：在所有平台上获得相同的技能体验"
+    }
+  ]
+}

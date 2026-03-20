@@ -1,0 +1,94 @@
+{
+  "sourceFile": "tests/subagent-driven-dev/go-fractals/design.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Go Fractals CLI - Design",
+      "zh-Hans": "# Go Fractals CLI - 设计"
+    },
+    {
+      "en-US": "## Overview",
+      "zh-Hans": "## 概述"
+    },
+    {
+      "en-US": "A command-line tool that generates ASCII art fractals. Supports two fractal types with configurable output.",
+      "zh-Hans": "一个生成 ASCII 艺术分形的命令行工具。支持两种分形类型，并可配置输出。"
+    },
+    {
+      "en-US": "## Usage",
+      "zh-Hans": "## 使用方法"
+    },
+    {
+      "en-US": "```bash\n# Sierpinski triangle\nfractals sierpinski --size 32 --depth 5\n\n# Mandelbrot set\nfractals mandelbrot --width 80 --height 24 --iterations 100\n\n# Custom character\nfractals sierpinski --size 16 --char '#'\n\n# Help\nfractals --help\nfractals sierpinski --help\n```",
+      "zh-Hans": "```bash\n# Sierpinski triangle\nfractals sierpinski --size 32 --depth 5\n\n# Mandelbrot set\nfractals mandelbrot --width 80 --height 24 --iterations 100\n\n# Custom character\nfractals sierpinski --size 16 --char '#'\n\n# Help\nfractals --help\nfractals sierpinski --help\n```"
+    },
+    {
+      "en-US": "## Commands",
+      "zh-Hans": "## 命令"
+    },
+    {
+      "en-US": "### `sierpinski`",
+      "zh-Hans": "### `sierpinski`"
+    },
+    {
+      "en-US": "Generates a Sierpinski triangle using recursive subdivision.",
+      "zh-Hans": "通过递归细分生成谢尔宾斯基三角形。"
+    },
+    {
+      "en-US": "Flags:",
+      "zh-Hans": "标志："
+    },
+    {
+      "en-US": "- `--size` (default: 32) - Width of the triangle base in characters\n- `--depth` (default: 5) - Recursion depth\n- `--char` (default: '*') - Character to use for filled points",
+      "zh-Hans": "* `--size` (默认值: 32) - 三角形底边的字符宽度\n* `--depth` (默认值: 5) - 递归深度\n* `--char` (默认值: '\\*') - 用于填充点的字符"
+    },
+    {
+      "en-US": "Output: Triangle printed to stdout, one line per row.",
+      "zh-Hans": "输出：三角形打印到标准输出，每行打印一个。"
+    },
+    {
+      "en-US": "### `mandelbrot`",
+      "zh-Hans": "### `mandelbrot`"
+    },
+    {
+      "en-US": "Renders the Mandelbrot set as ASCII art. Maps iteration count to characters.",
+      "zh-Hans": "将曼德博集合渲染为 ASCII 艺术。将迭代次数映射到字符。"
+    },
+    {
+      "en-US": "Flags:",
+      "zh-Hans": "标志："
+    },
+    {
+      "en-US": "- `--width` (default: 80) - Output width in characters\n- `--height` (default: 24) - Output height in characters\n- `--iterations` (default: 100) - Maximum iterations for escape calculation\n- `--char` (default: gradient) - Single character, or omit for gradient \" .:-=+*#%@\"",
+      "zh-Hans": "* `--width` (默认值: 80) - 输出宽度（字符数）\n* `--height` (默认值: 24) - 输出高度（字符数）\n* `--iterations` (默认值: 100) - 逃逸计算的最大迭代次数\n* `--char` (默认值: gradient) - 单个字符，或省略以使用渐变字符 \" .:-=+\\*#%@\""
+    },
+    {
+      "en-US": "Output: Rectangle printed to stdout.",
+      "zh-Hans": "输出：矩形打印到标准输出。"
+    },
+    {
+      "en-US": "## Architecture",
+      "zh-Hans": "## 架构"
+    },
+    {
+      "en-US": "```\ncmd/\n  fractals/\n    main.go           # Entry point, CLI setup\ninternal/\n  sierpinski/\n    sierpinski.go     # Algorithm\n    sierpinski_test.go\n  mandelbrot/\n    mandelbrot.go     # Algorithm\n    mandelbrot_test.go\n  cli/\n    root.go           # Root command, help\n    sierpinski.go     # Sierpinski subcommand\n    mandelbrot.go     # Mandelbrot subcommand\n```",
+      "zh-Hans": "```\ncmd/\n  fractals/\n    main.go           # Entry point, CLI setup\ninternal/\n  sierpinski/\n    sierpinski.go     # Algorithm\n    sierpinski_test.go\n  mandelbrot/\n    mandelbrot.go     # Algorithm\n    mandelbrot_test.go\n  cli/\n    root.go           # Root command, help\n    sierpinski.go     # Sierpinski subcommand\n    mandelbrot.go     # Mandelbrot subcommand\n```"
+    },
+    {
+      "en-US": "## Dependencies",
+      "zh-Hans": "## 依赖项"
+    },
+    {
+      "en-US": "- Go 1.21+\n- `github.com/spf13/cobra` for CLI",
+      "zh-Hans": "* Go 1.21+\n* `github.com/spf13/cobra` 用于 CLI"
+    },
+    {
+      "en-US": "## Acceptance Criteria",
+      "zh-Hans": "## 验收标准"
+    },
+    {
+      "en-US": "1. `fractals --help` shows usage\n2. `fractals sierpinski` outputs a recognizable triangle\n3. `fractals mandelbrot` outputs a recognizable Mandelbrot set\n4. `--size`, `--width`, `--height`, `--depth`, `--iterations` flags work\n5. `--char` customizes output character\n6. Invalid inputs produce clear error messages\n7. All tests pass",
+      "zh-Hans": "1. `fractals --help` 显示用法\n2. `fractals sierpinski` 输出可识别的三角形\n3. `fractals mandelbrot` 输出可识别的曼德博集合\n4. `--size`, `--width`, `--height`, `--depth`, `--iterations` 标志正常工作\n5. `--char` 自定义输出字符\n6. 无效输入会产生清晰的错误信息\n7. 所有测试通过"
+    }
+  ]
+}

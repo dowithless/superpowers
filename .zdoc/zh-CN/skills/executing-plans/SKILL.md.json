@@ -1,0 +1,118 @@
+{
+  "sourceFile": "skills/executing-plans/SKILL.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "---\nname: executing-plans\ndescription: Use when you have a written implementation plan to execute in a separate session with review checkpoints\n---",
+      "zh-Hans": "---\nname: executing-plans\ndescription: 当您有一个书面实施计划，需要在单独的会话中执行并设置审查检查点时使用。\n---"
+    },
+    {
+      "en-US": "# Executing Plans",
+      "zh-Hans": "# 执行计划"
+    },
+    {
+      "en-US": "## Overview",
+      "zh-Hans": "## 概述"
+    },
+    {
+      "en-US": "Load plan, review critically, execute all tasks, report when complete.",
+      "zh-Hans": "加载计划，进行审阅，执行所有任务，完成后报告。"
+    },
+    {
+      "en-US": "**Announce at start:** \"I'm using the executing-plans skill to implement this plan.\"",
+      "zh-Hans": "**开始时宣布：** \"我正在使用执行计划技能来实施这个计划。\""
+    },
+    {
+      "en-US": "**Note:** Tell your human partner that Superpowers works much better with access to subagents. The quality of its work will be significantly higher if run on a platform with subagent support (such as Claude Code or Codex). If subagents are available, use superpowers:subagent-driven-development instead of this skill.",
+      "zh-Hans": "**注意：** 告诉您的人类伙伴，Superpowers 在有子代理访问权限的情况下效果会好得多。如果在支持子代理的平台上运行（例如 Claude Code 或 Codex），其工作质量将显著提高。如果子代理可用，请使用 superpowers:subagent-driven-development 而不是此技能。"
+    },
+    {
+      "en-US": "## The Process",
+      "zh-Hans": "## 流程"
+    },
+    {
+      "en-US": "### Step 1: Load and Review Plan",
+      "zh-Hans": "### 步骤 1：加载并审阅计划"
+    },
+    {
+      "en-US": "1. Read plan file\n2. Review critically - identify any questions or concerns about the plan\n3. If concerns: Raise them with your human partner before starting\n4. If no concerns: Create TodoWrite and proceed",
+      "zh-Hans": "1. 读取计划文件\n2. 审阅计划 - 识别计划中的任何疑问或问题\n3. 如果有问题：在开始前向您的人类伙伴提出\n4. 如果没有问题：创建 TodoWrite 并继续"
+    },
+    {
+      "en-US": "### Step 2: Execute Tasks",
+      "zh-Hans": "### 步骤 2：执行任务"
+    },
+    {
+      "en-US": "For each task:",
+      "zh-Hans": "对于每个任务："
+    },
+    {
+      "en-US": "1. Mark as in_progress\n2. Follow each step exactly (plan has bite-sized steps)\n3. Run verifications as specified\n4. Mark as completed",
+      "zh-Hans": "1. 标记为 in\\_progress\n2. 严格按照每个步骤执行（计划包含易于执行的小步骤）\n3. 按照指定运行验证\n4. 标记为 completed"
+    },
+    {
+      "en-US": "### Step 3: Complete Development",
+      "zh-Hans": "### 步骤 3：完成开发"
+    },
+    {
+      "en-US": "After all tasks complete and verified:",
+      "zh-Hans": "所有任务完成并验证后："
+    },
+    {
+      "en-US": "- Announce: \"I'm using the finishing-a-development-branch skill to complete this work.\"\n- **REQUIRED SUB-SKILL:** Use superpowers:finishing-a-development-branch\n- Follow that skill to verify tests, present options, execute choice",
+      "zh-Hans": "* 宣布：\"我正在使用完成开发分支技能来完成这项工作。\"\n* **必需的子技能：** 使用 superpowers:finishing-a-development-branch\n* 遵循该技能来验证测试、呈现选项、执行选择"
+    },
+    {
+      "en-US": "## When to Stop and Ask for Help",
+      "zh-Hans": "## 何时停止并寻求帮助"
+    },
+    {
+      "en-US": "**STOP executing immediately when:**",
+      "zh-Hans": "**遇到以下情况立即停止执行：**"
+    },
+    {
+      "en-US": "- Hit a blocker (missing dependency, test fails, instruction unclear)\n- Plan has critical gaps preventing starting\n- You don't understand an instruction\n- Verification fails repeatedly",
+      "zh-Hans": "* 遇到阻碍（缺少依赖项、测试失败、指令不明确）\n* 计划存在关键缺陷，无法开始\n* 不理解某个指令\n* 验证反复失败"
+    },
+    {
+      "en-US": "**Ask for clarification rather than guessing.**",
+      "zh-Hans": "**请求澄清，而不是猜测。**"
+    },
+    {
+      "en-US": "## When to Revisit Earlier Steps",
+      "zh-Hans": "## 何时重新审视前面的步骤"
+    },
+    {
+      "en-US": "**Return to Review (Step 1) when:**",
+      "zh-Hans": "**遇到以下情况返回审阅（步骤 1）：**"
+    },
+    {
+      "en-US": "- Partner updates the plan based on your feedback\n- Fundamental approach needs rethinking",
+      "zh-Hans": "* 伙伴根据您的反馈更新了计划\n* 基本方法需要重新思考"
+    },
+    {
+      "en-US": "**Don't force through blockers** - stop and ask.",
+      "zh-Hans": "**不要强行突破阻碍** - 停止并询问。"
+    },
+    {
+      "en-US": "## Remember",
+      "zh-Hans": "## 记住"
+    },
+    {
+      "en-US": "- Review plan critically first\n- Follow plan steps exactly\n- Don't skip verifications\n- Reference skills when plan says to\n- Stop when blocked, don't guess\n- Never start implementation on main/master branch without explicit user consent",
+      "zh-Hans": "* 首先审阅计划\n* 严格按照计划步骤执行\n* 不要跳过验证\n* 当计划说明时，引用相关技能\n* 遇到阻碍时停止，不要猜测\n* 未经用户明确同意，切勿在 main/master 分支上开始实施"
+    },
+    {
+      "en-US": "## Integration",
+      "zh-Hans": "## 集成"
+    },
+    {
+      "en-US": "**Required workflow skills:**",
+      "zh-Hans": "**必需的工作流技能：**"
+    },
+    {
+      "en-US": "- **superpowers:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting\n- **superpowers:writing-plans** - Creates the plan this skill executes\n- **superpowers:finishing-a-development-branch** - Complete development after all tasks",
+      "zh-Hans": "* **superpowers:using-git-worktrees** - 必需：在开始前设置隔离的工作空间\n* **superpowers:writing-plans** - 创建此技能执行的计划\n* **superpowers:finishing-a-development-branch** - 所有任务完成后完成开发"
+    }
+  ]
+}

@@ -1,0 +1,302 @@
+{
+  "sourceFile": "tests/subagent-driven-dev/go-fractals/plan.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Go Fractals CLI - Implementation Plan",
+      "zh-Hans": "# Go Fractals CLI - 实施计划"
+    },
+    {
+      "en-US": "Execute this plan using the `superpowers:subagent-driven-development` skill.",
+      "zh-Hans": "使用 `superpowers:subagent-driven-development` 技能执行此计划。"
+    },
+    {
+      "en-US": "## Context",
+      "zh-Hans": "## 背景"
+    },
+    {
+      "en-US": "Building a CLI tool that generates ASCII fractals. See `design.md` for full specification.",
+      "zh-Hans": "构建一个生成 ASCII 分形的 CLI 工具。完整规范请参阅 `design.md`。"
+    },
+    {
+      "en-US": "## Tasks",
+      "zh-Hans": "## 任务"
+    },
+    {
+      "en-US": "### Task 1: Project Setup",
+      "zh-Hans": "### 任务 1：项目设置"
+    },
+    {
+      "en-US": "Create the Go module and directory structure.",
+      "zh-Hans": "创建 Go 模块和目录结构。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Initialize `go.mod` with module name `github.com/superpowers-test/fractals`\n- Create directory structure: `cmd/fractals/`, `internal/sierpinski/`, `internal/mandelbrot/`, `internal/cli/`\n- Create minimal `cmd/fractals/main.go` that prints \"fractals cli\"\n- Add `github.com/spf13/cobra` dependency",
+      "zh-Hans": "* 使用模块名称 `github.com/superpowers-test/fractals` 初始化 `go.mod`\n* 创建目录结构：`cmd/fractals/`、`internal/sierpinski/`、`internal/mandelbrot/`、`internal/cli/`\n* 创建打印 \"fractals cli\" 的最小 `cmd/fractals/main.go`\n* 添加 `github.com/spf13/cobra` 依赖项"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- `go build ./cmd/fractals` succeeds\n- `./fractals` prints \"fractals cli\"",
+      "zh-Hans": "* `go build ./cmd/fractals` 执行成功\n* `./fractals` 打印 \"fractals cli\""
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 2: CLI Framework with Help",
+      "zh-Hans": "### 任务 2：带帮助的 CLI 框架"
+    },
+    {
+      "en-US": "Set up Cobra root command with help output.",
+      "zh-Hans": "设置带有帮助输出的 Cobra 根命令。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Create `internal/cli/root.go` with root command\n- Configure help text showing available subcommands\n- Wire root command into `main.go`",
+      "zh-Hans": "* 使用根命令创建 `internal/cli/root.go`\n* 配置显示可用子命令的帮助文本\n* 将根命令接入 `main.go`"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- `./fractals --help` shows usage with \"sierpinski\" and \"mandelbrot\" listed as available commands\n- `./fractals` (no args) shows help",
+      "zh-Hans": "* `./fractals --help` 显示用法，其中列出 \"sierpinski\" 和 \"mandelbrot\" 作为可用命令\n* `./fractals`（无参数）显示帮助"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 3: Sierpinski Algorithm",
+      "zh-Hans": "### 任务 3：Sierpinski 算法"
+    },
+    {
+      "en-US": "Implement the Sierpinski triangle generation algorithm.",
+      "zh-Hans": "实现谢尔宾斯基三角形生成算法。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Create `internal/sierpinski/sierpinski.go`\n- Implement `Generate(size, depth int, char rune) []string` that returns lines of the triangle\n- Use recursive midpoint subdivision algorithm\n- Create `internal/sierpinski/sierpinski_test.go` with tests:\n  - Small triangle (size=4, depth=2) matches expected output\n  - Size=1 returns single character\n  - Depth=0 returns filled triangle",
+      "zh-Hans": "* 创建 `internal/sierpinski/sierpinski.go`\n* 实现返回三角形各行的 `Generate(size, depth int, char rune) []string`\n* 使用递归中点细分算法\n* 创建带有测试的 `internal/sierpinski/sierpinski_test.go`：\n  * 小三角形（size=4, depth=2）匹配预期输出\n  * Size=1 返回单个字符\n  * Depth=0 返回实心三角形"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- `go test ./internal/sierpinski/...` passes",
+      "zh-Hans": "* `go test ./internal/sierpinski/...` 通过"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 4: Sierpinski CLI Integration",
+      "zh-Hans": "### 任务 4：Sierpinski CLI 集成"
+    },
+    {
+      "en-US": "Wire the Sierpinski algorithm to a CLI subcommand.",
+      "zh-Hans": "将谢尔宾斯基算法连接到 CLI 子命令。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Create `internal/cli/sierpinski.go` with `sierpinski` subcommand\n- Add flags: `--size` (default 32), `--depth` (default 5), `--char` (default '*')\n- Call `sierpinski.Generate()` and print result to stdout",
+      "zh-Hans": "* 使用 `sierpinski` 子命令创建 `internal/cli/sierpinski.go`\n* 添加标志：`--size`（默认 32）、`--depth`（默认 5）、`--char`（默认 '\\*'）\n* 调用 `sierpinski.Generate()` 并将结果打印到标准输出"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- `./fractals sierpinski` outputs a triangle\n- `./fractals sierpinski --size 16 --depth 3` outputs smaller triangle\n- `./fractals sierpinski --help` shows flag documentation",
+      "zh-Hans": "* `./fractals sierpinski` 输出一个三角形\n* `./fractals sierpinski --size 16 --depth 3` 输出较小的三角形\n* `./fractals sierpinski --help` 显示标志文档"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 5: Mandelbrot Algorithm",
+      "zh-Hans": "### 任务 5：Mandelbrot 算法"
+    },
+    {
+      "en-US": "Implement the Mandelbrot set ASCII renderer.",
+      "zh-Hans": "实现曼德博集合 ASCII 渲染器。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Create `internal/mandelbrot/mandelbrot.go`\n- Implement `Render(width, height, maxIter int, char string) []string`\n- Map complex plane region (-2.5 to 1.0 real, -1.0 to 1.0 imaginary) to output dimensions\n- Map iteration count to character gradient \" .:-=+*#%@\" (or single char if provided)\n- Create `internal/mandelbrot/mandelbrot_test.go` with tests:\n  - Output dimensions match requested width/height\n  - Known point inside set (0,0) maps to max-iteration character\n  - Known point outside set (2,0) maps to low-iteration character",
+      "zh-Hans": "* 创建 `internal/mandelbrot/mandelbrot.go`\n* 实现 `Render(width, height, maxIter int, char string) []string`\n* 将复平面区域（实部 -2.5 到 1.0，虚部 -1.0 到 1.0）映射到输出尺寸\n* 将迭代次数映射到字符梯度 \" .:-=+\\*#%@\"（如果提供了单字符则使用单字符）\n* 创建带有测试的 `internal/mandelbrot/mandelbrot_test.go`：\n  * 输出尺寸匹配请求的宽度/高度\n  * 已知集合内点 (0,0) 映射到最大迭代字符\n  * 已知集合外点 (2,0) 映射到低迭代字符"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- `go test ./internal/mandelbrot/...` passes",
+      "zh-Hans": "* `go test ./internal/mandelbrot/...` 通过"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 6: Mandelbrot CLI Integration",
+      "zh-Hans": "### 任务 6：Mandelbrot CLI 集成"
+    },
+    {
+      "en-US": "Wire the Mandelbrot algorithm to a CLI subcommand.",
+      "zh-Hans": "将曼德博集合算法连接到 CLI 子命令。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Create `internal/cli/mandelbrot.go` with `mandelbrot` subcommand\n- Add flags: `--width` (default 80), `--height` (default 24), `--iterations` (default 100), `--char` (default \"\")\n- Call `mandelbrot.Render()` and print result to stdout",
+      "zh-Hans": "* 使用 `mandelbrot` 子命令创建 `internal/cli/mandelbrot.go`\n* 添加标志：`--width`（默认 80）、`--height`（默认 24）、`--iterations`（默认 100）、`--char`（默认 \"\"）\n* 调用 `mandelbrot.Render()` 并将结果打印到标准输出"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- `./fractals mandelbrot` outputs recognizable Mandelbrot set\n- `./fractals mandelbrot --width 40 --height 12` outputs smaller version\n- `./fractals mandelbrot --help` shows flag documentation",
+      "zh-Hans": "* `./fractals mandelbrot` 输出可识别的曼德博集合\n* `./fractals mandelbrot --width 40 --height 12` 输出较小版本\n* `./fractals mandelbrot --help` 显示标志文档"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 7: Character Set Configuration",
+      "zh-Hans": "### 任务 7：字符集配置"
+    },
+    {
+      "en-US": "Ensure `--char` flag works consistently across both commands.",
+      "zh-Hans": "确保 `--char` 标志在两个命令中一致工作。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Verify Sierpinski `--char` flag passes character to algorithm\n- For Mandelbrot, `--char` should use single character instead of gradient\n- Add tests for custom character output",
+      "zh-Hans": "* 验证 Sierpinski 的 `--char` 标志将字符传递给算法\n* 对于 Mandelbrot，`--char` 应使用单字符而不是梯度\n* 为自定义字符输出添加测试"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- `./fractals sierpinski --char '#'` uses '#' character\n- `./fractals mandelbrot --char '.'` uses '.' for all filled points\n- Tests pass",
+      "zh-Hans": "* `./fractals sierpinski --char '#'` 使用 '#' 字符\n* `./fractals mandelbrot --char '.'` 对所有填充点使用 '.'\n* 测试通过"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 8: Input Validation and Error Handling",
+      "zh-Hans": "### 任务 8：输入验证和错误处理"
+    },
+    {
+      "en-US": "Add validation for invalid inputs.",
+      "zh-Hans": "为无效输入添加验证。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Sierpinski: size must be > 0, depth must be >= 0\n- Mandelbrot: width/height must be > 0, iterations must be > 0\n- Return clear error messages for invalid inputs\n- Add tests for error cases",
+      "zh-Hans": "* Sierpinski：size 必须 > 0，depth 必须 >= 0\n* Mandelbrot：width/height 必须 > 0，iterations 必须 > 0\n* 为无效输入返回清晰的错误信息\n* 为错误情况添加测试"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- `./fractals sierpinski --size 0` prints error, exits non-zero\n- `./fractals mandelbrot --width -1` prints error, exits non-zero\n- Error messages are clear and helpful",
+      "zh-Hans": "* `./fractals sierpinski --size 0` 打印错误，非零退出\n* `./fractals mandelbrot --width -1` 打印错误，非零退出\n* 错误信息清晰且有帮助"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 9: Integration Tests",
+      "zh-Hans": "### 任务 9：集成测试"
+    },
+    {
+      "en-US": "Add integration tests that invoke the CLI.",
+      "zh-Hans": "添加调用 CLI 的集成测试。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Create `cmd/fractals/main_test.go` or `test/integration_test.go`\n- Test full CLI invocation for both commands\n- Verify output format and exit codes\n- Test error cases return non-zero exit",
+      "zh-Hans": "* 创建 `cmd/fractals/main_test.go` 或 `test/integration_test.go`\n* 测试两个命令的完整 CLI 调用\n* 验证输出格式和退出码\n* 测试错误情况是否返回非零退出"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- `go test ./...` passes all tests including integration tests",
+      "zh-Hans": "* `go test ./...` 通过所有测试，包括集成测试"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 10: README",
+      "zh-Hans": "### 任务 10：README"
+    },
+    {
+      "en-US": "Document usage and examples.",
+      "zh-Hans": "记录用法和示例。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Create `README.md` with:\n  - Project description\n  - Installation: `go install ./cmd/fractals`\n  - Usage examples for both commands\n  - Example output (small samples)",
+      "zh-Hans": "* 创建包含以下内容的 `README.md`：\n  * 项目描述\n  * 安装：`go install ./cmd/fractals`\n  * 两个命令的使用示例\n  * 示例输出（小样本）"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- README accurately describes the tool\n- Examples in README actually work",
+      "zh-Hans": "* README 准确描述了该工具\n* README 中的示例确实有效"
+    }
+  ]
+}

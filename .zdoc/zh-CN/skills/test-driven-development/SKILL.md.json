@@ -1,0 +1,442 @@
+{
+  "sourceFile": "skills/test-driven-development/SKILL.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "---\nname: test-driven-development\ndescription: Use when implementing any feature or bugfix, before writing implementation code\n---",
+      "zh-Hans": "---\nname: test-driven-development\ndescription: 在实现任何功能或修复错误之前，编写实现代码时使用\n---"
+    },
+    {
+      "en-US": "# Test-Driven Development (TDD)",
+      "zh-Hans": "# 测试驱动开发 (TDD)"
+    },
+    {
+      "en-US": "## Overview",
+      "zh-Hans": "## 概述"
+    },
+    {
+      "en-US": "Write the test first. Watch it fail. Write minimal code to pass.",
+      "zh-Hans": "先写测试。看着它失败。写最少的代码使其通过。"
+    },
+    {
+      "en-US": "**Core principle:** If you didn't watch the test fail, you don't know if it tests the right thing.",
+      "zh-Hans": "**核心原则：** 如果你没看到测试失败，你就不知道它测试的是否正确。"
+    },
+    {
+      "en-US": "**Violating the letter of the rules is violating the spirit of the rules.**",
+      "zh-Hans": "**违反规则的字面意思就是违反规则的精神。**"
+    },
+    {
+      "en-US": "## When to Use",
+      "zh-Hans": "## 何时使用"
+    },
+    {
+      "en-US": "**Always:**",
+      "zh-Hans": "**总是：**"
+    },
+    {
+      "en-US": "- New features\n- Bug fixes\n- Refactoring\n- Behavior changes",
+      "zh-Hans": "* 新功能\n* 错误修复\n* 重构\n* 行为变更"
+    },
+    {
+      "en-US": "**Exceptions (ask your human partner):**",
+      "zh-Hans": "**例外（询问你的人类伙伴）：**"
+    },
+    {
+      "en-US": "- Throwaway prototypes\n- Generated code\n- Configuration files",
+      "zh-Hans": "* 一次性原型\n* 生成的代码\n* 配置文件"
+    },
+    {
+      "en-US": "Thinking \"skip TDD just this once\"? Stop. That's rationalization.",
+      "zh-Hans": "想着“就这一次跳过 TDD”？停下来。那是在找借口。"
+    },
+    {
+      "en-US": "## The Iron Law",
+      "zh-Hans": "## 铁律"
+    },
+    {
+      "en-US": "```\nNO PRODUCTION CODE WITHOUT A FAILING TEST FIRST\n```",
+      "zh-Hans": "```\nNO PRODUCTION CODE WITHOUT A FAILING TEST FIRST\n```"
+    },
+    {
+      "en-US": "Write code before the test? Delete it. Start over.",
+      "zh-Hans": "在测试之前写代码？删除它。重新开始。"
+    },
+    {
+      "en-US": "**No exceptions:**",
+      "zh-Hans": "**没有例外：**"
+    },
+    {
+      "en-US": "- Don't keep it as \"reference\"\n- Don't \"adapt\" it while writing tests\n- Don't look at it\n- Delete means delete",
+      "zh-Hans": "* 不要把它当作“参考”保留\n* 不要在编写测试时“调整”它\n* 不要看它\n* 删除就是删除"
+    },
+    {
+      "en-US": "Implement fresh from tests. Period.",
+      "zh-Hans": "根据测试重新实现。完毕。"
+    },
+    {
+      "en-US": "## Red-Green-Refactor",
+      "zh-Hans": "## 红-绿-重构"
+    },
+    {
+      "en-US": "```dot\ndigraph tdd_cycle {\n    rankdir=LR;\n    red [label=\"RED\\nWrite failing test\", shape=box, style=filled, fillcolor=\"#ffcccc\"];\n    verify_red [label=\"Verify fails\\ncorrectly\", shape=diamond];\n    green [label=\"GREEN\\nMinimal code\", shape=box, style=filled, fillcolor=\"#ccffcc\"];\n    verify_green [label=\"Verify passes\\nAll green\", shape=diamond];\n    refactor [label=\"REFACTOR\\nClean up\", shape=box, style=filled, fillcolor=\"#ccccff\"];\n    next [label=\"Next\", shape=ellipse];\n\n    red -> verify_red;\n    verify_red -> green [label=\"yes\"];\n    verify_red -> red [label=\"wrong\\nfailure\"];\n    green -> verify_green;\n    verify_green -> refactor [label=\"yes\"];\n    verify_green -> green [label=\"no\"];\n    refactor -> verify_green [label=\"stay\\ngreen\"];\n    verify_green -> next;\n    next -> red;\n}\n```",
+      "zh-Hans": "```dot\ndigraph tdd_cycle {\n    rankdir=LR;\n    red [label=\"RED\\nWrite failing test\", shape=box, style=filled, fillcolor=\"#ffcccc\"];\n    verify_red [label=\"Verify fails\\ncorrectly\", shape=diamond];\n    green [label=\"GREEN\\nMinimal code\", shape=box, style=filled, fillcolor=\"#ccffcc\"];\n    verify_green [label=\"Verify passes\\nAll green\", shape=diamond];\n    refactor [label=\"REFACTOR\\nClean up\", shape=box, style=filled, fillcolor=\"#ccccff\"];\n    next [label=\"Next\", shape=ellipse];\n\n    red -> verify_red;\n    verify_red -> green [label=\"yes\"];\n    verify_red -> red [label=\"wrong\\nfailure\"];\n    green -> verify_green;\n    verify_green -> refactor [label=\"yes\"];\n    verify_green -> green [label=\"no\"];\n    refactor -> verify_green [label=\"stay\\ngreen\"];\n    verify_green -> next;\n    next -> red;\n}\n```"
+    },
+    {
+      "en-US": "### RED - Write Failing Test",
+      "zh-Hans": "### 红 - 编写失败的测试"
+    },
+    {
+      "en-US": "Write one minimal test showing what should happen.",
+      "zh-Hans": "编写一个最小的测试，展示应该发生什么。"
+    },
+    {
+      "en-US": "<Good>\n```typescript\ntest('retries failed operations 3 times', async () => {\n  let attempts = 0;\n  const operation = () => {\n    attempts++;\n    if (attempts < 3) throw new Error('fail');\n    return 'success';\n  };",
+      "zh-Hans": "<Good>\n```typescript\ntest('重试失败的操作3次', async () => {\n  let attempts = 0;\n  const operation = () => {\n    attempts++;\n    if (attempts < 3) throw new Error('fail');\n    return 'success';\n  };"
+    },
+    {
+      "en-US": "const result = await retryOperation(operation);",
+      "zh-Hans": "const result = await retryOperation(operation);"
+    },
+    {
+      "en-US": "expect(result).toBe('success');\n  expect(attempts).toBe(3);\n});",
+      "zh-Hans": "expect(result).toBe('success');\nexpect(attempts).toBe(3);\n});"
+    },
+    {
+      "en-US": "```\nClear name, tests real behavior, one thing\n</Good>\n\n<Bad>\n```typescript\ntest('retry works', async () => {\n  const mock = jest.fn()\n    .mockRejectedValueOnce(new Error())\n    .mockRejectedValueOnce(new Error())\n    .mockResolvedValueOnce('success');\n  await retryOperation(mock);\n  expect(mock).toHaveBeenCalledTimes(3);\n});\n```",
+      "zh-Hans": "````\nClear name, tests real behavior, one thing\n</Good>\n\n<Bad>\n```typescript\ntest('retry works', async () => {\n  const mock = jest.fn()\n    .mockRejectedValueOnce(new Error())\n    .mockRejectedValueOnce(new Error())\n    .mockResolvedValueOnce('success');\n  await retryOperation(mock);\n  expect(mock).toHaveBeenCalledTimes(3);\n});\n````"
+    },
+    {
+      "en-US": "Vague name, tests mock not code\n</Bad>",
+      "zh-Hans": "模糊的名称，测试的是模拟对象而不是代码 </Bad>"
+    },
+    {
+      "en-US": "**Requirements:**",
+      "zh-Hans": "**要求：**"
+    },
+    {
+      "en-US": "- One behavior\n- Clear name\n- Real code (no mocks unless unavoidable)",
+      "zh-Hans": "* 一种行为\n* 清晰的名称\n* 真实代码（除非不可避免，否则不使用模拟对象）"
+    },
+    {
+      "en-US": "### Verify RED - Watch It Fail",
+      "zh-Hans": "### 验证红 - 看着它失败"
+    },
+    {
+      "en-US": "**MANDATORY. Never skip.**",
+      "zh-Hans": "**强制性的。永远不要跳过。**"
+    },
+    {
+      "en-US": "```bash\nnpm test path/to/test.test.ts\n```",
+      "zh-Hans": "```bash\nnpm test path/to/test.test.ts\n```"
+    },
+    {
+      "en-US": "Confirm:",
+      "zh-Hans": "确认："
+    },
+    {
+      "en-US": "- Test fails (not errors)\n- Failure message is expected\n- Fails because feature missing (not typos)",
+      "zh-Hans": "* 测试失败（不是错误）\n* 失败消息符合预期\n* 失败是因为缺少功能（不是拼写错误）"
+    },
+    {
+      "en-US": "**Test passes?** You're testing existing behavior. Fix test.",
+      "zh-Hans": "**测试通过？** 你测试的是现有行为。修复测试。"
+    },
+    {
+      "en-US": "**Test errors?** Fix error, re-run until it fails correctly.",
+      "zh-Hans": "**测试出错？** 修复错误，重新运行直到它正确失败。"
+    },
+    {
+      "en-US": "### GREEN - Minimal Code",
+      "zh-Hans": "### 绿 - 最少的代码"
+    },
+    {
+      "en-US": "Write simplest code to pass the test.",
+      "zh-Hans": "编写最简单的代码使测试通过。"
+    },
+    {
+      "en-US": "<Good>\n```typescript\nasync function retryOperation<T>(fn: () => Promise<T>): Promise<T> {\n  for (let i = 0; i < 3; i++) {\n    try {\n      return await fn();\n    } catch (e) {\n      if (i === 2) throw e;\n    }\n  }\n  throw new Error('unreachable');\n}\n```\nJust enough to pass\n</Good>",
+      "zh-Hans": "<Good>\n```typescript\nasync function retryOperation<T>(fn: () => Promise<T>): Promise<T> {\n  for (let i = 0; i < 3; i++) {\n    try {\n      return await fn();\n    } catch (e) {\n      if (i === 2) throw e;\n    }\n  }\n  throw new Error('unreachable');\n}\n```\n刚够通过\n</Good>"
+    },
+    {
+      "en-US": "<Bad>\n```typescript\nasync function retryOperation<T>(\n  fn: () => Promise<T>,\n  options?: {\n    maxRetries?: number;\n    backoff?: 'linear' | 'exponential';\n    onRetry?: (attempt: number) => void;\n  }\n): Promise<T> {\n  // YAGNI\n}\n```\nOver-engineered\n</Bad>",
+      "zh-Hans": "<Bad>\n```typescript\nasync function retryOperation<T>(\n  fn: () => Promise<T>,\n  options?: {\n    maxRetries?: number;\n    backoff?: 'linear' | 'exponential';\n    onRetry?: (attempt: number) => void;\n  }\n): Promise<T> {\n  // YAGNI\n}\n```\n过度工程化\n</Bad>"
+    },
+    {
+      "en-US": "Don't add features, refactor other code, or \"improve\" beyond the test.",
+      "zh-Hans": "不要添加功能、重构其他代码，或在测试范围之外进行“改进”。"
+    },
+    {
+      "en-US": "### Verify GREEN - Watch It Pass",
+      "zh-Hans": "### 验证绿 - 看着它通过"
+    },
+    {
+      "en-US": "**MANDATORY.**",
+      "zh-Hans": "**强制性的。**"
+    },
+    {
+      "en-US": "```bash\nnpm test path/to/test.test.ts\n```",
+      "zh-Hans": "```bash\nnpm test path/to/test.test.ts\n```"
+    },
+    {
+      "en-US": "Confirm:",
+      "zh-Hans": "确认："
+    },
+    {
+      "en-US": "- Test passes\n- Other tests still pass\n- Output pristine (no errors, warnings)",
+      "zh-Hans": "* 测试通过\n* 其他测试仍然通过\n* 输出干净（没有错误、警告）"
+    },
+    {
+      "en-US": "**Test fails?** Fix code, not test.",
+      "zh-Hans": "**测试失败？** 修复代码，而不是测试。"
+    },
+    {
+      "en-US": "**Other tests fail?** Fix now.",
+      "zh-Hans": "**其他测试失败？** 立即修复。"
+    },
+    {
+      "en-US": "### REFACTOR - Clean Up",
+      "zh-Hans": "### 重构 - 清理"
+    },
+    {
+      "en-US": "After green only:",
+      "zh-Hans": "仅在变绿之后："
+    },
+    {
+      "en-US": "- Remove duplication\n- Improve names\n- Extract helpers",
+      "zh-Hans": "* 消除重复\n* 改进命名\n* 提取辅助函数"
+    },
+    {
+      "en-US": "Keep tests green. Don't add behavior.",
+      "zh-Hans": "保持测试为绿色。不要添加行为。"
+    },
+    {
+      "en-US": "### Repeat",
+      "zh-Hans": "### 重复"
+    },
+    {
+      "en-US": "Next failing test for next feature.",
+      "zh-Hans": "为下一个功能编写下一个失败的测试。"
+    },
+    {
+      "en-US": "## Good Tests",
+      "zh-Hans": "## 好的测试"
+    },
+    {
+      "en-US": "| Quality | Good | Bad |\n|---------|------|-----|\n| **Minimal** | One thing. \"and\" in name? Split it. | `test('validates email and domain and whitespace')` |\n| **Clear** | Name describes behavior | `test('test1')` |\n| **Shows intent** | Demonstrates desired API | Obscures what code should do |",
+      "zh-Hans": "| 品质 | 好 | 坏 |\n|---------|------|-----|\n| **最小化** | 一件事。名字里有“和”？拆开它。 | `test('validates email and domain and whitespace')` |\n| **清晰** | 名称描述行为 | `test('test1')` |\n| **展示意图** | 展示期望的 API | 模糊了代码应该做什么 |"
+    },
+    {
+      "en-US": "## Why Order Matters",
+      "zh-Hans": "## 为什么顺序很重要"
+    },
+    {
+      "en-US": "**\"I'll write tests after to verify it works\"**",
+      "zh-Hans": "**“我会在之后写测试来验证它是否工作”**"
+    },
+    {
+      "en-US": "Tests written after code pass immediately. Passing immediately proves nothing:",
+      "zh-Hans": "在代码之后编写的测试会立即通过。立即通过什么也证明不了："
+    },
+    {
+      "en-US": "- Might test wrong thing\n- Might test implementation, not behavior\n- Might miss edge cases you forgot\n- You never saw it catch the bug",
+      "zh-Hans": "* 可能测试了错误的东西\n* 可能测试的是实现，而不是行为\n* 可能遗漏了你忘记的边缘情况\n* 你从未看到它捕捉到错误"
+    },
+    {
+      "en-US": "Test-first forces you to see the test fail, proving it actually tests something.",
+      "zh-Hans": "测试先行迫使你看到测试失败，证明它确实在测试某些东西。"
+    },
+    {
+      "en-US": "**\"I already manually tested all the edge cases\"**",
+      "zh-Hans": "**“我已经手动测试了所有边缘情况”**"
+    },
+    {
+      "en-US": "Manual testing is ad-hoc. You think you tested everything but:",
+      "zh-Hans": "手动测试是临时的。你以为你测试了所有东西，但是："
+    },
+    {
+      "en-US": "- No record of what you tested\n- Can't re-run when code changes\n- Easy to forget cases under pressure\n- \"It worked when I tried it\" ≠ comprehensive",
+      "zh-Hans": "* 没有记录你测试了什么\n* 代码变更时无法重新运行\n* 压力下容易忘记用例\n* “我试的时候它工作” ≠ 全面"
+    },
+    {
+      "en-US": "Automated tests are systematic. They run the same way every time.",
+      "zh-Hans": "自动化测试是系统性的。它们每次都以相同的方式运行。"
+    },
+    {
+      "en-US": "**\"Deleting X hours of work is wasteful\"**",
+      "zh-Hans": "**“删除 X 小时的工作是浪费”**"
+    },
+    {
+      "en-US": "Sunk cost fallacy. The time is already gone. Your choice now:",
+      "zh-Hans": "沉没成本谬误。时间已经花掉了。你现在可以选择："
+    },
+    {
+      "en-US": "- Delete and rewrite with TDD (X more hours, high confidence)\n- Keep it and add tests after (30 min, low confidence, likely bugs)",
+      "zh-Hans": "* 删除并用 TDD 重写（再花 X 小时，高置信度）\n* 保留它并在之后添加测试（30 分钟，低置信度，很可能有错误）"
+    },
+    {
+      "en-US": "The \"waste\" is keeping code you can't trust. Working code without real tests is technical debt.",
+      "zh-Hans": "“浪费”在于保留了你无法信任的代码。没有真正测试的工作代码是技术债务。"
+    },
+    {
+      "en-US": "**\"TDD is dogmatic, being pragmatic means adapting\"**",
+      "zh-Hans": "**“TDD 是教条的，务实意味着适应”**"
+    },
+    {
+      "en-US": "TDD IS pragmatic:",
+      "zh-Hans": "TDD 就是务实的："
+    },
+    {
+      "en-US": "- Finds bugs before commit (faster than debugging after)\n- Prevents regressions (tests catch breaks immediately)\n- Documents behavior (tests show how to use code)\n- Enables refactoring (change freely, tests catch breaks)",
+      "zh-Hans": "* 在提交前发现错误（比事后调试更快）\n* 防止回归（测试立即捕捉到破坏）\n* 记录行为（测试展示如何使用代码）\n* 支持重构（自由更改，测试捕捉破坏）"
+    },
+    {
+      "en-US": "\"Pragmatic\" shortcuts = debugging in production = slower.",
+      "zh-Hans": "“务实”的捷径 = 在生产环境中调试 = 更慢。"
+    },
+    {
+      "en-US": "**\"Tests after achieve the same goals - it's spirit not ritual\"**",
+      "zh-Hans": "**“事后测试能达到同样的目标——这是精神而不是仪式”**"
+    },
+    {
+      "en-US": "No. Tests-after answer \"What does this do?\" Tests-first answer \"What should this do?\"",
+      "zh-Hans": "不。事后测试回答“这做了什么？” 测试先行回答“这应该做什么？”"
+    },
+    {
+      "en-US": "Tests-after are biased by your implementation. You test what you built, not what's required. You verify remembered edge cases, not discovered ones.",
+      "zh-Hans": "事后测试受你的实现影响。你测试你构建的东西，而不是需要的东西。你验证你记得的边缘情况，而不是发现的边缘情况。"
+    },
+    {
+      "en-US": "Tests-first force edge case discovery before implementing. Tests-after verify you remembered everything (you didn't).",
+      "zh-Hans": "测试先行迫使你在实现之前发现边缘情况。事后测试验证你是否记得所有东西（你没有）。"
+    },
+    {
+      "en-US": "30 minutes of tests after ≠ TDD. You get coverage, lose proof tests work.",
+      "zh-Hans": "30 分钟的事后测试 ≠ TDD。你得到了覆盖率，但失去了证明测试有效的部分。"
+    },
+    {
+      "en-US": "## Common Rationalizations",
+      "zh-Hans": "## 常见的合理化借口"
+    },
+    {
+      "en-US": "| Excuse | Reality |\n|--------|---------|\n| \"Too simple to test\" | Simple code breaks. Test takes 30 seconds. |\n| \"I'll test after\" | Tests passing immediately prove nothing. |\n| \"Tests after achieve same goals\" | Tests-after = \"what does this do?\" Tests-first = \"what should this do?\" |\n| \"Already manually tested\" | Ad-hoc ≠ systematic. No record, can't re-run. |\n| \"Deleting X hours is wasteful\" | Sunk cost fallacy. Keeping unverified code is technical debt. |\n| \"Keep as reference, write tests first\" | You'll adapt it. That's testing after. Delete means delete. |\n| \"Need to explore first\" | Fine. Throw away exploration, start with TDD. |\n| \"Test hard = design unclear\" | Listen to test. Hard to test = hard to use. |\n| \"TDD will slow me down\" | TDD faster than debugging. Pragmatic = test-first. |\n| \"Manual test faster\" | Manual doesn't prove edge cases. You'll re-test every change. |\n| \"Existing code has no tests\" | You're improving it. Add tests for existing code. |",
+      "zh-Hans": "| 借口 | 现实 |\n|--------|---------|\n| “太简单了，不需要测试” | 简单的代码也会出错。测试只需 30 秒。 |\n| “我会事后测试” | 测试立即通过什么也证明不了。 |\n| “事后测试能达到同样的目标” | 事后测试 = “这做了什么？” 测试先行 = “这应该做什么？” |\n| “已经手动测试过了” | 临时的 ≠ 系统性的。没有记录，无法重新运行。 |\n| “删除 X 小时是浪费” | 沉没成本谬误。保留未验证的代码是技术债务。 |\n| “保留作为参考，先写测试” | 你会调整它。那就是事后测试。删除就是删除。 |\n| “需要先探索一下” | 可以。扔掉探索，用 TDD 开始。 |\n| “测试困难 = 设计不清晰” | 倾听测试。难以测试 = 难以使用。 |\n| “TDD 会拖慢我” | TDD 比调试更快。务实 = 测试先行。 |\n| “手动测试更快” | 手动测试无法证明边缘情况。每次变更你都需要重新测试。 |\n| “现有代码没有测试” | 你正在改进它。为现有代码添加测试。 |"
+    },
+    {
+      "en-US": "## Red Flags - STOP and Start Over",
+      "zh-Hans": "## 危险信号 - 停止并重新开始"
+    },
+    {
+      "en-US": "- Code before test\n- Test after implementation\n- Test passes immediately\n- Can't explain why test failed\n- Tests added \"later\"\n- Rationalizing \"just this once\"\n- \"I already manually tested it\"\n- \"Tests after achieve the same purpose\"\n- \"It's about spirit not ritual\"\n- \"Keep as reference\" or \"adapt existing code\"\n- \"Already spent X hours, deleting is wasteful\"\n- \"TDD is dogmatic, I'm being pragmatic\"\n- \"This is different because...\"",
+      "zh-Hans": "* 先写代码后写测试\n* 在实现后添加测试\n* 测试立即通过\n* 无法解释测试失败的原因\n* 测试“稍后”添加\n* 为“就这一次”找借口\n* “我已经手动测试过了”\n* “事后测试能达到同样的目的”\n* “这是精神而不是仪式”\n* “保留作为参考”或“调整现有代码”\n* “已经花了 X 小时，删除是浪费”\n* “TDD 是教条的，我是务实的”\n* “这次不同，因为...”"
+    },
+    {
+      "en-US": "**All of these mean: Delete code. Start over with TDD.**",
+      "zh-Hans": "**所有这些都意味着：删除代码。用 TDD 重新开始。**"
+    },
+    {
+      "en-US": "## Example: Bug Fix",
+      "zh-Hans": "## 示例：错误修复"
+    },
+    {
+      "en-US": "**Bug:** Empty email accepted",
+      "zh-Hans": "**错误：** 接受空电子邮件"
+    },
+    {
+      "en-US": "**RED**",
+      "zh-Hans": "**红**"
+    },
+    {
+      "en-US": "```typescript\ntest('rejects empty email', async () => {\n  const result = await submitForm({ email: '' });\n  expect(result.error).toBe('Email required');\n});\n```",
+      "zh-Hans": "```typescript\ntest('rejects empty email', async () => {\n  const result = await submitForm({ email: '' });\n  expect(result.error).toBe('Email required');\n});\n```"
+    },
+    {
+      "en-US": "**Verify RED**",
+      "zh-Hans": "**验证红**"
+    },
+    {
+      "en-US": "```bash\n$ npm test\nFAIL: expected 'Email required', got undefined\n```",
+      "zh-Hans": "```bash\n$ npm test\nFAIL: expected 'Email required', got undefined\n```"
+    },
+    {
+      "en-US": "**GREEN**",
+      "zh-Hans": "**绿**"
+    },
+    {
+      "en-US": "```typescript\nfunction submitForm(data: FormData) {\n  if (!data.email?.trim()) {\n    return { error: 'Email required' };\n  }\n  // ...\n}\n```",
+      "zh-Hans": "```typescript\nfunction submitForm(data: FormData) {\n  if (!data.email?.trim()) {\n    return { error: 'Email required' };\n  }\n  // ...\n}\n```"
+    },
+    {
+      "en-US": "**Verify GREEN**",
+      "zh-Hans": "**验证绿**"
+    },
+    {
+      "en-US": "```bash\n$ npm test\nPASS\n```",
+      "zh-Hans": "```bash\n$ npm test\nPASS\n```"
+    },
+    {
+      "en-US": "**REFACTOR**\nExtract validation for multiple fields if needed.",
+      "zh-Hans": "**重构**\n如果需要，为多个字段提取验证逻辑。"
+    },
+    {
+      "en-US": "## Verification Checklist",
+      "zh-Hans": "## 验证清单"
+    },
+    {
+      "en-US": "Before marking work complete:",
+      "zh-Hans": "在标记工作完成之前："
+    },
+    {
+      "en-US": "- [ ] Every new function/method has a test\n- [ ] Watched each test fail before implementing\n- [ ] Each test failed for expected reason (feature missing, not typo)\n- [ ] Wrote minimal code to pass each test\n- [ ] All tests pass\n- [ ] Output pristine (no errors, warnings)\n- [ ] Tests use real code (mocks only if unavoidable)\n- [ ] Edge cases and errors covered",
+      "zh-Hans": "* \\[ ] 每个新函数/方法都有一个测试\n* \\[ ] 在实现之前看到每个测试失败\n* \\[ ] 每个测试都因预期原因失败（缺少功能，不是拼写错误）\n* \\[ ] 编写了最少的代码使每个测试通过\n* \\[ ] 所有测试通过\n* \\[ ] 输出干净（没有错误、警告）\n* \\[ ] 测试使用真实代码（仅在必要时使用模拟对象）\n* \\[ ] 覆盖了边缘情况和错误"
+    },
+    {
+      "en-US": "Can't check all boxes? You skipped TDD. Start over.",
+      "zh-Hans": "无法勾选所有选项？你跳过了 TDD。重新开始。"
+    },
+    {
+      "en-US": "## When Stuck",
+      "zh-Hans": "## 遇到困难时"
+    },
+    {
+      "en-US": "| Problem | Solution |\n|---------|----------|\n| Don't know how to test | Write wished-for API. Write assertion first. Ask your human partner. |\n| Test too complicated | Design too complicated. Simplify interface. |\n| Must mock everything | Code too coupled. Use dependency injection. |\n| Test setup huge | Extract helpers. Still complex? Simplify design. |",
+      "zh-Hans": "| 问题 | 解决方案 |\n|---------|----------|\n| 不知道如何测试 | 写下期望的 API。先写断言。询问你的人类伙伴。 |\n| 测试太复杂 | 设计太复杂。简化接口。 |\n| 必须模拟一切 | 代码耦合度太高。使用依赖注入。 |\n| 测试设置庞大 | 提取辅助函数。仍然复杂？简化设计。 |"
+    },
+    {
+      "en-US": "## Debugging Integration",
+      "zh-Hans": "## 调试集成"
+    },
+    {
+      "en-US": "Bug found? Write failing test reproducing it. Follow TDD cycle. Test proves fix and prevents regression.",
+      "zh-Hans": "发现错误？编写一个重现它的失败测试。遵循 TDD 循环。测试证明修复并防止回归。"
+    },
+    {
+      "en-US": "Never fix bugs without a test.",
+      "zh-Hans": "永远不要在没有测试的情况下修复错误。"
+    },
+    {
+      "en-US": "## Testing Anti-Patterns",
+      "zh-Hans": "## 测试反模式"
+    },
+    {
+      "en-US": "When adding mocks or test utilities, read @testing-anti-patterns.md to avoid common pitfalls:",
+      "zh-Hans": "添加模拟对象或测试工具时，请阅读 @testing-anti-patterns.md 以避免常见陷阱："
+    },
+    {
+      "en-US": "- Testing mock behavior instead of real behavior\n- Adding test-only methods to production classes\n- Mocking without understanding dependencies",
+      "zh-Hans": "* 测试模拟对象行为而不是真实行为\n* 向生产类添加仅用于测试的方法\n* 在不理解依赖关系的情况下进行模拟"
+    },
+    {
+      "en-US": "## Final Rule",
+      "zh-Hans": "## 最终规则"
+    },
+    {
+      "en-US": "```\nProduction code → test exists and failed first\nOtherwise → not TDD\n```",
+      "zh-Hans": "```\nProduction code → test exists and failed first\nOtherwise → not TDD\n```"
+    },
+    {
+      "en-US": "No exceptions without your human partner's permission.",
+      "zh-Hans": "没有你的人类伙伴的许可，不得有例外。"
+    }
+  ]
+}

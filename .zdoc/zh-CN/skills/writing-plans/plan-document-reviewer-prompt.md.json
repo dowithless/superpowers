@@ -1,0 +1,30 @@
+{
+  "sourceFile": "skills/writing-plans/plan-document-reviewer-prompt.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Plan Document Reviewer Prompt Template",
+      "zh-Hans": "# 计划文档审阅者提示模板"
+    },
+    {
+      "en-US": "Use this template when dispatching a plan document reviewer subagent.",
+      "zh-Hans": "在分派计划文档审阅者子代理时使用此模板。"
+    },
+    {
+      "en-US": "**Purpose:** Verify the plan is complete, matches the spec, and has proper task decomposition.",
+      "zh-Hans": "**目的：** 验证计划是否完整、符合规范，并具有适当的任务分解。"
+    },
+    {
+      "en-US": "**Dispatch after:** The complete plan is written.",
+      "zh-Hans": "**调度时间：** 完整计划编写完成后。"
+    },
+    {
+      "en-US": "```\nTask tool (general-purpose):\n  description: \"Review plan document\"\n  prompt: |\n    You are a plan document reviewer. Verify this plan is complete and ready for implementation.\n\n    **Plan to review:** [PLAN_FILE_PATH]\n    **Spec for reference:** [SPEC_FILE_PATH]\n\n    ## What to Check\n\n    | Category | What to Look For |\n    |----------|------------------|\n    | Completeness | TODOs, placeholders, incomplete tasks, missing steps |\n    | Spec Alignment | Plan covers spec requirements, no major scope creep |\n    | Task Decomposition | Tasks have clear boundaries, steps are actionable |\n    | Buildability | Could an engineer follow this plan without getting stuck? |\n\n    ## Calibration\n\n    **Only flag issues that would cause real problems during implementation.**\n    An implementer building the wrong thing or getting stuck is an issue.\n    Minor wording, stylistic preferences, and \"nice to have\" suggestions are not.\n\n    Approve unless there are serious gaps — missing requirements from the spec,\n    contradictory steps, placeholder content, or tasks so vague they can't be acted on.\n\n    ## Output Format\n\n    ## Plan Review\n\n    **Status:** Approved | Issues Found\n\n    **Issues (if any):**\n    - [Task X, Step Y]: [specific issue] - [why it matters for implementation]\n\n    **Recommendations (advisory, do not block approval):**\n    - [suggestions for improvement]\n```",
+      "zh-Hans": "```\nTask tool (general-purpose):\n  description: \"Review plan document\"\n  prompt: |\n    You are a plan document reviewer. Verify this plan is complete and ready for implementation.\n\n    **Plan to review:** [PLAN_FILE_PATH]\n    **Spec for reference:** [SPEC_FILE_PATH]\n\n    ## What to Check\n\n    | Category | What to Look For |\n    |----------|------------------|\n    | Completeness | TODOs, placeholders, incomplete tasks, missing steps |\n    | Spec Alignment | Plan covers spec requirements, no major scope creep |\n    | Task Decomposition | Tasks have clear boundaries, steps are actionable |\n    | Buildability | Could an engineer follow this plan without getting stuck? |\n\n    ## Calibration\n\n    **Only flag issues that would cause real problems during implementation.**\n    An implementer building the wrong thing or getting stuck is an issue.\n    Minor wording, stylistic preferences, and \"nice to have\" suggestions are not.\n\n    Approve unless there are serious gaps — missing requirements from the spec,\n    contradictory steps, placeholder content, or tasks so vague they can't be acted on.\n\n    ## Output Format\n\n    ## Plan Review\n\n    **Status:** Approved | Issues Found\n\n    **Issues (if any):**\n    - [Task X, Step Y]: [specific issue] - [why it matters for implementation]\n\n    **Recommendations (advisory, do not block approval):**\n    - [suggestions for improvement]\n```"
+    },
+    {
+      "en-US": "**Reviewer returns:** Status, Issues (if any), Recommendations",
+      "zh-Hans": "**审阅者返回：** 状态、问题（如有）、建议"
+    }
+  ]
+}

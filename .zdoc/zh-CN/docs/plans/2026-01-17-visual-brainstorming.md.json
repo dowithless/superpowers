@@ -1,0 +1,354 @@
+{
+  "sourceFile": "docs/plans/2026-01-17-visual-brainstorming.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Visual Brainstorming Companion Implementation Plan",
+      "zh-Hans": "# 视觉化头脑风暴伴侣实施计划"
+    },
+    {
+      "en-US": "> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.",
+      "zh-Hans": "> **对于智能体工作者：** 必需子技能：使用 superpowers:executing-plans 来按任务实施此计划。"
+    },
+    {
+      "en-US": "**Goal:** Give Claude a browser-based visual companion for brainstorming sessions - show mockups, prototypes, and interactive choices alongside terminal conversation.",
+      "zh-Hans": "**目标：** 为 Claude 提供一个基于浏览器的视觉伴侣，用于头脑风暴会议——在终端对话旁展示线框图、原型和交互式选择。"
+    },
+    {
+      "en-US": "**Architecture:** Claude writes HTML to a temp file. A local Node.js server watches that file and serves it with an auto-injected helper library. User interactions flow via WebSocket to server stdout, which Claude sees in background task output.",
+      "zh-Hans": "**架构：** Claude 将 HTML 写入一个临时文件。一个本地 Node.js 服务器监视该文件，并通过一个自动注入的辅助库来提供该文件。用户交互通过 WebSocket 流到服务器的标准输出，Claude 可以在后台任务输出中看到这些交互。"
+    },
+    {
+      "en-US": "**Tech Stack:** Node.js, Express, ws (WebSocket), chokidar (file watching)",
+      "zh-Hans": "**技术栈：** Node.js, Express, ws (WebSocket), chokidar (文件监视)"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Task 1: Create the Server Foundation",
+      "zh-Hans": "## 任务 1：创建服务器基础"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Create: `lib/brainstorm-server/index.js`\n- Create: `lib/brainstorm-server/package.json`",
+      "zh-Hans": "* 创建：`lib/brainstorm-server/index.js`\n* 创建：`lib/brainstorm-server/package.json`"
+    },
+    {
+      "en-US": "**Step 1: Create package.json**",
+      "zh-Hans": "**步骤 1：创建 package.json**"
+    },
+    {
+      "en-US": "```json\n{\n  \"name\": \"brainstorm-server\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Visual brainstorming companion server for Claude Code\",\n  \"main\": \"index.js\",\n  \"dependencies\": {\n    \"chokidar\": \"^3.5.3\",\n    \"express\": \"^4.18.2\",\n    \"ws\": \"^8.14.2\"\n  }\n}\n```",
+      "zh-Hans": "```json\n{\n  \"name\": \"brainstorm-server\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Visual brainstorming companion server for Claude Code\",\n  \"main\": \"index.js\",\n  \"dependencies\": {\n    \"chokidar\": \"^3.5.3\",\n    \"express\": \"^4.18.2\",\n    \"ws\": \"^8.14.2\"\n  }\n}\n```"
+    },
+    {
+      "en-US": "**Step 2: Create minimal server that starts**",
+      "zh-Hans": "**步骤 2：创建可启动的最小服务器**"
+    },
+    {
+      "en-US": "```javascript\nconst express = require('express');\nconst http = require('http');\nconst WebSocket = require('ws');\nconst chokidar = require('chokidar');\nconst fs = require('fs');\nconst path = require('path');\n\nconst PORT = process.env.BRAINSTORM_PORT || 3333;\nconst SCREEN_FILE = process.env.BRAINSTORM_SCREEN || '/tmp/brainstorm/screen.html';\nconst SCREEN_DIR = path.dirname(SCREEN_FILE);\n\n// Ensure screen directory exists\nif (!fs.existsSync(SCREEN_DIR)) {\n  fs.mkdirSync(SCREEN_DIR, { recursive: true });\n}\n\n// Create default screen if none exists\nif (!fs.existsSync(SCREEN_FILE)) {\n  fs.writeFileSync(SCREEN_FILE, `<!DOCTYPE html>\n<html>\n<head>\n  <title>Brainstorm Companion</title>\n  <style>\n    body { font-family: system-ui, sans-serif; padding: 2rem; max-width: 800px; margin: 0 auto; }\n    h1 { color: #333; }\n    p { color: #666; }\n  </style>\n</head>\n<body>\n  <h1>Brainstorm Companion</h1>\n  <p>Waiting for Claude to push a screen...</p>\n</body>\n</html>`);\n}\n\nconst app = express();\nconst server = http.createServer(app);\nconst wss = new WebSocket.Server({ server });\n\n// Track connected browsers for reload notifications\nconst clients = new Set();\n\nwss.on('connection', (ws) => {\n  clients.add(ws);\n  ws.on('close', () => clients.delete(ws));\n\n  ws.on('message', (data) => {\n    // User interaction event - write to stdout for Claude\n    const event = JSON.parse(data.toString());\n    console.log(JSON.stringify({ type: 'user-event', ...event }));\n  });\n});\n\n// Serve current screen with helper.js injected\napp.get('/', (req, res) => {\n  let html = fs.readFileSync(SCREEN_FILE, 'utf-8');\n\n  // Inject helper script before </body>\n  const helperScript = fs.readFileSync(path.join(__dirname, 'helper.js'), 'utf-8');\n  const injection = `<script>\\n${helperScript}\\n</script>`;\n\n  if (html.includes('</body>')) {\n    html = html.replace('</body>', `${injection}\\n</body>`);\n  } else {\n    html += injection;\n  }\n\n  res.type('html').send(html);\n});\n\n// Watch for screen file changes\nchokidar.watch(SCREEN_FILE).on('change', () => {\n  console.log(JSON.stringify({ type: 'screen-updated', file: SCREEN_FILE }));\n  // Notify all browsers to reload\n  clients.forEach(ws => {\n    if (ws.readyState === WebSocket.OPEN) {\n      ws.send(JSON.stringify({ type: 'reload' }));\n    }\n  });\n});\n\nserver.listen(PORT, '127.0.0.1', () => {\n  console.log(JSON.stringify({ type: 'server-started', port: PORT, url: `http://localhost:${PORT}` }));\n});\n```",
+      "zh-Hans": "```javascript\nconst express = require('express');\nconst http = require('http');\nconst WebSocket = require('ws');\nconst chokidar = require('chokidar');\nconst fs = require('fs');\nconst path = require('path');\n\nconst PORT = process.env.BRAINSTORM_PORT || 3333;\nconst SCREEN_FILE = process.env.BRAINSTORM_SCREEN || '/tmp/brainstorm/screen.html';\nconst SCREEN_DIR = path.dirname(SCREEN_FILE);\n\n// Ensure screen directory exists\nif (!fs.existsSync(SCREEN_DIR)) {\n  fs.mkdirSync(SCREEN_DIR, { recursive: true });\n}\n\n// Create default screen if none exists\nif (!fs.existsSync(SCREEN_FILE)) {\n  fs.writeFileSync(SCREEN_FILE, `<!DOCTYPE html>\n<html>\n<head>\n  <title>Brainstorm Companion</title>\n  <style>\n    body { font-family: system-ui, sans-serif; padding: 2rem; max-width: 800px; margin: 0 auto; }\n    h1 { color: #333; }\n    p { color: #666; }\n  </style>\n</head>\n<body>\n  <h1>Brainstorm Companion</h1>\n  <p>Waiting for Claude to push a screen...</p>\n</body>\n</html>`);\n}\n\nconst app = express();\nconst server = http.createServer(app);\nconst wss = new WebSocket.Server({ server });\n\n// Track connected browsers for reload notifications\nconst clients = new Set();\n\nwss.on('connection', (ws) => {\n  clients.add(ws);\n  ws.on('close', () => clients.delete(ws));\n\n  ws.on('message', (data) => {\n    // User interaction event - write to stdout for Claude\n    const event = JSON.parse(data.toString());\n    console.log(JSON.stringify({ type: 'user-event', ...event }));\n  });\n});\n\n// Serve current screen with helper.js injected\napp.get('/', (req, res) => {\n  let html = fs.readFileSync(SCREEN_FILE, 'utf-8');\n\n  // Inject helper script before </body>\n  const helperScript = fs.readFileSync(path.join(__dirname, 'helper.js'), 'utf-8');\n  const injection = `<script>\\n${helperScript}\\n</script>`;\n\n  if (html.includes('</body>')) {\n    html = html.replace('</body>', `${injection}\\n</body>`);\n  } else {\n    html += injection;\n  }\n\n  res.type('html').send(html);\n});\n\n// Watch for screen file changes\nchokidar.watch(SCREEN_FILE).on('change', () => {\n  console.log(JSON.stringify({ type: 'screen-updated', file: SCREEN_FILE }));\n  // Notify all browsers to reload\n  clients.forEach(ws => {\n    if (ws.readyState === WebSocket.OPEN) {\n      ws.send(JSON.stringify({ type: 'reload' }));\n    }\n  });\n});\n\nserver.listen(PORT, '127.0.0.1', () => {\n  console.log(JSON.stringify({ type: 'server-started', port: PORT, url: `http://localhost:${PORT}` }));\n});\n```"
+    },
+    {
+      "en-US": "**Step 3: Run npm install**",
+      "zh-Hans": "**步骤 3：运行 npm install**"
+    },
+    {
+      "en-US": "Run: `cd lib/brainstorm-server && npm install`\nExpected: Dependencies installed",
+      "zh-Hans": "运行：`cd lib/brainstorm-server && npm install`\n预期：依赖项已安装"
+    },
+    {
+      "en-US": "**Step 4: Test server starts**",
+      "zh-Hans": "**步骤 4：测试服务器启动**"
+    },
+    {
+      "en-US": "Run: `cd lib/brainstorm-server && timeout 3 node index.js || true`\nExpected: See JSON with `server-started` and port info",
+      "zh-Hans": "运行：`cd lib/brainstorm-server && timeout 3 node index.js || true`\n预期：看到包含 `server-started` 和端口信息的 JSON"
+    },
+    {
+      "en-US": "**Step 5: Commit**",
+      "zh-Hans": "**步骤 5：提交**"
+    },
+    {
+      "en-US": "```bash\ngit add lib/brainstorm-server/\ngit commit -m \"feat: add brainstorm server foundation\"\n```",
+      "zh-Hans": "```bash\ngit add lib/brainstorm-server/\ngit commit -m \"feat: add brainstorm server foundation\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Task 2: Create the Helper Library",
+      "zh-Hans": "## 任务 2：创建辅助库"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Create: `lib/brainstorm-server/helper.js`",
+      "zh-Hans": "* 创建：`lib/brainstorm-server/helper.js`"
+    },
+    {
+      "en-US": "**Step 1: Create helper.js with event auto-capture**",
+      "zh-Hans": "**步骤 1：创建带有事件自动捕获功能的 helper.js**"
+    },
+    {
+      "en-US": "```javascript\n(function() {\n  const WS_URL = 'ws://' + window.location.host;\n  let ws = null;\n  let eventQueue = [];\n\n  function connect() {\n    ws = new WebSocket(WS_URL);\n\n    ws.onopen = () => {\n      // Send any queued events\n      eventQueue.forEach(e => ws.send(JSON.stringify(e)));\n      eventQueue = [];\n    };\n\n    ws.onmessage = (msg) => {\n      const data = JSON.parse(msg.data);\n      if (data.type === 'reload') {\n        window.location.reload();\n      }\n    };\n\n    ws.onclose = () => {\n      // Reconnect after 1 second\n      setTimeout(connect, 1000);\n    };\n  }\n\n  function send(event) {\n    event.timestamp = Date.now();\n    if (ws && ws.readyState === WebSocket.OPEN) {\n      ws.send(JSON.stringify(event));\n    } else {\n      eventQueue.push(event);\n    }\n  }\n\n  // Auto-capture clicks on interactive elements\n  document.addEventListener('click', (e) => {\n    const target = e.target.closest('button, a, [data-choice], [role=\"button\"], input[type=\"submit\"]');\n    if (!target) return;\n\n    // Don't capture regular link navigation\n    if (target.tagName === 'A' && !target.dataset.choice) return;\n\n    e.preventDefault();\n\n    send({\n      type: 'click',\n      text: target.textContent.trim(),\n      choice: target.dataset.choice || null,\n      id: target.id || null,\n      className: target.className || null\n    });\n  });\n\n  // Auto-capture form submissions\n  document.addEventListener('submit', (e) => {\n    e.preventDefault();\n    const form = e.target;\n    const formData = new FormData(form);\n    const data = {};\n    formData.forEach((value, key) => { data[key] = value; });\n\n    send({\n      type: 'submit',\n      formId: form.id || null,\n      formName: form.name || null,\n      data: data\n    });\n  });\n\n  // Auto-capture input changes (debounced)\n  let inputTimeout = null;\n  document.addEventListener('input', (e) => {\n    const target = e.target;\n    if (!target.matches('input, textarea, select')) return;\n\n    clearTimeout(inputTimeout);\n    inputTimeout = setTimeout(() => {\n      send({\n        type: 'input',\n        name: target.name || null,\n        id: target.id || null,\n        value: target.value,\n        inputType: target.type || target.tagName.toLowerCase()\n      });\n    }, 500); // 500ms debounce\n  });\n\n  // Expose for explicit use if needed\n  window.brainstorm = {\n    send: send,\n    choice: (value, metadata = {}) => send({ type: 'choice', value, ...metadata })\n  };\n\n  connect();\n})();\n```",
+      "zh-Hans": "```javascript\n(function() {\n  const WS_URL = 'ws://' + window.location.host;\n  let ws = null;\n  let eventQueue = [];\n\n  function connect() {\n    ws = new WebSocket(WS_URL);\n\n    ws.onopen = () => {\n      // Send any queued events\n      eventQueue.forEach(e => ws.send(JSON.stringify(e)));\n      eventQueue = [];\n    };\n\n    ws.onmessage = (msg) => {\n      const data = JSON.parse(msg.data);\n      if (data.type === 'reload') {\n        window.location.reload();\n      }\n    };\n\n    ws.onclose = () => {\n      // Reconnect after 1 second\n      setTimeout(connect, 1000);\n    };\n  }\n\n  function send(event) {\n    event.timestamp = Date.now();\n    if (ws && ws.readyState === WebSocket.OPEN) {\n      ws.send(JSON.stringify(event));\n    } else {\n      eventQueue.push(event);\n    }\n  }\n\n  // Auto-capture clicks on interactive elements\n  document.addEventListener('click', (e) => {\n    const target = e.target.closest('button, a, [data-choice], [role=\"button\"], input[type=\"submit\"]');\n    if (!target) return;\n\n    // Don't capture regular link navigation\n    if (target.tagName === 'A' && !target.dataset.choice) return;\n\n    e.preventDefault();\n\n    send({\n      type: 'click',\n      text: target.textContent.trim(),\n      choice: target.dataset.choice || null,\n      id: target.id || null,\n      className: target.className || null\n    });\n  });\n\n  // Auto-capture form submissions\n  document.addEventListener('submit', (e) => {\n    e.preventDefault();\n    const form = e.target;\n    const formData = new FormData(form);\n    const data = {};\n    formData.forEach((value, key) => { data[key] = value; });\n\n    send({\n      type: 'submit',\n      formId: form.id || null,\n      formName: form.name || null,\n      data: data\n    });\n  });\n\n  // Auto-capture input changes (debounced)\n  let inputTimeout = null;\n  document.addEventListener('input', (e) => {\n    const target = e.target;\n    if (!target.matches('input, textarea, select')) return;\n\n    clearTimeout(inputTimeout);\n    inputTimeout = setTimeout(() => {\n      send({\n        type: 'input',\n        name: target.name || null,\n        id: target.id || null,\n        value: target.value,\n        inputType: target.type || target.tagName.toLowerCase()\n      });\n    }, 500); // 500ms debounce\n  });\n\n  // Expose for explicit use if needed\n  window.brainstorm = {\n    send: send,\n    choice: (value, metadata = {}) => send({ type: 'choice', value, ...metadata })\n  };\n\n  connect();\n})();\n```"
+    },
+    {
+      "en-US": "**Step 2: Verify helper.js is syntactically valid**",
+      "zh-Hans": "**步骤 2：验证 helper.js 语法有效**"
+    },
+    {
+      "en-US": "Run: `node -c lib/brainstorm-server/helper.js`\nExpected: No syntax errors",
+      "zh-Hans": "运行：`node -c lib/brainstorm-server/helper.js`\n预期：无语法错误"
+    },
+    {
+      "en-US": "**Step 3: Commit**",
+      "zh-Hans": "**步骤 3：提交**"
+    },
+    {
+      "en-US": "```bash\ngit add lib/brainstorm-server/helper.js\ngit commit -m \"feat: add browser helper library for event capture\"\n```",
+      "zh-Hans": "```bash\ngit add lib/brainstorm-server/helper.js\ngit commit -m \"feat: add browser helper library for event capture\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Task 3: Write Tests for the Server",
+      "zh-Hans": "## 任务 3：为服务器编写测试"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Create: `tests/brainstorm-server/server.test.js`\n- Create: `tests/brainstorm-server/package.json`",
+      "zh-Hans": "* 创建：`tests/brainstorm-server/server.test.js`\n* 创建：`tests/brainstorm-server/package.json`"
+    },
+    {
+      "en-US": "**Step 1: Create test package.json**",
+      "zh-Hans": "**步骤 1：创建测试 package.json**"
+    },
+    {
+      "en-US": "```json\n{\n  \"name\": \"brainstorm-server-tests\",\n  \"version\": \"1.0.0\",\n  \"scripts\": {\n    \"test\": \"node server.test.js\"\n  }\n}\n```",
+      "zh-Hans": "```json\n{\n  \"name\": \"brainstorm-server-tests\",\n  \"version\": \"1.0.0\",\n  \"scripts\": {\n    \"test\": \"node server.test.js\"\n  }\n}\n```"
+    },
+    {
+      "en-US": "**Step 2: Write server tests**",
+      "zh-Hans": "**步骤 2：编写服务器测试**"
+    },
+    {
+      "en-US": "```javascript\nconst { spawn } = require('child_process');\nconst http = require('http');\nconst WebSocket = require('ws');\nconst fs = require('fs');\nconst path = require('path');\nconst assert = require('assert');\n\nconst SERVER_PATH = path.join(__dirname, '../../lib/brainstorm-server/index.js');\nconst TEST_PORT = 3334;\nconst TEST_SCREEN = '/tmp/brainstorm-test/screen.html';\n\n// Clean up test directory\nfunction cleanup() {\n  if (fs.existsSync(path.dirname(TEST_SCREEN))) {\n    fs.rmSync(path.dirname(TEST_SCREEN), { recursive: true });\n  }\n}\n\nasync function sleep(ms) {\n  return new Promise(resolve => setTimeout(resolve, ms));\n}\n\nasync function fetch(url) {\n  return new Promise((resolve, reject) => {\n    http.get(url, (res) => {\n      let data = '';\n      res.on('data', chunk => data += chunk);\n      res.on('end', () => resolve({ status: res.statusCode, body: data }));\n    }).on('error', reject);\n  });\n}\n\nasync function runTests() {\n  cleanup();\n\n  // Start server\n  const server = spawn('node', [SERVER_PATH], {\n    env: { ...process.env, BRAINSTORM_PORT: TEST_PORT, BRAINSTORM_SCREEN: TEST_SCREEN }\n  });\n\n  let stdout = '';\n  server.stdout.on('data', (data) => { stdout += data.toString(); });\n  server.stderr.on('data', (data) => { console.error('Server stderr:', data.toString()); });\n\n  await sleep(1000); // Wait for server to start\n\n  try {\n    // Test 1: Server starts and outputs JSON\n    console.log('Test 1: Server startup message');\n    assert(stdout.includes('server-started'), 'Should output server-started');\n    assert(stdout.includes(TEST_PORT.toString()), 'Should include port');\n    console.log('  PASS');\n\n    // Test 2: GET / returns HTML with helper injected\n    console.log('Test 2: Serves HTML with helper injected');\n    const res = await fetch(`http://localhost:${TEST_PORT}/`);\n    assert.strictEqual(res.status, 200);\n    assert(res.body.includes('brainstorm'), 'Should include brainstorm content');\n    assert(res.body.includes('WebSocket'), 'Should have helper.js injected');\n    console.log('  PASS');\n\n    // Test 3: WebSocket connection and event relay\n    console.log('Test 3: WebSocket relays events to stdout');\n    stdout = ''; // Reset stdout capture\n    const ws = new WebSocket(`ws://localhost:${TEST_PORT}`);\n    await new Promise(resolve => ws.on('open', resolve));\n\n    ws.send(JSON.stringify({ type: 'click', text: 'Test Button' }));\n    await sleep(100);\n\n    assert(stdout.includes('user-event'), 'Should relay user events');\n    assert(stdout.includes('Test Button'), 'Should include event data');\n    ws.close();\n    console.log('  PASS');\n\n    // Test 4: File change triggers reload notification\n    console.log('Test 4: File change notifies browsers');\n    const ws2 = new WebSocket(`ws://localhost:${TEST_PORT}`);\n    await new Promise(resolve => ws2.on('open', resolve));\n\n    let gotReload = false;\n    ws2.on('message', (data) => {\n      const msg = JSON.parse(data.toString());\n      if (msg.type === 'reload') gotReload = true;\n    });\n\n    // Modify the screen file\n    fs.writeFileSync(TEST_SCREEN, '<html><body>Updated</body></html>');\n    await sleep(500);\n\n    assert(gotReload, 'Should send reload message on file change');\n    ws2.close();\n    console.log('  PASS');\n\n    console.log('\\nAll tests passed!');\n\n  } finally {\n    server.kill();\n    cleanup();\n  }\n}\n\nrunTests().catch(err => {\n  console.error('Test failed:', err);\n  process.exit(1);\n});\n```",
+      "zh-Hans": "```javascript\nconst { spawn } = require('child_process');\nconst http = require('http');\nconst WebSocket = require('ws');\nconst fs = require('fs');\nconst path = require('path');\nconst assert = require('assert');\n\nconst SERVER_PATH = path.join(__dirname, '../../lib/brainstorm-server/index.js');\nconst TEST_PORT = 3334;\nconst TEST_SCREEN = '/tmp/brainstorm-test/screen.html';\n\n// Clean up test directory\nfunction cleanup() {\n  if (fs.existsSync(path.dirname(TEST_SCREEN))) {\n    fs.rmSync(path.dirname(TEST_SCREEN), { recursive: true });\n  }\n}\n\nasync function sleep(ms) {\n  return new Promise(resolve => setTimeout(resolve, ms));\n}\n\nasync function fetch(url) {\n  return new Promise((resolve, reject) => {\n    http.get(url, (res) => {\n      let data = '';\n      res.on('data', chunk => data += chunk);\n      res.on('end', () => resolve({ status: res.statusCode, body: data }));\n    }).on('error', reject);\n  });\n}\n\nasync function runTests() {\n  cleanup();\n\n  // Start server\n  const server = spawn('node', [SERVER_PATH], {\n    env: { ...process.env, BRAINSTORM_PORT: TEST_PORT, BRAINSTORM_SCREEN: TEST_SCREEN }\n  });\n\n  let stdout = '';\n  server.stdout.on('data', (data) => { stdout += data.toString(); });\n  server.stderr.on('data', (data) => { console.error('Server stderr:', data.toString()); });\n\n  await sleep(1000); // Wait for server to start\n\n  try {\n    // Test 1: Server starts and outputs JSON\n    console.log('Test 1: Server startup message');\n    assert(stdout.includes('server-started'), 'Should output server-started');\n    assert(stdout.includes(TEST_PORT.toString()), 'Should include port');\n    console.log('  PASS');\n\n    // Test 2: GET / returns HTML with helper injected\n    console.log('Test 2: Serves HTML with helper injected');\n    const res = await fetch(`http://localhost:${TEST_PORT}/`);\n    assert.strictEqual(res.status, 200);\n    assert(res.body.includes('brainstorm'), 'Should include brainstorm content');\n    assert(res.body.includes('WebSocket'), 'Should have helper.js injected');\n    console.log('  PASS');\n\n    // Test 3: WebSocket connection and event relay\n    console.log('Test 3: WebSocket relays events to stdout');\n    stdout = ''; // Reset stdout capture\n    const ws = new WebSocket(`ws://localhost:${TEST_PORT}`);\n    await new Promise(resolve => ws.on('open', resolve));\n\n    ws.send(JSON.stringify({ type: 'click', text: 'Test Button' }));\n    await sleep(100);\n\n    assert(stdout.includes('user-event'), 'Should relay user events');\n    assert(stdout.includes('Test Button'), 'Should include event data');\n    ws.close();\n    console.log('  PASS');\n\n    // Test 4: File change triggers reload notification\n    console.log('Test 4: File change notifies browsers');\n    const ws2 = new WebSocket(`ws://localhost:${TEST_PORT}`);\n    await new Promise(resolve => ws2.on('open', resolve));\n\n    let gotReload = false;\n    ws2.on('message', (data) => {\n      const msg = JSON.parse(data.toString());\n      if (msg.type === 'reload') gotReload = true;\n    });\n\n    // Modify the screen file\n    fs.writeFileSync(TEST_SCREEN, '<html><body>Updated</body></html>');\n    await sleep(500);\n\n    assert(gotReload, 'Should send reload message on file change');\n    ws2.close();\n    console.log('  PASS');\n\n    console.log('\\nAll tests passed!');\n\n  } finally {\n    server.kill();\n    cleanup();\n  }\n}\n\nrunTests().catch(err => {\n  console.error('Test failed:', err);\n  process.exit(1);\n});\n```"
+    },
+    {
+      "en-US": "**Step 3: Run tests**",
+      "zh-Hans": "**步骤 3：运行测试**"
+    },
+    {
+      "en-US": "Run: `cd tests/brainstorm-server && npm install ws && node server.test.js`\nExpected: All tests pass",
+      "zh-Hans": "运行：`cd tests/brainstorm-server && npm install ws && node server.test.js`\n预期：所有测试通过"
+    },
+    {
+      "en-US": "**Step 4: Commit**",
+      "zh-Hans": "**步骤 4：提交**"
+    },
+    {
+      "en-US": "```bash\ngit add tests/brainstorm-server/\ngit commit -m \"test: add brainstorm server integration tests\"\n```",
+      "zh-Hans": "```bash\ngit add tests/brainstorm-server/\ngit commit -m \"test: add brainstorm server integration tests\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Task 4: Add Visual Companion to Brainstorming Skill",
+      "zh-Hans": "## 任务 4：将视觉伴侣添加到头脑风暴技能"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `skills/brainstorming/SKILL.md`\n- Create: `skills/brainstorming/visual-companion.md` (supporting doc)",
+      "zh-Hans": "* 修改：`skills/brainstorming/SKILL.md`\n* 创建：`skills/brainstorming/visual-companion.md` (支持文档)"
+    },
+    {
+      "en-US": "**Step 1: Create the supporting documentation**",
+      "zh-Hans": "**步骤 1：创建支持文档**"
+    },
+    {
+      "en-US": "Create `skills/brainstorming/visual-companion.md`:",
+      "zh-Hans": "创建 `skills/brainstorming/visual-companion.md`："
+    },
+    {
+      "en-US": "```markdown\n# Visual Companion Reference\n\n## Starting the Server\n\nRun as a background job:\n\n```bash\nnode ${PLUGIN_ROOT}/lib/brainstorm-server/index.js\n```",
+      "zh-Hans": "````markdown\n# Visual Companion 参考\n\n## 启动服务器\n\n以后台任务运行：\n\n```bash\nnode ${PLUGIN_ROOT}/lib/brainstorm-server/index.js\n````"
+    },
+    {
+      "en-US": "Tell the user: \"I've started a visual companion at http://localhost:3333 - open it in a browser.\"",
+      "zh-Hans": "告诉用户：\"我已经在 http://localhost:3333 启动了一个视觉伴侣——请在浏览器中打开它。\""
+    },
+    {
+      "en-US": "## Pushing Screens",
+      "zh-Hans": "## 推送屏幕"
+    },
+    {
+      "en-US": "Write HTML to `/tmp/brainstorm/screen.html`. The server watches this file and auto-refreshes the browser.",
+      "zh-Hans": "将 HTML 写入 `/tmp/brainstorm/screen.html`。服务器监视此文件并自动刷新浏览器。"
+    },
+    {
+      "en-US": "## Reading User Responses",
+      "zh-Hans": "## 读取用户响应"
+    },
+    {
+      "en-US": "Check the background task output for JSON events:",
+      "zh-Hans": "在后台任务输出中检查 JSON 事件："
+    },
+    {
+      "en-US": "```json\n{\"type\":\"user-event\",\"type\":\"click\",\"text\":\"Option A\",\"choice\":\"optionA\",\"timestamp\":1234567890}\n{\"type\":\"user-event\",\"type\":\"submit\",\"data\":{\"notes\":\"My feedback\"},\"timestamp\":1234567891}\n```",
+      "zh-Hans": "```json\n{\"type\":\"user-event\",\"type\":\"click\",\"text\":\"Option A\",\"choice\":\"optionA\",\"timestamp\":1234567890}\n{\"type\":\"user-event\",\"type\":\"submit\",\"data\":{\"notes\":\"My feedback\"},\"timestamp\":1234567891}\n```"
+    },
+    {
+      "en-US": "Event types:",
+      "zh-Hans": "事件类型："
+    },
+    {
+      "en-US": "- **click**: User clicked button or `data-choice` element\n- **submit**: User submitted form (includes all form data)\n- **input**: User typed in field (debounced 500ms)",
+      "zh-Hans": "* **click：** 用户点击了按钮或 `data-choice` 元素\n* **submit：** 用户提交了表单（包含所有表单数据）\n* **input：** 用户在字段中输入了内容（防抖 500 毫秒）"
+    },
+    {
+      "en-US": "## HTML Patterns",
+      "zh-Hans": "## HTML 模式"
+    },
+    {
+      "en-US": "### Choice Cards",
+      "zh-Hans": "### 选择卡片"
+    },
+    {
+      "en-US": "```html\n<div class=\"options\">\n  <button data-choice=\"optionA\">\n    <h3>Option A</h3>\n    <p>Description</p>\n  </button>\n  <button data-choice=\"optionB\">\n    <h3>Option B</h3>\n    <p>Description</p>\n  </button>\n</div>\n```",
+      "zh-Hans": "```html\n<div class=\"options\">\n  <button data-choice=\"optionA\">\n    <h3>Option A</h3>\n    <p>Description</p>\n  </button>\n  <button data-choice=\"optionB\">\n    <h3>Option B</h3>\n    <p>Description</p>\n  </button>\n</div>\n```"
+    },
+    {
+      "en-US": "### Interactive Mockup",
+      "zh-Hans": "### 交互式线框图"
+    },
+    {
+      "en-US": "```html\n<div class=\"mockup\">\n  <header data-choice=\"header\">App Header</header>\n  <nav data-choice=\"nav\">Navigation</nav>\n  <main data-choice=\"main\">Content</main>\n</div>\n```",
+      "zh-Hans": "```html\n<div class=\"mockup\">\n  <header data-choice=\"header\">App Header</header>\n  <nav data-choice=\"nav\">Navigation</nav>\n  <main data-choice=\"main\">Content</main>\n</div>\n```"
+    },
+    {
+      "en-US": "### Form with Notes",
+      "zh-Hans": "### 带备注的表单"
+    },
+    {
+      "en-US": "```html\n<form>\n  <label>Priority: <input type=\"range\" name=\"priority\" min=\"1\" max=\"5\"></label>\n  <textarea name=\"notes\" placeholder=\"Additional thoughts...\"></textarea>\n  <button type=\"submit\">Submit</button>\n</form>\n```",
+      "zh-Hans": "```html\n<form>\n  <label>Priority: <input type=\"range\" name=\"priority\" min=\"1\" max=\"5\"></label>\n  <textarea name=\"notes\" placeholder=\"Additional thoughts...\"></textarea>\n  <button type=\"submit\">Submit</button>\n</form>\n```"
+    },
+    {
+      "en-US": "### Explicit JavaScript",
+      "zh-Hans": "### 显式 JavaScript"
+    },
+    {
+      "en-US": "```html\n<button onclick=\"brainstorm.choice('custom', {extra: 'data'})\">Custom</button>\n```",
+      "zh-Hans": "```html\n<button onclick=\"brainstorm.choice('custom', {extra: 'data'})\">Custom</button>\n```"
+    },
+    {
+      "en-US": "```\n\n**Step 2: Add visual companion section to brainstorming skill**\n\nAdd after \"Key Principles\" in `skills/brainstorming/SKILL.md`:\n\n```markdown\n\n## Visual Companion (Optional)\n\nWhen brainstorming involves visual elements - UI mockups, wireframes, interactive prototypes - use the browser-based visual companion.\n\n**When to use:**\n- Presenting UI/UX options that benefit from visual comparison\n- Showing wireframes or layout options\n- Gathering structured feedback (ratings, forms)\n- Prototyping click interactions\n\n**How it works:**\n1. Start the server as a background job\n2. Tell user to open http://localhost:3333\n3. Write HTML to `/tmp/brainstorm/screen.html` (auto-refreshes)\n4. Check background task output for user interactions\n\nThe terminal remains the primary conversation interface. The browser is a visual aid.\n\n**Reference:** See `visual-companion.md` in this skill directory for HTML patterns and API details.\n```",
+      "zh-Hans": "````\n\n**Step 2: Add visual companion section to brainstorming skill**\n\nAdd after \"Key Principles\" in `skills/brainstorming/SKILL.md`:\n\n```markdown\n\n## Visual Companion (Optional)\n\nWhen brainstorming involves visual elements - UI mockups, wireframes, interactive prototypes - use the browser-based visual companion.\n\n**When to use:**\n- Presenting UI/UX options that benefit from visual comparison\n- Showing wireframes or layout options\n- Gathering structured feedback (ratings, forms)\n- Prototyping click interactions\n\n**How it works:**\n1. Start the server as a background job\n2. Tell user to open http://localhost:3333\n3. Write HTML to `/tmp/brainstorm/screen.html` (auto-refreshes)\n4. Check background task output for user interactions\n\nThe terminal remains the primary conversation interface. The browser is a visual aid.\n\n**Reference:** See `visual-companion.md` in this skill directory for HTML patterns and API details.\n````"
+    },
+    {
+      "en-US": "**Step 3: Verify the edits**",
+      "zh-Hans": "**步骤 3：验证编辑**"
+    },
+    {
+      "en-US": "Run: `grep -A5 \"Visual Companion\" skills/brainstorming/SKILL.md`\nExpected: Shows the new section",
+      "zh-Hans": "运行：`grep -A5 \"Visual Companion\" skills/brainstorming/SKILL.md`\n预期：显示新章节"
+    },
+    {
+      "en-US": "**Step 4: Commit**",
+      "zh-Hans": "**步骤 4：提交**"
+    },
+    {
+      "en-US": "```bash\ngit add skills/brainstorming/\ngit commit -m \"feat: add visual companion to brainstorming skill\"\n```",
+      "zh-Hans": "```bash\ngit add skills/brainstorming/\ngit commit -m \"feat: add visual companion to brainstorming skill\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Task 5: Add Server to Plugin Ignore (Optional Cleanup)",
+      "zh-Hans": "## 任务 5：将服务器添加到插件忽略列表（可选清理）"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Check if `.gitignore` needs node_modules exclusion for lib/brainstorm-server",
+      "zh-Hans": "* 检查 `.gitignore` 是否需要为 lib/brainstorm-server 排除 node\\_modules"
+    },
+    {
+      "en-US": "**Step 1: Check current gitignore**",
+      "zh-Hans": "**步骤 1：检查当前的 gitignore**"
+    },
+    {
+      "en-US": "Run: `cat .gitignore 2>/dev/null || echo \"No .gitignore\"`",
+      "zh-Hans": "运行：`cat .gitignore 2>/dev/null || echo \"No .gitignore\"`"
+    },
+    {
+      "en-US": "**Step 2: Add node_modules if needed**",
+      "zh-Hans": "**步骤 2：如果需要，添加 node\\_modules**"
+    },
+    {
+      "en-US": "If not already present, add:",
+      "zh-Hans": "如果尚未存在，添加："
+    },
+    {
+      "en-US": "```\nlib/brainstorm-server/node_modules/\n```",
+      "zh-Hans": "```\nlib/brainstorm-server/node_modules/\n```"
+    },
+    {
+      "en-US": "**Step 3: Commit if changed**",
+      "zh-Hans": "**步骤 3：如果更改则提交**"
+    },
+    {
+      "en-US": "```bash\ngit add .gitignore\ngit commit -m \"chore: ignore brainstorm-server node_modules\"\n```",
+      "zh-Hans": "```bash\ngit add .gitignore\ngit commit -m \"chore: ignore brainstorm-server node_modules\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Summary",
+      "zh-Hans": "## 总结"
+    },
+    {
+      "en-US": "After completing all tasks:",
+      "zh-Hans": "完成所有任务后："
+    },
+    {
+      "en-US": "1. **Server** at `lib/brainstorm-server/` - Node.js server that watches HTML file and relays events\n2. **Helper library** auto-injected - captures clicks, forms, inputs\n3. **Tests** at `tests/brainstorm-server/` - verifies server behavior\n4. **Brainstorming skill** updated with visual companion section and `visual-companion.md` reference doc",
+      "zh-Hans": "1. **服务器**位于 `lib/brainstorm-server/` —— 监视 HTML 文件并中继事件的 Node.js 服务器\n2. **辅助库**自动注入 —— 捕获点击、表单、输入事件\n3. **测试**位于 `tests/brainstorm-server/` —— 验证服务器行为\n4. **头脑风暴技能**更新了视觉伴侣章节和 `visual-companion.md` 参考文档"
+    },
+    {
+      "en-US": "**To use:**",
+      "zh-Hans": "**使用方法：**"
+    },
+    {
+      "en-US": "1. Start server as background job: `node lib/brainstorm-server/index.js &`\n2. Tell user to open `http://localhost:3333`\n3. Write HTML to `/tmp/brainstorm/screen.html`\n4. Check task output for user events",
+      "zh-Hans": "1. 将服务器作为后台任务启动：`node lib/brainstorm-server/index.js &`\n2. 告诉用户打开 `http://localhost:3333`\n3. 将 HTML 写入 `/tmp/brainstorm/screen.html`\n4. 在任务输出中检查用户事件"
+    }
+  ]
+}

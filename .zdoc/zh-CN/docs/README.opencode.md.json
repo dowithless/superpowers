@@ -1,0 +1,182 @@
+{
+  "sourceFile": "docs/README.opencode.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Superpowers for OpenCode",
+      "zh-Hans": "# OpenCode 的 Superpowers"
+    },
+    {
+      "en-US": "Complete guide for using Superpowers with [OpenCode.ai](https://opencode.ai).",
+      "zh-Hans": "与 [OpenCode.ai](https://opencode.ai) 一起使用 Superpowers 的完整指南。"
+    },
+    {
+      "en-US": "## Installation",
+      "zh-Hans": "## 安装"
+    },
+    {
+      "en-US": "Add superpowers to the `plugin` array in your `opencode.json` (global or project-level):",
+      "zh-Hans": "将 superpowers 添加到你的 `opencode.json`（全局或项目级）中的 `plugin` 数组："
+    },
+    {
+      "en-US": "```json\n{\n  \"plugin\": [\"superpowers@git+https://github.com/obra/superpowers.git\"]\n}\n```",
+      "zh-Hans": "```json\n{\n  \"plugin\": [\"superpowers@git+https://github.com/obra/superpowers.git\"]\n}\n```"
+    },
+    {
+      "en-US": "Restart OpenCode. The plugin auto-installs via Bun and registers all skills automatically.",
+      "zh-Hans": "重启 OpenCode。插件将通过 Bun 自动安装并自动注册所有技能。"
+    },
+    {
+      "en-US": "Verify by asking: \"Tell me about your superpowers\"",
+      "zh-Hans": "通过询问以下内容进行验证：“告诉我关于你的 superpowers”"
+    },
+    {
+      "en-US": "### Migrating from the old symlink-based install",
+      "zh-Hans": "### 从旧的基于符号链接的安装迁移"
+    },
+    {
+      "en-US": "If you previously installed superpowers using `git clone` and symlinks, remove the old setup:",
+      "zh-Hans": "如果你之前使用 `git clone` 和符号链接安装了 superpowers，请移除旧设置："
+    },
+    {
+      "en-US": "```bash\n# Remove old symlinks\nrm -f ~/.config/opencode/plugins/superpowers.js\nrm -rf ~/.config/opencode/skills/superpowers\n\n# Optionally remove the cloned repo\nrm -rf ~/.config/opencode/superpowers\n\n# Remove skills.paths from opencode.json if you added one for superpowers\n```",
+      "zh-Hans": "```bash\n# Remove old symlinks\nrm -f ~/.config/opencode/plugins/superpowers.js\nrm -rf ~/.config/opencode/skills/superpowers\n\n# Optionally remove the cloned repo\nrm -rf ~/.config/opencode/superpowers\n\n# Remove skills.paths from opencode.json if you added one for superpowers\n```"
+    },
+    {
+      "en-US": "Then follow the installation steps above.",
+      "zh-Hans": "然后按照上述安装步骤操作。"
+    },
+    {
+      "en-US": "## Usage",
+      "zh-Hans": "## 使用"
+    },
+    {
+      "en-US": "### Finding Skills",
+      "zh-Hans": "### 查找技能"
+    },
+    {
+      "en-US": "Use OpenCode's native `skill` tool to list all available skills:",
+      "zh-Hans": "使用 OpenCode 原生的 `skill` 工具列出所有可用技能："
+    },
+    {
+      "en-US": "```\nuse skill tool to list skills\n```",
+      "zh-Hans": "```\nuse skill tool to list skills\n```"
+    },
+    {
+      "en-US": "### Loading a Skill",
+      "zh-Hans": "### 加载技能"
+    },
+    {
+      "en-US": "```\nuse skill tool to load superpowers/brainstorming\n```",
+      "zh-Hans": "```\nuse skill tool to load superpowers/brainstorming\n```"
+    },
+    {
+      "en-US": "### Personal Skills",
+      "zh-Hans": "### 个人技能"
+    },
+    {
+      "en-US": "Create your own skills in `~/.config/opencode/skills/`:",
+      "zh-Hans": "在 `~/.config/opencode/skills/` 中创建您自己的技能："
+    },
+    {
+      "en-US": "```bash\nmkdir -p ~/.config/opencode/skills/my-skill\n```",
+      "zh-Hans": "```bash\nmkdir -p ~/.config/opencode/skills/my-skill\n```"
+    },
+    {
+      "en-US": "Create `~/.config/opencode/skills/my-skill/SKILL.md`:",
+      "zh-Hans": "创建 `~/.config/opencode/skills/my-skill/SKILL.md`："
+    },
+    {
+      "en-US": "```markdown\n---\nname: my-skill\ndescription: Use when [condition] - [what it does]\n---\n\n# My Skill\n\n[Your skill content here]\n```",
+      "zh-Hans": "```markdown\n---\nname: my-skill\ndescription: Use when [condition] - [what it does]\n---\n\n# 我的技能\n\n[你的技能内容在此]\n```"
+    },
+    {
+      "en-US": "### Project Skills",
+      "zh-Hans": "### 项目技能"
+    },
+    {
+      "en-US": "Create project-specific skills in `.opencode/skills/` within your project.",
+      "zh-Hans": "在你的项目中，于 `.opencode/skills/` 内创建项目特定技能。"
+    },
+    {
+      "en-US": "**Skill Priority:** Project skills > Personal skills > Superpowers skills",
+      "zh-Hans": "**技能优先级：** 项目技能 > 个人技能 > Superpowers 技能"
+    },
+    {
+      "en-US": "## Updating",
+      "zh-Hans": "## 更新"
+    },
+    {
+      "en-US": "Superpowers updates automatically when you restart OpenCode. The plugin is re-installed from the git repository on each launch.",
+      "zh-Hans": "Superpowers 在你重启 OpenCode 时会自动更新。插件在每次启动时都会从 git 仓库重新安装。"
+    },
+    {
+      "en-US": "To pin a specific version, use a branch or tag:",
+      "zh-Hans": "要固定特定版本，请使用分支或标签："
+    },
+    {
+      "en-US": "```json\n{\n  \"plugin\": [\"superpowers@git+https://github.com/obra/superpowers.git#v5.0.3\"]\n}\n```",
+      "zh-Hans": "```json\n{\n  \"plugin\": [\"superpowers@git+https://github.com/obra/superpowers.git#v5.0.3\"]\n}\n```"
+    },
+    {
+      "en-US": "## How It Works",
+      "zh-Hans": "## 工作原理"
+    },
+    {
+      "en-US": "The plugin does two things:",
+      "zh-Hans": "该插件执行两项操作："
+    },
+    {
+      "en-US": "1. **Injects bootstrap context** via the `experimental.chat.system.transform` hook, adding superpowers awareness to every conversation.\n2. **Registers the skills directory** via the `config` hook, so OpenCode discovers all superpowers skills without symlinks or manual config.",
+      "zh-Hans": "1. **通过 `experimental.chat.system.transform` 钩子注入引导上下文**，为每次对话添加 superpowers 感知。\n2. **通过 `config` 钩子注册技能目录**，以便 OpenCode 无需符号链接或手动配置即可发现所有 superpowers 技能。"
+    },
+    {
+      "en-US": "### Tool Mapping",
+      "zh-Hans": "### 工具映射"
+    },
+    {
+      "en-US": "Skills written for Claude Code are automatically adapted for OpenCode:",
+      "zh-Hans": "为 Claude Code 编写的技能会自动适配到 OpenCode："
+    },
+    {
+      "en-US": "- `TodoWrite` → `todowrite`\n- `Task` with subagents → OpenCode's `@mention` system\n- `Skill` tool → OpenCode's native `skill` tool\n- File operations → Native OpenCode tools",
+      "zh-Hans": "* `TodoWrite` → `todowrite`\n* 带有子代理的 `Task` → OpenCode 的 `@mention` 系统\n* `Skill` 工具 → OpenCode 原生的 `skill` 工具\n* 文件操作 → 原生 OpenCode 工具"
+    },
+    {
+      "en-US": "## Troubleshooting",
+      "zh-Hans": "## 故障排除"
+    },
+    {
+      "en-US": "### Plugin not loading",
+      "zh-Hans": "### 插件未加载"
+    },
+    {
+      "en-US": "1. Check OpenCode logs: `opencode run --print-logs \"hello\" 2>&1 | grep -i superpowers`\n2. Verify the plugin line in your `opencode.json` is correct\n3. Make sure you're running a recent version of OpenCode",
+      "zh-Hans": "1. 检查 OpenCode 日志：`opencode run --print-logs \"hello\" 2>&1 | grep -i superpowers`\n2. 验证你的 `opencode.json` 中的插件行是否正确\n3. 确保你运行的是最新版本的 OpenCode"
+    },
+    {
+      "en-US": "### Skills not found",
+      "zh-Hans": "### 技能未找到"
+    },
+    {
+      "en-US": "1. Use OpenCode's `skill` tool to list available skills\n2. Check that the plugin is loading (see above)\n3. Each skill needs a `SKILL.md` file with valid YAML frontmatter",
+      "zh-Hans": "1. 使用 OpenCode 的 `skill` 工具列出可用技能\n2. 检查插件是否正在加载（见上文）\n3. 每个技能都需要一个带有有效 YAML 前置元数据的 `SKILL.md` 文件"
+    },
+    {
+      "en-US": "### Bootstrap not appearing",
+      "zh-Hans": "### 引导程序未出现"
+    },
+    {
+      "en-US": "1. Check OpenCode version supports `experimental.chat.system.transform` hook\n2. Restart OpenCode after config changes",
+      "zh-Hans": "1. 检查 OpenCode 版本是否支持 `experimental.chat.system.transform` 钩子\n2. 在配置更改后重启 OpenCode"
+    },
+    {
+      "en-US": "## Getting Help",
+      "zh-Hans": "## 获取帮助"
+    },
+    {
+      "en-US": "- Report issues: https://github.com/obra/superpowers/issues\n- Main documentation: https://github.com/obra/superpowers\n- OpenCode docs: https://opencode.ai/docs/",
+      "zh-Hans": "* 报告问题：https://github.com/obra/superpowers/issues\n* 主要文档：https://github.com/obra/superpowers\n* OpenCode 文档：https://opencode.ai/docs/"
+    }
+  ]
+}

@@ -1,0 +1,262 @@
+{
+  "sourceFile": "docs/superpowers/specs/2026-02-19-visual-brainstorming-refactor-design.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Visual Brainstorming Refactor: Browser Displays, Terminal Commands",
+      "zh-Hans": "# 可视化头脑风暴重构：浏览器显示与终端命令"
+    },
+    {
+      "en-US": "**Date:** 2026-02-19\n**Status:** Approved\n**Scope:** `lib/brainstorm-server/`, `skills/brainstorming/visual-companion.md`, `tests/brainstorm-server/`",
+      "zh-Hans": "**日期：** 2026-02-19\n**状态：** 已批准\n**范围：** `lib/brainstorm-server/`, `skills/brainstorming/visual-companion.md`, `tests/brainstorm-server/`"
+    },
+    {
+      "en-US": "## Problem",
+      "zh-Hans": "## 问题"
+    },
+    {
+      "en-US": "During visual brainstorming, Claude runs `wait-for-feedback.sh` as a background task and blocks on `TaskOutput(block=true, timeout=600s)`. This seizes the TUI entirely — the user cannot type to Claude while visual brainstorming is running. The browser becomes the only input channel.",
+      "zh-Hans": "在可视化头脑风暴过程中，Claude 将 `wait-for-feedback.sh` 作为后台任务运行并阻塞在 `TaskOutput(block=true, timeout=600s)` 上。这会完全占用 TUI —— 在可视化头脑风暴运行时用户无法向 Claude 输入。浏览器成为唯一的输入通道。"
+    },
+    {
+      "en-US": "Claude Code's execution model is turn-based. There is no way for Claude to listen on two channels simultaneously within a single turn. The blocking `TaskOutput` pattern was the wrong primitive — it simulates event-driven behavior the platform doesn't support.",
+      "zh-Hans": "Claude Code 的执行模型是基于轮次的。Claude 无法在一个轮次内同时监听两个通道。阻塞式的 `TaskOutput` 模式是错误的原语 —— 它模拟了平台不支持的基于事件的行为。"
+    },
+    {
+      "en-US": "## Design",
+      "zh-Hans": "## 设计"
+    },
+    {
+      "en-US": "### Core Model",
+      "zh-Hans": "### 核心模型"
+    },
+    {
+      "en-US": "**Browser = interactive display.** Shows mockups, lets the user click to select options. Selections are recorded server-side.",
+      "zh-Hans": "**浏览器 = 交互式显示。** 显示设计稿，让用户点击选择选项。选择结果记录在服务器端。"
+    },
+    {
+      "en-US": "**Terminal = conversation channel.** Always unblocked, always available. The user talks to Claude here.",
+      "zh-Hans": "**终端 = 对话通道。** 始终保持畅通，始终可用。用户在此与 Claude 对话。"
+    },
+    {
+      "en-US": "### The Loop",
+      "zh-Hans": "### 循环流程"
+    },
+    {
+      "en-US": "1. Claude writes an HTML file to the session directory\n2. Server detects it via chokidar, pushes WebSocket reload to the browser (unchanged)\n3. Claude ends its turn — tells the user to check the browser and respond in the terminal\n4. User looks at browser, optionally clicks to select an option, then types feedback in the terminal\n5. On the next turn, Claude reads `$SCREEN_DIR/.events` for the browser interaction stream (clicks, selections), merges with the terminal text\n6. Iterate or advance",
+      "zh-Hans": "1. Claude 将 HTML 文件写入会话目录\n2. 服务器通过 chokidar 检测到该文件，通过 WebSocket 推送重新加载指令到浏览器（保持不变）\n3. Claude 结束其轮次 —— 告诉用户检查浏览器并在终端中回应\n4. 用户查看浏览器，可选地点击选择选项，然后在终端中输入反馈\n5. 在下一轮次中，Claude 读取 `$SCREEN_DIR/.events` 以获取浏览器交互流（点击、选择），并与终端文本合并\n6. 迭代或推进"
+    },
+    {
+      "en-US": "No background tasks. No `TaskOutput` blocking. No polling scripts.",
+      "zh-Hans": "无后台任务。无 `TaskOutput` 阻塞。无轮询脚本。"
+    },
+    {
+      "en-US": "### Key Deletion: `wait-for-feedback.sh`",
+      "zh-Hans": "### 关键删除项：`wait-for-feedback.sh`"
+    },
+    {
+      "en-US": "Deleted entirely. Its purpose was to bridge \"server logs events to stdout\" and \"Claude needs to receive those events.\" The `.events` file replaces this — the server writes user interaction events directly, and Claude reads them with whatever file-reading mechanism the platform provides.",
+      "zh-Hans": "完全删除。其目的是在“服务器将事件记录到标准输出”和“Claude 需要接收这些事件”之间建立桥梁。`.events` 文件取代了它 —— 服务器直接写入用户交互事件，而 Claude 使用平台提供的任何文件读取机制来读取它们。"
+    },
+    {
+      "en-US": "### Key Addition: `.events` File (Per-Screen Event Stream)",
+      "zh-Hans": "### 关键新增项：`.events` 文件（每屏幕事件流）"
+    },
+    {
+      "en-US": "The server writes all user interaction events to `$SCREEN_DIR/.events`, one JSON object per line. This gives Claude the full interaction stream for the current screen — not just the final selection, but the user's exploration path (clicked A, then B, settled on C).",
+      "zh-Hans": "服务器将所有用户交互事件写入 `$SCREEN_DIR/.events`，每行一个 JSON 对象。这为 Claude 提供了当前屏幕的完整交互流 —— 不仅仅是最终选择，还包括用户的探索路径（点击了 A，然后 B，最终选定 C）。"
+    },
+    {
+      "en-US": "Example contents after a user explores options:",
+      "zh-Hans": "用户探索选项后的示例内容："
+    },
+    {
+      "en-US": "```jsonl\n{\"type\":\"click\",\"choice\":\"a\",\"text\":\"Option A - Preset-First Wizard\",\"timestamp\":1706000101}\n{\"type\":\"click\",\"choice\":\"c\",\"text\":\"Option C - Manual Config\",\"timestamp\":1706000108}\n{\"type\":\"click\",\"choice\":\"b\",\"text\":\"Option B - Hybrid Approach\",\"timestamp\":1706000115}\n```",
+      "zh-Hans": "```jsonl\n{\"type\":\"click\",\"choice\":\"a\",\"text\":\"Option A - Preset-First Wizard\",\"timestamp\":1706000101}\n{\"type\":\"click\",\"choice\":\"c\",\"text\":\"Option C - Manual Config\",\"timestamp\":1706000108}\n{\"type\":\"click\",\"choice\":\"b\",\"text\":\"Option B - Hybrid Approach\",\"timestamp\":1706000115}\n```"
+    },
+    {
+      "en-US": "- Append-only within a screen. Each user event is appended as a new line.\n- The file is cleared (deleted) when chokidar detects a new HTML file (new screen pushed), preventing stale events from carrying over.\n- If the file doesn't exist when Claude reads it, no browser interaction occurred — Claude uses only the terminal text.\n- The file contains only user events (`click`, etc.) — not server lifecycle events (`server-started`, `screen-added`). This keeps it small and focused.\n- Claude can read the full stream to understand the user's exploration pattern, or just look at the last `choice` event for the final selection.",
+      "zh-Hans": "* 在单个屏幕内是追加写入。每个用户事件都作为新行追加。\n* 当 chokidar 检测到新的 HTML 文件（推送新屏幕）时，文件会被清除（删除），防止陈旧的事件延续。\n* 如果 Claude 读取时文件不存在，则表示没有发生浏览器交互 —— Claude 仅使用终端文本。\n* 该文件仅包含用户事件（`click` 等）—— 不包含服务器生命周期事件（`server-started`、`screen-added`）。这使其保持小巧且专注。\n* Claude 可以读取完整流来理解用户的探索模式，或者仅查看最后的 `choice` 事件以获取最终选择。"
+    },
+    {
+      "en-US": "## Changes by File",
+      "zh-Hans": "## 按文件划分的变更"
+    },
+    {
+      "en-US": "### `index.js` (server)",
+      "zh-Hans": "### `index.js`（服务器）"
+    },
+    {
+      "en-US": "**A. Write user events to `.events` file.**",
+      "zh-Hans": "**A. 将用户事件写入 `.events` 文件。**"
+    },
+    {
+      "en-US": "In the WebSocket `message` handler, after logging the event to stdout: append the event as a JSON line to `$SCREEN_DIR/.events` via `fs.appendFileSync`. Only write user interaction events (those with `source: 'user-event'`), not server lifecycle events.",
+      "zh-Hans": "在 WebSocket `message` 处理程序中，将事件记录到标准输出后：通过 `fs.appendFileSync` 将事件作为 JSON 行追加到 `$SCREEN_DIR/.events`。仅写入用户交互事件（那些带有 `source: 'user-event'` 的），不写入服务器生命周期事件。"
+    },
+    {
+      "en-US": "**B. Clear `.events` on new screen.**",
+      "zh-Hans": "**B. 在新屏幕时清除 `.events`。**"
+    },
+    {
+      "en-US": "In the chokidar `add` handler (new `.html` file detected), delete `$SCREEN_DIR/.events` if it exists. This is the definitive \"new screen\" signal — better than clearing on GET `/` which fires on every reload.",
+      "zh-Hans": "在 chokidar `add` 处理程序（检测到新的 `.html` 文件）中，如果 `$SCREEN_DIR/.events` 存在则删除它。这是明确的“新屏幕”信号 —— 比在每次重新加载都会触发的 GET `/` 时清除更好。"
+    },
+    {
+      "en-US": "**C. Replace `wrapInFrame` content injection.**",
+      "zh-Hans": "**C. 替换 `wrapInFrame` 内容注入。**"
+    },
+    {
+      "en-US": "The current regex anchors on `<div class=\"feedback-footer\">`, which is being removed. Replace with a comment placeholder: remove the existing default content inside `#claude-content` (the `<h2>Visual Brainstorming</h2>` and subtitle paragraph) and replace with a single `<!-- CONTENT -->` marker. Content injection becomes `frameTemplate.replace('<!-- CONTENT -->', content)`. Simpler and won't break if template formatting changes.",
+      "zh-Hans": "当前的正则表达式锚定在 `<div class=\"feedback-footer\">`，而该内容正在被移除。替换为注释占位符：移除 `#claude-content` 内现有的默认内容（`<h2>Visual Brainstorming</h2>` 和副标题段落），并替换为单个 `<!-- CONTENT -->` 标记。内容注入变为 `frameTemplate.replace('<!-- CONTENT -->', content)`。更简单，并且如果模板格式更改也不会中断。"
+    },
+    {
+      "en-US": "### `frame-template.html` (UI frame)",
+      "zh-Hans": "### `frame-template.html`（UI 框架）"
+    },
+    {
+      "en-US": "**Remove:**",
+      "zh-Hans": "**移除：**"
+    },
+    {
+      "en-US": "- The `feedback-footer` div (textarea, Send button, label, `.feedback-row`)\n- Associated CSS (`.feedback-footer`, `.feedback-footer label`, `.feedback-row`, textarea and button styles within it)",
+      "zh-Hans": "* `feedback-footer` div（文本区域、发送按钮、标签、`.feedback-row`）\n* 相关的 CSS（`.feedback-footer`、`.feedback-footer label`、`.feedback-row`、其中的文本区域和按钮样式）"
+    },
+    {
+      "en-US": "**Add:**",
+      "zh-Hans": "**添加：**"
+    },
+    {
+      "en-US": "- `<!-- CONTENT -->` placeholder inside `#claude-content`, replacing the default text\n- A selection indicator bar where the footer was, with two states:\n  - Default: \"Click an option above, then return to the terminal\"\n  - After selection: \"Option B selected — return to terminal to continue\"\n- CSS for the indicator bar (subtle, similar visual weight to the existing header)",
+      "zh-Hans": "* `<!-- CONTENT -->` 占位符在 `#claude-content` 内，替换默认文本\n* 一个选择指示条，位于原来页脚的位置，有两种状态：\n  * 默认：“点击上方选项，然后返回终端”\n  * 选择后：“已选择选项 B —— 返回终端以继续”\n* 指示条的 CSS（微妙，视觉重量与现有页眉相似）"
+    },
+    {
+      "en-US": "**Keep unchanged:**",
+      "zh-Hans": "**保持不变：**"
+    },
+    {
+      "en-US": "- Header bar with \"Brainstorm Companion\" title and connection status\n- `.main` wrapper and `#claude-content` container\n- All component CSS (`.options`, `.cards`, `.mockup`, `.split`, `.pros-cons`, placeholders, mock elements)\n- Dark/light theme variables and media query",
+      "zh-Hans": "* 带有“Brainstorm Companion”标题和连接状态的页眉栏\n* `.main` 包装器和 `#claude-content` 容器\n* 所有组件 CSS（`.options`、`.cards`、`.mockup`、`.split`、`.pros-cons`、占位符、模拟元素）\n* 深色/浅色主题变量和媒体查询"
+    },
+    {
+      "en-US": "### `helper.js` (client-side script)",
+      "zh-Hans": "### `helper.js`（客户端脚本）"
+    },
+    {
+      "en-US": "**Remove:**",
+      "zh-Hans": "**移除：**"
+    },
+    {
+      "en-US": "- `sendToClaude()` function and the \"Sent to Claude\" page takeover\n- `window.send()` function (was tied to the removed Send button)\n- Form submission handler — no purpose without the feedback textarea, adds log noise\n- Input change handler — same reason\n- `pageshow` event listener (was added to fix textarea persistence — no textarea anymore)",
+      "zh-Hans": "* `sendToClaude()` 函数和“已发送给 Claude”页面接管\n* `window.send()` 函数（与已移除的发送按钮关联）\n* 表单提交处理程序 —— 没有反馈文本区域后无意义，增加日志噪音\n* 输入变更处理程序 —— 原因同上\n* `pageshow` 事件监听器（原为修复文本区域持久性而添加 —— 现在没有文本区域了）"
+    },
+    {
+      "en-US": "**Keep:**",
+      "zh-Hans": "**保留：**"
+    },
+    {
+      "en-US": "- WebSocket connection, reconnect logic, event queue\n- Reload handler (`window.location.reload()` on server push)\n- `window.toggleSelect()` for selection highlighting\n- `window.selectedChoice` tracking\n- `window.brainstorm.send()` and `window.brainstorm.choice()` — these are distinct from the removed `window.send()`. They call `sendEvent` which logs to the server via WebSocket. Useful for custom full-document pages.",
+      "zh-Hans": "* WebSocket 连接、重新连接逻辑、事件队列\n* 重新加载处理程序（服务器推送时的 `window.location.reload()`）\n* 用于选择高亮的 `window.toggleSelect()`\n* `window.selectedChoice` 跟踪\n* `window.brainstorm.send()` 和 `window.brainstorm.choice()` —— 这些与已移除的 `window.send()` 不同。它们调用 `sendEvent`，后者通过 WebSocket 记录到服务器。对自定义完整文档页面很有用。"
+    },
+    {
+      "en-US": "**Narrow:**",
+      "zh-Hans": "**收窄范围：**"
+    },
+    {
+      "en-US": "- Click handler: capture only `[data-choice]` clicks, not all buttons/links. The broad capture was needed when the browser was a feedback channel; now it's just for selection tracking.",
+      "zh-Hans": "* 点击处理程序：仅捕获 `[data-choice]` 点击，而非所有按钮/链接。当浏览器是反馈通道时需要广泛捕获；现在仅用于选择跟踪。"
+    },
+    {
+      "en-US": "**Add:**",
+      "zh-Hans": "**添加：**"
+    },
+    {
+      "en-US": "- On `data-choice` click, update the selection indicator bar text to show which option was selected.",
+      "zh-Hans": "* 在 `data-choice` 点击时，更新选择指示条文本以显示选择了哪个选项。"
+    },
+    {
+      "en-US": "**Remove from `window.brainstorm` API:**",
+      "zh-Hans": "**从 `window.brainstorm` API 中移除：**"
+    },
+    {
+      "en-US": "- `brainstorm.sendToClaude` — no longer exists",
+      "zh-Hans": "* `brainstorm.sendToClaude` —— 不再存在"
+    },
+    {
+      "en-US": "### `visual-companion.md` (skill instructions)",
+      "zh-Hans": "### `visual-companion.md`（技能说明）"
+    },
+    {
+      "en-US": "**Rewrite \"The Loop\" section** to the non-blocking flow described above. Remove all references to:",
+      "zh-Hans": "**重写“循环流程”部分**为上述非阻塞流程。移除所有对以下内容的引用："
+    },
+    {
+      "en-US": "- `wait-for-feedback.sh`\n- `TaskOutput` blocking\n- Timeout/retry logic (600s timeout, 30-minute cap)\n- \"User Feedback Format\" section describing `send-to-claude` JSON",
+      "zh-Hans": "* `wait-for-feedback.sh`\n* `TaskOutput` 阻塞\n* 超时/重试逻辑（600 秒超时，30 分钟上限）\n* 描述 `send-to-claude` JSON 的“用户反馈格式”部分"
+    },
+    {
+      "en-US": "**Replace with:**",
+      "zh-Hans": "**替换为：**"
+    },
+    {
+      "en-US": "- The new loop (write HTML → end turn → user responds in terminal → read `.events` → iterate)\n- `.events` file format documentation\n- Guidance that the terminal message is the primary feedback; `.events` provides the full browser interaction stream for additional context",
+      "zh-Hans": "* 新循环（写入 HTML → 结束轮次 → 用户在终端回应 → 读取 `.events` → 迭代）\n* `.events` 文件格式文档\n* 指导说明：终端消息是主要反馈；`.events` 提供完整的浏览器交互流以获取额外上下文"
+    },
+    {
+      "en-US": "**Keep:**",
+      "zh-Hans": "**保留：**"
+    },
+    {
+      "en-US": "- Server startup/shutdown instructions\n- Content fragment vs full document guidance\n- CSS class reference and available components\n- Design tips (scale fidelity to the question, 2-4 options per screen, etc.)",
+      "zh-Hans": "* 服务器启动/关闭说明\n* 内容片段与完整文档的指导\n* CSS 类参考和可用组件\n* 设计技巧（根据问题调整保真度、每屏幕 2-4 个选项等）"
+    },
+    {
+      "en-US": "### `wait-for-feedback.sh`",
+      "zh-Hans": "### `wait-for-feedback.sh`"
+    },
+    {
+      "en-US": "**Deleted entirely.**",
+      "zh-Hans": "**完全删除。**"
+    },
+    {
+      "en-US": "### `tests/brainstorm-server/server.test.js`",
+      "zh-Hans": "### `tests/brainstorm-server/server.test.js`"
+    },
+    {
+      "en-US": "Tests that need updating:",
+      "zh-Hans": "需要更新的测试："
+    },
+    {
+      "en-US": "- Test asserting `feedback-footer` presence in fragment responses — update to assert the selection indicator bar or `<!-- CONTENT -->` replacement\n- Test asserting `helper.js` contains `send` — update to reflect narrowed API\n- Test asserting `sendToClaude` CSS variable usage — remove (function no longer exists)",
+      "zh-Hans": "* 断言片段响应中存在 `feedback-footer` 的测试 —— 更新为断言选择指示条或 `<!-- CONTENT -->` 替换\n* 断言 `helper.js` 包含 `send` 的测试 —— 更新以反映收窄的 API\n* 断言 `sendToClaude` CSS 变量用法的测试 —— 移除（函数不再存在）"
+    },
+    {
+      "en-US": "## Platform Compatibility",
+      "zh-Hans": "## 平台兼容性"
+    },
+    {
+      "en-US": "The server code (`index.js`, `helper.js`, `frame-template.html`) is fully platform-agnostic — pure Node.js and browser JavaScript. No Claude Code-specific references. Already proven to work on Codex via background terminal interaction.",
+      "zh-Hans": "服务器代码（`index.js`、`helper.js`、`frame-template.html`）完全与平台无关 —— 纯 Node.js 和浏览器 JavaScript。没有 Claude Code 特定引用。已通过后台终端交互在 Codex 上验证可行。"
+    },
+    {
+      "en-US": "The skill instructions (`visual-companion.md`) are the platform-adaptive layer. Each platform's Claude uses its own tools to start the server, read `.events`, etc. The non-blocking model works naturally across platforms since it doesn't depend on any platform-specific blocking primitive.",
+      "zh-Hans": "技能说明（`visual-companion.md`）是平台适配层。每个平台的 Claude 使用其自己的工具来启动服务器、读取 `.events` 等。非阻塞模型自然适用于所有平台，因为它不依赖任何平台特定的阻塞原语。"
+    },
+    {
+      "en-US": "## What This Enables",
+      "zh-Hans": "## 此项重构带来的能力"
+    },
+    {
+      "en-US": "- **TUI always responsive** during visual brainstorming\n- **Mixed input** — click in browser + type in terminal, naturally merged\n- **Graceful degradation** — browser down or user doesn't open it? Terminal still works\n- **Simpler architecture** — no background tasks, no polling scripts, no timeout management\n- **Cross-platform** — same server code works on Claude Code, Codex, and any future platform",
+      "zh-Hans": "* **TUI 在可视化头脑风暴期间始终保持响应**\n* **混合输入** —— 在浏览器中点击 + 在终端中键入，自然地合并\n* **优雅降级** —— 浏览器关闭或用户未打开？终端仍然可用\n* **更简单的架构** —— 无后台任务、无轮询脚本、无超时管理\n* **跨平台** —— 相同的服务器代码适用于 Claude Code、Codex 及任何未来平台"
+    },
+    {
+      "en-US": "## What This Drops",
+      "zh-Hans": "## 此项重构舍弃的内容"
+    },
+    {
+      "en-US": "- **Pure-browser feedback workflow** — user must return to the terminal to continue. The selection indicator bar guides them, but it's one extra step compared to the old click-Send-and-wait flow.\n- **Inline text feedback from browser** — the textarea is gone. All text feedback goes through the terminal. This is intentional — the terminal is a better text input channel than a small textarea in a frame.\n- **Immediate response on browser Send** — the old system had Claude respond the moment the user clicked Send. Now there's a gap while the user switches to the terminal. In practice this is seconds, and the user gets to add context in their terminal message.",
+      "zh-Hans": "* **纯浏览器反馈工作流** —— 用户必须返回终端才能继续。选择指示条会引导他们，但与旧的点击-发送-等待流程相比，这多了一个步骤。\n* **来自浏览器的内联文本反馈** —— 文本区域已移除。所有文本反馈都通过终端进行。这是有意为之 —— 终端是比框架中的小文本区域更好的文本输入通道。\n* **浏览器发送后的即时响应** —— 旧系统在用户点击发送时 Claude 会立即响应。现在用户切换到终端时存在间隙。实际上这只有几秒钟，并且用户可以在其终端消息中添加上下文。"
+    }
+  ]
+}

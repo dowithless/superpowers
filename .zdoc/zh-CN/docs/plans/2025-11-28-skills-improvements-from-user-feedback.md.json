@@ -1,0 +1,718 @@
+{
+  "sourceFile": "docs/plans/2025-11-28-skills-improvements-from-user-feedback.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Skills Improvements from User Feedback",
+      "zh-Hans": "# 基于用户反馈的技能改进"
+    },
+    {
+      "en-US": "**Date:** 2025-11-28\n**Status:** Draft\n**Source:** Two Claude instances using superpowers in real development scenarios",
+      "zh-Hans": "**日期：** 2025-11-28\n**状态：** 草案\n**来源：** 两个 Claude 实例在实际开发场景中使用 superpowers"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Executive Summary",
+      "zh-Hans": "## 执行摘要"
+    },
+    {
+      "en-US": "Two Claude instances provided detailed feedback from actual development sessions. Their feedback reveals **systematic gaps** in current skills that allowed preventable bugs to ship despite following the skills.",
+      "zh-Hans": "两个 Claude 实例提供了来自实际开发会话的详细反馈。他们的反馈揭示了当前技能中存在的**系统性缺陷**，这些缺陷导致可预防的 bug 在遵循技能的情况下仍然被发布。"
+    },
+    {
+      "en-US": "**Critical insight:** These are problem reports, not just solution proposals. The problems are real; the solutions need careful evaluation.",
+      "zh-Hans": "**关键洞察：** 这些都是问题报告，而不仅仅是解决方案提议。问题是真实存在的；解决方案需要仔细评估。"
+    },
+    {
+      "en-US": "**Key themes:**",
+      "zh-Hans": "**关键主题：**"
+    },
+    {
+      "en-US": "1. **Verification gaps** - We verify operations succeed but not that they achieve intended outcomes\n2. **Process hygiene** - Background processes accumulate and interfere across subagents\n3. **Context optimization** - Subagents get too much irrelevant information\n4. **Self-reflection missing** - No prompt to critique own work before handoff\n5. **Mock safety** - Mocks can drift from interfaces without detection\n6. **Skill activation** - Skills exist but aren't being read/used",
+      "zh-Hans": "1. **验证缺口** - 我们验证操作成功，但不验证它们是否达到了预期结果\n2. **流程卫生** - 后台进程累积并在子代理之间产生干扰\n3. **上下文优化** - 子代理获取了太多无关信息\n4. **缺少自我反思** - 在移交前没有提示来批判自己的工作\n5. **模拟安全** - 模拟可能偏离接口而无法被检测到\n6. **技能激活** - 技能存在但未被阅读/使用"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Problems Identified",
+      "zh-Hans": "## 已识别的问题"
+    },
+    {
+      "en-US": "### Problem 1: Configuration Change Verification Gap",
+      "zh-Hans": "### 问题 1：配置变更验证缺口"
+    },
+    {
+      "en-US": "**What happened:**",
+      "zh-Hans": "**发生了什么：**"
+    },
+    {
+      "en-US": "- Subagent tested \"OpenAI integration\"\n- Set `OPENAI_API_KEY` env var\n- Got status 200 responses\n- Reported \"OpenAI integration working\"\n- **BUT** response contained `\"model\": \"claude-sonnet-4-20250514\"` - was actually using Anthropic",
+      "zh-Hans": "* 子代理测试了“OpenAI 集成”\n* 设置了 `OPENAI_API_KEY` 环境变量\n* 收到了状态 200 的响应\n* 报告“OpenAI 集成工作正常”\n* **但是** 响应包含 `\"model\": \"claude-sonnet-4-20250514\"` - 实际上使用的是 Anthropic"
+    },
+    {
+      "en-US": "**Root cause:**\n`verification-before-completion` checks operations succeed but not that outcomes reflect intended configuration changes.",
+      "zh-Hans": "**根本原因：**\n`verification-before-completion` 检查操作是否成功，但不检查结果是否反映了预期的配置变更。"
+    },
+    {
+      "en-US": "**Impact:** High - False confidence in integration tests, bugs ship to production",
+      "zh-Hans": "**影响：** 高 - 对集成测试产生虚假信心，bug 发布到生产环境"
+    },
+    {
+      "en-US": "**Example failure pattern:**",
+      "zh-Hans": "**示例失败模式：**"
+    },
+    {
+      "en-US": "- Switch LLM provider → verify status 200 but don't check model name\n- Enable feature flag → verify no errors but don't check feature is active\n- Change environment → verify deployment succeeds but don't check environment vars",
+      "zh-Hans": "* 切换 LLM 提供商 → 验证状态 200 但不检查模型名称\n* 启用功能标志 → 验证无错误但不检查功能是否激活\n* 更改环境 → 验证部署成功但不检查环境变量"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Problem 2: Background Process Accumulation",
+      "zh-Hans": "### 问题 2：后台进程累积"
+    },
+    {
+      "en-US": "**What happened:**",
+      "zh-Hans": "**发生了什么：**"
+    },
+    {
+      "en-US": "- Multiple subagents dispatched during session\n- Each started background server processes\n- Processes accumulated (4+ servers running)\n- Stale processes still bound to ports\n- Later E2E test hit stale server with wrong config\n- Confusing/incorrect test results",
+      "zh-Hans": "* 会话期间分派了多个子代理\n* 每个子代理都启动了后台服务器进程\n* 进程累积（4 个以上服务器在运行）\n* 过时的进程仍然绑定到端口\n* 后来的端到端测试命中了配置错误的陈旧服务器\n* 导致混淆/不正确的测试结果"
+    },
+    {
+      "en-US": "**Root cause:**\nSubagents are stateless - don't know about previous subagents' processes. No cleanup protocol.",
+      "zh-Hans": "**根本原因：**\n子代理是无状态的 - 不知道先前子代理的进程。没有清理协议。"
+    },
+    {
+      "en-US": "**Impact:** Medium-High - Tests hit wrong server, false passes/failures, debugging confusion",
+      "zh-Hans": "**影响：** 中-高 - 测试命中错误的服务器，虚假通过/失败，调试混淆"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Problem 3: Context Bloat in Subagent Prompts",
+      "zh-Hans": "### 问题 3：子代理提示中的上下文膨胀"
+    },
+    {
+      "en-US": "**What happened:**",
+      "zh-Hans": "**发生了什么：**"
+    },
+    {
+      "en-US": "- Standard approach: give subagent full plan file to read\n- Experiment: give only task + pattern + file + verify command\n- Result: Faster, more focused, single-attempt completion more common",
+      "zh-Hans": "* 标准方法：给子代理完整的计划文件阅读\n* 实验：只给任务 + 模式 + 文件 + 验证命令\n* 结果：更快、更专注、单次尝试完成更常见"
+    },
+    {
+      "en-US": "**Root cause:**\nSubagents waste tokens and attention on irrelevant plan sections.",
+      "zh-Hans": "**根本原因：**\n子代理在无关的计划部分浪费了令牌和注意力。"
+    },
+    {
+      "en-US": "**Impact:** Medium - Slower execution, more failed attempts",
+      "zh-Hans": "**影响：** 中 - 执行速度慢，更多失败尝试"
+    },
+    {
+      "en-US": "**What worked:**",
+      "zh-Hans": "**有效的方法：**"
+    },
+    {
+      "en-US": "```\nYou are adding a single E2E test to packnplay's test suite.\n\n**Your task:** Add `TestE2E_FeaturePrivilegedMode` to `pkg/runner/e2e_test.go`\n\n**What to test:** A local devcontainer feature that requests `\"privileged\": true`\nin its metadata should result in the container running with `--privileged` flag.\n\n**Follow the exact pattern of TestE2E_FeatureOptionValidation** (at the end of the file)\n\n**After writing, run:** `go test -v ./pkg/runner -run TestE2E_FeaturePrivilegedMode -timeout 5m`\n```",
+      "zh-Hans": "```\nYou are adding a single E2E test to packnplay's test suite.\n\n**Your task:** Add `TestE2E_FeaturePrivilegedMode` to `pkg/runner/e2e_test.go`\n\n**What to test:** A local devcontainer feature that requests `\"privileged\": true`\nin its metadata should result in the container running with `--privileged` flag.\n\n**Follow the exact pattern of TestE2E_FeatureOptionValidation** (at the end of the file)\n\n**After writing, run:** `go test -v ./pkg/runner -run TestE2E_FeaturePrivilegedMode -timeout 5m`\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Problem 4: No Self-Reflection Before Handoff",
+      "zh-Hans": "### 问题 4：移交前无自我反思"
+    },
+    {
+      "en-US": "**What happened:**",
+      "zh-Hans": "**发生了什么：**"
+    },
+    {
+      "en-US": "- Added self-reflection prompt: \"Look at your work with fresh eyes - what could be better?\"\n- Implementer for Task 5 identified failing test was due to implementation bug, not test bug\n- Traced to line 99: `strings.Join(metadata.Entrypoint, \" \")` creating invalid Docker syntax\n- Without self-reflection, would have just reported \"test fails\" without root cause",
+      "zh-Hans": "* 添加了自我反思提示：“用新的眼光审视你的工作 - 哪些地方可以做得更好？”\n* 任务 5 的实施者识别出测试失败是由于实现 bug，而不是测试 bug\n* 追溯到第 99 行：`strings.Join(metadata.Entrypoint, \" \")` 创建了无效的 Docker 语法\n* 如果没有自我反思，只会报告“测试失败”而不说明根本原因"
+    },
+    {
+      "en-US": "**Root cause:**\nImplementers don't naturally step back and critique their own work before reporting completion.",
+      "zh-Hans": "**根本原因：**\n实施者在报告完成前，不会自然地退一步批判自己的工作。"
+    },
+    {
+      "en-US": "**Impact:** Medium - Bugs handed off to reviewer that implementer could have caught",
+      "zh-Hans": "**影响：** 中 - 实施者本可以发现的 bug 被移交给审查者"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Problem 5: Mock-Interface Drift",
+      "zh-Hans": "### 问题 5：模拟-接口漂移"
+    },
+    {
+      "en-US": "**What happened:**",
+      "zh-Hans": "**发生了什么：**"
+    },
+    {
+      "en-US": "```typescript\n// Interface defines close()\ninterface PlatformAdapter {\n  close(): Promise<void>;\n}\n\n// Code (BUGGY) calls cleanup()\nawait adapter.cleanup();\n\n// Mock (MATCHES BUG) defines cleanup()\nvi.mock('web-adapter', () => ({\n  WebAdapter: vi.fn().mockImplementation(() => ({\n    cleanup: vi.fn().mockResolvedValue(undefined),  // Wrong!\n  })),\n}));\n```",
+      "zh-Hans": "```typescript\n// Interface defines close()\ninterface PlatformAdapter {\n  close(): Promise<void>;\n}\n\n// Code (BUGGY) calls cleanup()\nawait adapter.cleanup();\n\n// Mock (MATCHES BUG) defines cleanup()\nvi.mock('web-adapter', () => ({\n  WebAdapter: vi.fn().mockImplementation(() => ({\n    cleanup: vi.fn().mockResolvedValue(undefined),  // Wrong!\n  })),\n}));\n```"
+    },
+    {
+      "en-US": "- Tests passed\n- Runtime crashed: \"adapter.cleanup is not a function\"",
+      "zh-Hans": "* 测试通过\n* 运行时崩溃：“adapter.cleanup is not a function”"
+    },
+    {
+      "en-US": "**Root cause:**\nMock derived from what buggy code calls, not from interface definition. TypeScript can't catch inline mocks with wrong method names.",
+      "zh-Hans": "**根本原因：**\n模拟源自错误代码调用的内容，而非接口定义。TypeScript 无法捕获方法名错误的行内模拟。"
+    },
+    {
+      "en-US": "**Impact:** High - Tests give false confidence, runtime crashes",
+      "zh-Hans": "**影响：** 高 - 测试给出虚假信心，运行时崩溃"
+    },
+    {
+      "en-US": "**Why testing-anti-patterns didn't prevent this:**\nThe skill covers testing mock behavior and mocking without understanding, but not the specific pattern of \"derive mock from interface, not implementation.\"",
+      "zh-Hans": "**为什么测试反模式没有防止这种情况：**\n该技能涵盖了测试模拟行为和在不理解的情况下进行模拟，但没有涵盖“从接口而非实现派生模拟”的具体模式。"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Problem 6: Code Reviewer File Access",
+      "zh-Hans": "### 问题 6：代码审查者文件访问"
+    },
+    {
+      "en-US": "**What happened:**",
+      "zh-Hans": "**发生了什么：**"
+    },
+    {
+      "en-US": "- Code reviewer subagent dispatched\n- Couldn't find test file: \"The file doesn't appear to exist in the repository\"\n- File actually exists\n- Reviewer didn't know to explicitly read it first",
+      "zh-Hans": "* 分派了代码审查子代理\n* 找不到测试文件：“该文件似乎不存在于仓库中”\n* 文件实际存在\n* 审查者不知道需要先显式读取它"
+    },
+    {
+      "en-US": "**Root cause:**\nReviewer prompts don't include explicit file reading instructions.",
+      "zh-Hans": "**根本原因：**\n审查者提示不包括显式的文件读取指令。"
+    },
+    {
+      "en-US": "**Impact:** Low-Medium - Reviews fail or incomplete",
+      "zh-Hans": "**影响：** 低-中 - 审查失败或不完整"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Problem 7: Fix Workflow Latency",
+      "zh-Hans": "### 问题 7：修复工作流延迟"
+    },
+    {
+      "en-US": "**What happened:**",
+      "zh-Hans": "**发生了什么：**"
+    },
+    {
+      "en-US": "- Implementer identifies bug during self-reflection\n- Implementer knows the fix\n- Current workflow: report → I dispatch fixer → fixer fixes → I verify\n- Extra round-trip adds latency without adding value",
+      "zh-Hans": "* 实施者在自我反思期间识别出 bug\n* 实施者知道如何修复\n* 当前工作流：报告 → 我分派修复者 → 修复者修复 → 我验证\n* 额外的往返增加了延迟，但没有增加价值"
+    },
+    {
+      "en-US": "**Root cause:**\nRigid separation between implementer and fixer roles when implementer has already diagnosed.",
+      "zh-Hans": "**根本原因：**\n当实施者已经诊断出问题时，实施者和修复者角色之间仍存在严格的分离。"
+    },
+    {
+      "en-US": "**Impact:** Low - Latency, but no correctness issue",
+      "zh-Hans": "**影响：** 低 - 延迟，但无正确性问题"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Problem 8: Skills Not Being Read",
+      "zh-Hans": "### 问题 8：技能未被阅读"
+    },
+    {
+      "en-US": "**What happened:**",
+      "zh-Hans": "**发生了什么：**"
+    },
+    {
+      "en-US": "- `testing-anti-patterns` skill exists\n- Neither human nor subagents read it before writing tests\n- Would have prevented some issues (though not all - see Problem 5)",
+      "zh-Hans": "* `testing-anti-patterns` 技能存在\n* 无论是人类还是子代理在编写测试前都没有阅读它\n* 本可以防止一些问题（虽然不是全部 - 参见问题 5）"
+    },
+    {
+      "en-US": "**Root cause:**\nNo enforcement that subagents read relevant skills. No prompt includes skill reading.",
+      "zh-Hans": "**根本原因：**\n没有强制要求子代理阅读相关技能。没有提示包含技能阅读。"
+    },
+    {
+      "en-US": "**Impact:** Medium - Skill investment wasted if not used",
+      "zh-Hans": "**影响：** 中 - 如果不使用，技能投资就被浪费了"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Proposed Improvements",
+      "zh-Hans": "## 提议的改进"
+    },
+    {
+      "en-US": "### 1. verification-before-completion: Add Configuration Change Verification",
+      "zh-Hans": "### 1. verification-before-completion: 添加配置变更验证"
+    },
+    {
+      "en-US": "**Add new section:**",
+      "zh-Hans": "**添加新部分：**"
+    },
+    {
+      "en-US": "```markdown\n## Verifying Configuration Changes\n\nWhen testing changes to configuration, providers, feature flags, or environment:\n\n**Don't just verify the operation succeeded. Verify the output reflects the intended change.**\n\n### Common Failure Pattern\n\nOperation succeeds because *some* valid config exists, but it's not the config you intended to test.\n\n### Examples\n\n| Change | Insufficient | Required |\n|--------|-------------|----------|\n| Switch LLM provider | Status 200 | Response contains expected model name |\n| Enable feature flag | No errors | Feature behavior actually active |\n| Change environment | Deploy succeeds | Logs/vars reference new environment |\n| Set credentials | Auth succeeds | Authenticated user/context is correct |\n\n### Gate Function\n\n```",
+      "zh-Hans": "```markdown\n## 验证配置变更\n\n测试配置、提供商、功能开关或环境变更时：\n\n**不要仅验证操作成功。要验证输出反映了预期的变更。**\n\n### 常见失败模式\n\n操作成功是因为存在*某些*有效配置，但并非你打算测试的配置。\n\n### 示例\n\n| 变更 | 不充分的验证 | 必需的验证 |\n|--------|-------------|----------|\n| 切换LLM提供商 | 状态码200 | 响应包含预期的模型名称 |\n| 启用功能开关 | 无错误 | 功能行为实际已激活 |\n| 更改环境 | 部署成功 | 日志/变量引用新环境 |\n| 设置凭据 | 身份验证成功 | 已验证的用户/上下文正确 |\n\n### 门控函数\n```"
+    },
+    {
+      "en-US": "BEFORE claiming configuration change works:",
+      "zh-Hans": "在声称配置变更有效之前："
+    },
+    {
+      "en-US": "1. IDENTIFY: What should be DIFFERENT after this change?\n2. LOCATE: Where is that difference observable?\n   - Response field (model name, user ID)\n   - Log line (environment, provider)\n   - Behavior (feature active/inactive)\n3. RUN: Command that shows the observable difference\n4. VERIFY: Output contains expected difference\n5. ONLY THEN: Claim configuration change works",
+      "zh-Hans": "1. 识别：此变更后，什么应该**不同**？\n2. 定位：这种差异在哪里可以观察到？\n   * 响应字段（模型名称，用户 ID）\n   * 日志行（环境，提供商）\n   * 行为（功能激活/未激活）\n3. 运行：显示可观察差异的命令\n4. 验证：输出包含预期的差异\n5. 只有**在那之后**：声称配置变更有效"
+    },
+    {
+      "en-US": "Red flags:",
+      "zh-Hans": "危险信号："
+    },
+    {
+      "en-US": "- \"Request succeeded\" without checking content\n  - Checking status code but not response body\n  - Verifying no errors but not positive confirmation",
+      "zh-Hans": "* “请求成功”但不检查内容\n  * 检查状态码但不检查响应体\n  * 验证无错误但不进行积极确认"
+    },
+    {
+      "en-US": "```\n\n**Why this works:**\nForces verification of INTENT, not just operation success.\n\n---\n\n### 2. subagent-driven-development: Add Process Hygiene for E2E Tests\n\n**Add new section:**\n\n```markdown\n## Process Hygiene for E2E Tests\n\nWhen dispatching subagents that start services (servers, databases, message queues):\n\n### Problem\n\nSubagents are stateless - they don't know about processes started by previous subagents. Background processes persist and can interfere with later tests.\n\n### Solution\n\n**Before dispatching E2E test subagent, include cleanup in prompt:**\n\n```",
+      "zh-Hans": "````\n\n**Why this works:**\nForces verification of INTENT, not just operation success.\n\n---\n\n### 2. subagent-driven-development: Add Process Hygiene for E2E Tests\n\n**Add new section:**\n\n```markdown\n## Process Hygiene for E2E Tests\n\nWhen dispatching subagents that start services (servers, databases, message queues):\n\n### Problem\n\nSubagents are stateless - they don't know about processes started by previous subagents. Background processes persist and can interfere with later tests.\n\n### Solution\n\n**Before dispatching E2E test subagent, include cleanup in prompt:**\n\n````"
+    },
+    {
+      "en-US": "BEFORE starting any services:",
+      "zh-Hans": "在启动任何服务之前："
+    },
+    {
+      "en-US": "1. Kill existing processes: pkill -f \"<service-pattern>\" 2>/dev/null || true\n2. Wait for cleanup: sleep 1\n3. Verify port free: lsof -i :<port> && echo \"ERROR: Port still in use\" || echo \"Port free\"",
+      "zh-Hans": "1. 终止现有进程：pkill -f \"<service-pattern>\" 2>/dev/null || true\n2. 等待清理：sleep 1\n3. 验证端口空闲：lsof -i :<port> && echo \"ERROR: Port still in use\" || echo \"Port free\""
+    },
+    {
+      "en-US": "AFTER tests complete:",
+      "zh-Hans": "测试完成后："
+    },
+    {
+      "en-US": "1. Kill the process you started\n2. Verify cleanup: pgrep -f \"<service-pattern>\" || echo \"Cleanup successful\"",
+      "zh-Hans": "1. 终止你启动的进程\n2. 验证清理：pgrep -f \"<service-pattern>\" || echo \"Cleanup successful\""
+    },
+    {
+      "en-US": "```\n\n### Example\n\n```",
+      "zh-Hans": "```\n\n### Example\n\n```"
+    },
+    {
+      "en-US": "Task: Run E2E test of API server",
+      "zh-Hans": "任务：运行 API 服务器的端到端测试"
+    },
+    {
+      "en-US": "Prompt includes:\n\"Before starting the server:",
+      "zh-Hans": "提示包括：\n“在启动服务器之前："
+    },
+    {
+      "en-US": "- Kill any existing servers: pkill -f 'node.*server.js' 2>/dev/null || true\n- Verify port 3001 is free: lsof -i :3001 && exit 1 || echo 'Port available'",
+      "zh-Hans": "* 终止任何现有服务器：pkill -f 'node.\\*server.js' 2>/dev/null || true\n* 验证端口 3001 空闲：lsof -i :3001 && exit 1 || echo 'Port available'"
+    },
+    {
+      "en-US": "After tests:",
+      "zh-Hans": "测试之后："
+    },
+    {
+      "en-US": "- Kill the server you started\n- Verify: pgrep -f 'node.*server.js' || echo 'Cleanup verified'\"",
+      "zh-Hans": "* 终止你启动的服务器\n* 验证：pgrep -f 'node.\\*server.js' || echo 'Cleanup verified'”"
+    },
+    {
+      "en-US": "```\n\n### Why This Matters\n\n- Stale processes serve requests with wrong config\n- Port conflicts cause silent failures\n- Process accumulation slows system\n- Confusing test results (hitting wrong server)\n```",
+      "zh-Hans": "```\n\n### Why This Matters\n\n- Stale processes serve requests with wrong config\n- Port conflicts cause silent failures\n- Process accumulation slows system\n- Confusing test results (hitting wrong server)\n```"
+    },
+    {
+      "en-US": "**Trade-off analysis:**",
+      "zh-Hans": "**权衡分析：**"
+    },
+    {
+      "en-US": "- Adds boilerplate to prompts\n- But prevents very confusing debugging\n- Worth it for E2E test subagents",
+      "zh-Hans": "* 给提示增加了样板代码\n* 但防止了非常令人困惑的调试\n* 对于端到端测试子代理来说是值得的"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### 3. subagent-driven-development: Add Lean Context Option",
+      "zh-Hans": "### 3. subagent-driven-development: 添加精简上下文选项"
+    },
+    {
+      "en-US": "**Modify Step 2: Execute Task with Subagent**",
+      "zh-Hans": "**修改步骤 2：使用子代理执行任务**"
+    },
+    {
+      "en-US": "**Before:**",
+      "zh-Hans": "**之前：**"
+    },
+    {
+      "en-US": "```\nRead that task carefully from [plan-file].\n```",
+      "zh-Hans": "```\nRead that task carefully from [plan-file].\n```"
+    },
+    {
+      "en-US": "**After:**",
+      "zh-Hans": "**之后：**"
+    },
+    {
+      "en-US": "```\n## Context Approaches\n\n**Full Plan (default):**\nUse when tasks are complex or have dependencies:\n```",
+      "zh-Hans": "```\n## Context Approaches\n\n**Full Plan (default):**\nUse when tasks are complex or have dependencies:\n```"
+    },
+    {
+      "en-US": "Read Task N from [plan-file] carefully.",
+      "zh-Hans": "仔细阅读 \\[plan-file] 中的任务 N。"
+    },
+    {
+      "en-US": "```\n\n**Lean Context (for independent tasks):**\nUse when task is standalone and pattern-based:\n```",
+      "zh-Hans": "```\n\n**Lean Context (for independent tasks):**\nUse when task is standalone and pattern-based:\n```"
+    },
+    {
+      "en-US": "You are implementing: [1-2 sentence task description]",
+      "zh-Hans": "你正在实现：\\[1-2 句任务描述]"
+    },
+    {
+      "en-US": "File to modify: [exact path]\nPattern to follow: [reference to existing function/test]\nWhat to implement: [specific requirement]\nVerification: [exact command to run]",
+      "zh-Hans": "要修改的文件：\\[确切路径]\n要遵循的模式：\\[对现有函数/测试的引用]\n要实现的内容：\\[具体要求]\n验证：\\[要运行的精确命令]"
+    },
+    {
+      "en-US": "[Do NOT include full plan file]",
+      "zh-Hans": "\\[请勿包含完整的计划文件]"
+    },
+    {
+      "en-US": "```\n\n**Use lean context when:**\n- Task follows existing pattern (add similar test, implement similar feature)\n- Task is self-contained (doesn't need context from other tasks)\n- Pattern reference is sufficient (e.g., \"follow TestE2E_FeatureOptionValidation\")\n\n**Use full plan when:**\n- Task has dependencies on other tasks\n- Requires understanding of overall architecture\n- Complex logic that needs context\n```",
+      "zh-Hans": "```\n\n**Use lean context when:**\n- Task follows existing pattern (add similar test, implement similar feature)\n- Task is self-contained (doesn't need context from other tasks)\n- Pattern reference is sufficient (e.g., \"follow TestE2E_FeatureOptionValidation\")\n\n**Use full plan when:**\n- Task has dependencies on other tasks\n- Requires understanding of overall architecture\n- Complex logic that needs context\n```"
+    },
+    {
+      "en-US": "**Example:**",
+      "zh-Hans": "**示例：**"
+    },
+    {
+      "en-US": "```\nLean context prompt:\n\n\"You are adding a test for privileged mode in devcontainer features.\n\nFile: pkg/runner/e2e_test.go\nPattern: Follow TestE2E_FeatureOptionValidation (at end of file)\nTest: Feature with `\"privileged\": true` in metadata results in `--privileged` flag\nVerify: go test -v ./pkg/runner -run TestE2E_FeaturePrivilegedMode -timeout 5m\n\nReport: Implementation, test results, any issues.\"\n```",
+      "zh-Hans": "```\nLean context prompt:\n\n\"You are adding a test for privileged mode in devcontainer features.\n\nFile: pkg/runner/e2e_test.go\nPattern: Follow TestE2E_FeatureOptionValidation (at end of file)\nTest: Feature with `\"privileged\": true` in metadata results in `--privileged` flag\nVerify: go test -v ./pkg/runner -run TestE2E_FeaturePrivilegedMode -timeout 5m\n\nReport: Implementation, test results, any issues.\"\n```"
+    },
+    {
+      "en-US": "**Why this works:**\nReduces token usage, increases focus, faster completion when appropriate.",
+      "zh-Hans": "**为什么这有效：**\n减少令牌使用，提高专注度，在适当时更快完成。"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### 4. subagent-driven-development: Add Self-Reflection Step",
+      "zh-Hans": "### 4. subagent-driven-development: 添加自我反思步骤"
+    },
+    {
+      "en-US": "**Modify Step 2: Execute Task with Subagent**",
+      "zh-Hans": "**修改步骤 2：使用子代理执行任务**"
+    },
+    {
+      "en-US": "**Add to prompt template:**",
+      "zh-Hans": "**添加到提示模板：**"
+    },
+    {
+      "en-US": "```\nWhen done, BEFORE reporting back:\n\nTake a step back and review your work with fresh eyes.\n\nAsk yourself:\n- Does this actually solve the task as specified?\n- Are there edge cases I didn't consider?\n- Did I follow the pattern correctly?\n- If tests are failing, what's the ROOT CAUSE (implementation bug vs test bug)?\n- What could be better about this implementation?\n\nIf you identify issues during this reflection, fix them now.\n\nThen report:\n- What you implemented\n- Self-reflection findings (if any)\n- Test results\n- Files changed\n```",
+      "zh-Hans": "```\nWhen done, BEFORE reporting back:\n\nTake a step back and review your work with fresh eyes.\n\nAsk yourself:\n- Does this actually solve the task as specified?\n- Are there edge cases I didn't consider?\n- Did I follow the pattern correctly?\n- If tests are failing, what's the ROOT CAUSE (implementation bug vs test bug)?\n- What could be better about this implementation?\n\nIf you identify issues during this reflection, fix them now.\n\nThen report:\n- What you implemented\n- Self-reflection findings (if any)\n- Test results\n- Files changed\n```"
+    },
+    {
+      "en-US": "**Why this works:**\nCatches bugs implementer can find themselves before handoff. Documented case: identified entrypoint bug through self-reflection.",
+      "zh-Hans": "**为什么这有效：**\n在移交前捕获实施者自己能发现的 bug。有记录的案例：通过自我反思识别了入口点 bug。"
+    },
+    {
+      "en-US": "**Trade-off:**\nAdds ~30 seconds per task, but catches issues before review.",
+      "zh-Hans": "**权衡：**\n每个任务增加约 30 秒，但在审查前捕获问题。"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### 5. requesting-code-review: Add Explicit File Reading",
+      "zh-Hans": "### 5. requesting-code-review: 添加显式文件读取"
+    },
+    {
+      "en-US": "**Modify the code-reviewer template:**",
+      "zh-Hans": "**修改代码审查者模板：**"
+    },
+    {
+      "en-US": "**Add at the beginning:**",
+      "zh-Hans": "**在开头添加：**"
+    },
+    {
+      "en-US": "```markdown\n## Files to Review\n\nBEFORE analyzing, read these files:\n\n1. [List specific files that changed in the diff]\n2. [Files referenced by changes but not modified]\n\nUse Read tool to load each file.\n\nIf you cannot find a file:\n- Check exact path from diff\n- Try alternate locations\n- Report: \"Cannot locate [path] - please verify file exists\"\n\nDO NOT proceed with review until you've read the actual code.\n```",
+      "zh-Hans": "```markdown\n## 待审阅文件\n\n开始分析前，请先阅读以下文件：\n\n1. [列出差异中涉及的具体文件]\n2. [被变更引用但未修改的文件]\n\n使用 Read 工具加载每个文件。\n\n如果找不到文件：\n- 检查差异中提供的准确路径\n- 尝试其他可能的位置\n- 报告：\"无法定位 [路径] - 请确认文件是否存在\"\n\n在未实际阅读代码前，请勿继续审阅。\n```"
+    },
+    {
+      "en-US": "**Why this works:**\nExplicit instruction prevents \"file not found\" issues.",
+      "zh-Hans": "**为什么这有效：**\n明确的指令防止“找不到文件”的问题。"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### 6. testing-anti-patterns: Add Mock-Interface Drift Anti-Pattern",
+      "zh-Hans": "### 6. testing-anti-patterns: 添加模拟-接口漂移反模式"
+    },
+    {
+      "en-US": "**Add new Anti-Pattern 6:**",
+      "zh-Hans": "**添加新的反模式 6：**"
+    },
+    {
+      "en-US": "```markdown\n## Anti-Pattern 6: Mocks Derived from Implementation\n\n**The violation:**\n```typescript\n// Code (BUGGY) calls cleanup()\nawait adapter.cleanup();\n\n// Mock (MATCHES BUG) has cleanup()\nconst mock = {\n  cleanup: vi.fn().mockResolvedValue(undefined)\n};\n\n// Interface (CORRECT) defines close()\ninterface PlatformAdapter {\n  close(): Promise<void>;\n}\n```",
+      "zh-Hans": "````markdown\n## 反模式 6：从实现细节派生的模拟\n\n**违规情况：**\n```typescript\n// 代码（有缺陷）调用了 cleanup()\nawait adapter.cleanup();\n\n// 模拟（匹配缺陷）包含了 cleanup()\nconst mock = {\n  cleanup: vi.fn().mockResolvedValue(undefined)\n};\n\n// 接口（正确）定义的是 close()\ninterface PlatformAdapter {\n  close(): Promise<void>;\n}\n````"
+    },
+    {
+      "en-US": "**Why this is wrong:**",
+      "zh-Hans": "**为什么这是错误的：**"
+    },
+    {
+      "en-US": "- Mock encodes the bug into the test\n- TypeScript can't catch inline mocks with wrong method names\n- Test passes because both code and mock are wrong\n- Runtime crashes when real object is used",
+      "zh-Hans": "* 模拟将 bug 编码到测试中\n* TypeScript 无法捕获方法名错误的行内模拟\n* 测试通过是因为代码和模拟都是错误的\n* 使用真实对象时运行时崩溃"
+    },
+    {
+      "en-US": "**The fix:**",
+      "zh-Hans": "**修复方法：**"
+    },
+    {
+      "en-US": "```typescript\n// ✅ GOOD: Derive mock from interface\n\n// Step 1: Open interface definition (PlatformAdapter)\n// Step 2: List methods defined there (close, initialize, etc.)\n// Step 3: Mock EXACTLY those methods\n\nconst mock = {\n  initialize: vi.fn().mockResolvedValue(undefined),\n  close: vi.fn().mockResolvedValue(undefined),  // From interface!\n};\n\n// Now test FAILS because code calls cleanup() which doesn't exist\n// That failure reveals the bug BEFORE runtime\n```",
+      "zh-Hans": "```typescript\n// ✅ GOOD: Derive mock from interface\n\n// Step 1: Open interface definition (PlatformAdapter)\n// Step 2: List methods defined there (close, initialize, etc.)\n// Step 3: Mock EXACTLY those methods\n\nconst mock = {\n  initialize: vi.fn().mockResolvedValue(undefined),\n  close: vi.fn().mockResolvedValue(undefined),  // From interface!\n};\n\n// Now test FAILS because code calls cleanup() which doesn't exist\n// That failure reveals the bug BEFORE runtime\n```"
+    },
+    {
+      "en-US": "### Gate Function",
+      "zh-Hans": "### 门控函数"
+    },
+    {
+      "en-US": "```\nBEFORE writing any mock:\n\n  1. STOP - Do NOT look at the code under test yet\n  2. FIND: The interface/type definition for the dependency\n  3. READ: The interface file\n  4. LIST: Methods defined in the interface\n  5. MOCK: ONLY those methods with EXACTLY those names\n  6. DO NOT: Look at what your code calls\n\n  IF your test fails because code calls something not in mock:\n    ✅ GOOD - The test found a bug in your code\n    Fix the code to call the correct interface method\n    NOT the mock\n\n  Red flags:\n    - \"I'll mock what the code calls\"\n    - Copying method names from implementation\n    - Mock written without reading interface\n    - \"The test is failing so I'll add this method to the mock\"\n```",
+      "zh-Hans": "```\nBEFORE writing any mock:\n\n  1. STOP - Do NOT look at the code under test yet\n  2. FIND: The interface/type definition for the dependency\n  3. READ: The interface file\n  4. LIST: Methods defined in the interface\n  5. MOCK: ONLY those methods with EXACTLY those names\n  6. DO NOT: Look at what your code calls\n\n  IF your test fails because code calls something not in mock:\n    ✅ GOOD - The test found a bug in your code\n    Fix the code to call the correct interface method\n    NOT the mock\n\n  Red flags:\n    - \"I'll mock what the code calls\"\n    - Copying method names from implementation\n    - Mock written without reading interface\n    - \"The test is failing so I'll add this method to the mock\"\n```"
+    },
+    {
+      "en-US": "**Detection:**",
+      "zh-Hans": "**检测：**"
+    },
+    {
+      "en-US": "When you see runtime error \"X is not a function\" and tests pass:",
+      "zh-Hans": "当你看到运行时错误“X 不是一个函数”而测试通过时："
+    },
+    {
+      "en-US": "1. Check if X is mocked\n2. Compare mock methods to interface methods\n3. Look for method name mismatches",
+      "zh-Hans": "1. 检查 X 是否被模拟\n2. 比较模拟方法与接口方法\n3. 寻找方法名不匹配"
+    },
+    {
+      "en-US": "```\n\n**Why this works:**\nDirectly addresses the failure pattern from feedback.\n\n---\n\n### 7. subagent-driven-development: Require Skills Reading for Test Subagents\n\n**Add to prompt template when task involves testing:**\n\n```markdown\nBEFORE writing any tests:\n\n1. Read testing-anti-patterns skill:\n   Use Skill tool: superpowers:testing-anti-patterns\n\n2. Apply gate functions from that skill when:\n   - Writing mocks\n   - Adding methods to production classes\n   - Mocking dependencies\n\nThis is NOT optional. Tests that violate anti-patterns will be rejected in review.\n```",
+      "zh-Hans": "````\n\n**Why this works:**\nDirectly addresses the failure pattern from feedback.\n\n---\n\n### 7. subagent-driven-development: Require Skills Reading for Test Subagents\n\n**Add to prompt template when task involves testing:**\n\n```markdown\nBEFORE writing any tests:\n\n1. Read testing-anti-patterns skill:\n   Use Skill tool: superpowers:testing-anti-patterns\n\n2. Apply gate functions from that skill when:\n   - Writing mocks\n   - Adding methods to production classes\n   - Mocking dependencies\n\nThis is NOT optional. Tests that violate anti-patterns will be rejected in review.\n````"
+    },
+    {
+      "en-US": "**Why this works:**\nEnsures skills are actually used, not just exist.",
+      "zh-Hans": "**为什么这有效：**\n确保技能实际被使用，而不仅仅是存在。"
+    },
+    {
+      "en-US": "**Trade-off:**\nAdds time to each task, but prevents entire classes of bugs.",
+      "zh-Hans": "**权衡：**\n每个任务增加时间，但防止了整类 bug。"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### 8. subagent-driven-development: Allow Implementer to Fix Self-Identified Issues",
+      "zh-Hans": "### 8. subagent-driven-development: 允许实施者修复自我识别的问题"
+    },
+    {
+      "en-US": "**Modify Step 2:**",
+      "zh-Hans": "**修改步骤 2：**"
+    },
+    {
+      "en-US": "**Current:**",
+      "zh-Hans": "**当前：**"
+    },
+    {
+      "en-US": "```\nSubagent reports back with summary of work.\n```",
+      "zh-Hans": "```\nSubagent reports back with summary of work.\n```"
+    },
+    {
+      "en-US": "**Proposed:**",
+      "zh-Hans": "**提议：**"
+    },
+    {
+      "en-US": "```\nSubagent performs self-reflection, then:\n\nIF self-reflection identifies fixable issues:\n  1. Fix the issues\n  2. Re-run verification\n  3. Report: \"Initial implementation + self-reflection fix\"\n\nELSE:\n  Report: \"Implementation complete\"\n\nInclude in report:\n- Self-reflection findings\n- Whether fixes were applied\n- Final verification results\n```",
+      "zh-Hans": "```\nSubagent performs self-reflection, then:\n\nIF self-reflection identifies fixable issues:\n  1. Fix the issues\n  2. Re-run verification\n  3. Report: \"Initial implementation + self-reflection fix\"\n\nELSE:\n  Report: \"Implementation complete\"\n\nInclude in report:\n- Self-reflection findings\n- Whether fixes were applied\n- Final verification results\n```"
+    },
+    {
+      "en-US": "**Why this works:**\nReduces latency when implementer already knows the fix. Documented case: would have saved one round-trip for entrypoint bug.",
+      "zh-Hans": "**为什么这有效：**\n当实施者已经知道修复方法时，减少延迟。有记录的案例：本可以为入口点 bug 节省一次往返。"
+    },
+    {
+      "en-US": "**Trade-off:**\nSlightly more complex prompt, but faster end-to-end.",
+      "zh-Hans": "**权衡：**\n提示稍微复杂一些，但端到端速度更快。"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Implementation Plan",
+      "zh-Hans": "## 实施计划"
+    },
+    {
+      "en-US": "### Phase 1: High-Impact, Low-Risk (Do First)",
+      "zh-Hans": "### 第一阶段：高影响，低风险（优先实施）"
+    },
+    {
+      "en-US": "1. **verification-before-completion: Configuration change verification**\n   - Clear addition, doesn't change existing content\n   - Addresses high-impact problem (false confidence in tests)\n   - File: `skills/verification-before-completion/SKILL.md`\n\n2. **testing-anti-patterns: Mock-interface drift**\n   - Adds new anti-pattern, doesn't modify existing\n   - Addresses high-impact problem (runtime crashes)\n   - File: `skills/testing-anti-patterns/SKILL.md`\n\n3. **requesting-code-review: Explicit file reading**\n   - Simple addition to template\n   - Fixes concrete problem (reviewers can't find files)\n   - File: `skills/requesting-code-review/SKILL.md`",
+      "zh-Hans": "1. **verification-before-completion: 配置变更验证**\n   * 清晰的补充，不改变现有内容\n   * 解决高影响问题（测试中的虚假信心）\n   * 文件：`skills/verification-before-completion/SKILL.md`\n\n2. **testing-anti-patterns: 模拟-接口漂移**\n   * 添加新反模式，不修改现有内容\n   * 解决高影响问题（运行时崩溃）\n   * 文件：`skills/testing-anti-patterns/SKILL.md`\n\n3. **requesting-code-review: 显式文件读取**\n   * 对模板的简单补充\n   * 解决具体问题（审查者找不到文件）\n   * 文件：`skills/requesting-code-review/SKILL.md`"
+    },
+    {
+      "en-US": "### Phase 2: Moderate Changes (Test Carefully)",
+      "zh-Hans": "### 第二阶段：中等变更（仔细测试）"
+    },
+    {
+      "en-US": "4. **subagent-driven-development: Process hygiene**\n   - Adds new section, doesn't change workflow\n   - Addresses medium-high impact (test reliability)\n   - File: `skills/subagent-driven-development/SKILL.md`\n\n5. **subagent-driven-development: Self-reflection**\n   - Changes prompt template (higher risk)\n   - But documented to catch bugs\n   - File: `skills/subagent-driven-development/SKILL.md`\n\n6. **subagent-driven-development: Skills reading requirement**\n   - Adds prompt overhead\n   - But ensures skills are actually used\n   - File: `skills/subagent-driven-development/SKILL.md`",
+      "zh-Hans": "4. **subagent-driven-development: 流程卫生**\n   * 添加新部分，不改变工作流\n   * 解决中-高影响问题（测试可靠性）\n   * 文件：`skills/subagent-driven-development/SKILL.md`\n\n5. **subagent-driven-development: 自我反思**\n   * 更改提示模板（风险较高）\n   * 但有记录表明能捕获 bug\n   * 文件：`skills/subagent-driven-development/SKILL.md`\n\n6. **subagent-driven-development: 技能阅读要求**\n   * 增加提示开销\n   * 但确保技能实际被使用\n   * 文件：`skills/subagent-driven-development/SKILL.md`"
+    },
+    {
+      "en-US": "### Phase 3: Optimization (Validate First)",
+      "zh-Hans": "### 第三阶段：优化（先验证）"
+    },
+    {
+      "en-US": "7. **subagent-driven-development: Lean context option**\n   - Adds complexity (two approaches)\n   - Needs validation that it doesn't cause confusion\n   - File: `skills/subagent-driven-development/SKILL.md`\n\n8. **subagent-driven-development: Allow implementer to fix**\n   - Changes workflow (higher risk)\n   - Optimization, not bug fix\n   - File: `skills/subagent-driven-development/SKILL.md`",
+      "zh-Hans": "7. **subagent-driven-development: 精简上下文选项**\n   * 增加复杂性（两种方法）\n   * 需要验证它不会引起混淆\n   * 文件：`skills/subagent-driven-development/SKILL.md`\n\n8. **subagent-driven-development: 允许实施者修复**\n   * 更改工作流（风险较高）\n   * 优化，而非 bug 修复\n   * 文件：`skills/subagent-driven-development/SKILL.md`"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Open Questions",
+      "zh-Hans": "## 开放性问题"
+    },
+    {
+      "en-US": "1. **Lean context approach:**\n   - Should we make it the default for pattern-based tasks?\n   - How do we decide which approach to use?\n   - Risk of being too lean and missing important context?\n\n2. **Self-reflection:**\n   - Will this slow down simple tasks significantly?\n   - Should it only apply to complex tasks?\n   - How do we prevent \"reflection fatigue\" where it becomes rote?\n\n3. **Process hygiene:**\n   - Should this be in subagent-driven-development or a separate skill?\n   - Does it apply to other workflows beyond E2E tests?\n   - How do we handle cases where process SHOULD persist (dev servers)?\n\n4. **Skills reading enforcement:**\n   - Should we require ALL subagents to read relevant skills?\n   - How do we keep prompts from becoming too long?\n   - Risk of over-documenting and losing focus?",
+      "zh-Hans": "1. **精简上下文方法：**\n   * 对于基于模式的任务，我们应该将其设为默认吗？\n   * 我们如何决定使用哪种方法？\n   * 过于精简而遗漏重要上下文的风险？\n\n2. **自我反思：**\n   * 这会显著减慢简单任务的速度吗？\n   * 是否只应应用于复杂任务？\n   * 如何防止其变得机械而导致的“反思疲劳”？\n\n3. **流程卫生：**\n   * 这应该放在 subagent-driven-development 中，还是一个单独的技能里？\n   * 它是否适用于端到端测试之外的其他工作流？\n   * 如何处理进程**应该**持续存在的情况（开发服务器）？\n\n4. **技能阅读强制要求：**\n   * 我们应该要求**所有**子代理阅读相关技能吗？\n   * 如何防止提示变得过长？\n   * 过度文档化而失去焦点的风险？"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Success Metrics",
+      "zh-Hans": "## 成功指标"
+    },
+    {
+      "en-US": "How do we know these improvements work?",
+      "zh-Hans": "我们如何知道这些改进有效？"
+    },
+    {
+      "en-US": "1. **Configuration verification:**\n   - Zero instances of \"test passed but wrong config was used\"\n   - Jesse doesn't say \"that's not actually testing what you think\"\n\n2. **Process hygiene:**\n   - Zero instances of \"test hit wrong server\"\n   - No port conflict errors during E2E test runs\n\n3. **Mock-interface drift:**\n   - Zero instances of \"tests pass but runtime crashes on missing method\"\n   - No method name mismatches between mocks and interfaces\n\n4. **Self-reflection:**\n   - Measurable: Do implementer reports include self-reflection findings?\n   - Qualitative: Do fewer bugs make it to code review?\n\n5. **Skills reading:**\n   - Subagent reports reference skill gate functions\n   - Fewer anti-pattern violations in code review",
+      "zh-Hans": "1. **配置验证：**\n   * “测试通过但使用了错误配置”的实例为零\n   * Jesse 不会说“那实际上并没有测试你认为它在测试的东西”\n\n2. **流程卫生：**\n   * “测试命中错误服务器”的实例为零\n   * 端到端测试运行期间无端口冲突错误\n\n3. **模拟接口漂移：**\n   * 零出现“测试通过但运行时因缺少方法而崩溃”的情况\n   * 模拟对象与接口之间不存在方法名不匹配\n\n4. **自我反思：**\n   * 可衡量性：执行者报告是否包含自我反思的发现？\n   * 定性分析：进入代码审查阶段的缺陷是否减少？\n\n5. **技能解读：**\n   * 子代理报告引用技能门控函数\n   * 代码审查中反模式违规情况减少"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Risks and Mitigations",
+      "zh-Hans": "## 风险与应对措施"
+    },
+    {
+      "en-US": "### Risk: Prompt Bloat",
+      "zh-Hans": "### 风险：提示膨胀"
+    },
+    {
+      "en-US": "**Problem:** Adding all these requirements makes prompts overwhelming\n**Mitigation:**",
+      "zh-Hans": "**问题：** 添加所有这些要求会使提示变得过于冗长\n**应对措施：**"
+    },
+    {
+      "en-US": "- Phase implementation (don't add everything at once)\n- Make some additions conditional (E2E hygiene only for E2E tests)\n- Consider templates for different task types",
+      "zh-Hans": "* 分阶段实施（不要一次性添加所有内容）\n* 使部分附加要求成为条件性（端到端卫生仅适用于端到端测试）\n* 考虑为不同任务类型设置模板"
+    },
+    {
+      "en-US": "### Risk: Analysis Paralysis",
+      "zh-Hans": "### 风险：分析瘫痪"
+    },
+    {
+      "en-US": "**Problem:** Too much reflection/verification slows execution\n**Mitigation:**",
+      "zh-Hans": "**问题：** 过多的反思/验证会拖慢执行速度\n**应对措施：**"
+    },
+    {
+      "en-US": "- Keep gate functions quick (seconds, not minutes)\n- Make lean context opt-in initially\n- Monitor task completion times",
+      "zh-Hans": "* 保持门控函数快速执行（秒级，而非分钟级）\n* 初始阶段将精简上下文设为可选功能\n* 监控任务完成时间"
+    },
+    {
+      "en-US": "### Risk: False Sense of Security",
+      "zh-Hans": "### 风险：虚假安全感"
+    },
+    {
+      "en-US": "**Problem:** Following checklist doesn't guarantee correctness\n**Mitigation:**",
+      "zh-Hans": "**问题：** 遵循检查清单并不能保证正确性\n**应对措施：**"
+    },
+    {
+      "en-US": "- Emphasize gate functions are minimums, not maximums\n- Keep \"use judgment\" language in skills\n- Document that skills catch common failures, not all failures",
+      "zh-Hans": "* 强调门控函数是最低要求，而非最高标准\n* 在技能描述中保留“运用判断力”的表述\n* 说明技能旨在发现常见错误，而非所有错误"
+    },
+    {
+      "en-US": "### Risk: Skill Divergence",
+      "zh-Hans": "### 风险：技能分歧"
+    },
+    {
+      "en-US": "**Problem:** Different skills give conflicting advice\n**Mitigation:**",
+      "zh-Hans": "**问题：** 不同技能给出相互矛盾的建议\n**应对措施：**"
+    },
+    {
+      "en-US": "- Review changes across all skills for consistency\n- Document how skills interact (Integration sections)\n- Test with real scenarios before deployment",
+      "zh-Hans": "* 审查所有技能的变更以确保一致性\n* 记录技能间的协作方式（集成章节）\n* 部署前通过真实场景进行测试"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Recommendation",
+      "zh-Hans": "## 实施建议"
+    },
+    {
+      "en-US": "**Proceed with Phase 1 immediately:**",
+      "zh-Hans": "**立即启动第一阶段：**"
+    },
+    {
+      "en-US": "- verification-before-completion: Configuration change verification\n- testing-anti-patterns: Mock-interface drift\n- requesting-code-review: Explicit file reading",
+      "zh-Hans": "* 完成前验证：配置变更验证\n* 测试反模式：模拟接口漂移检测\n* 发起代码审查：显式文件读取要求"
+    },
+    {
+      "en-US": "**Test Phase 2 with Jesse before finalizing:**",
+      "zh-Hans": "**与Jesse共同测试第二阶段后再定稿：**"
+    },
+    {
+      "en-US": "- Get feedback on self-reflection impact\n- Validate process hygiene approach\n- Confirm skills reading requirement is worth overhead",
+      "zh-Hans": "* 获取关于自我反思影响的反馈\n* 验证流程卫生方法的有效性\n* 确认技能解读要求值得其额外开销"
+    },
+    {
+      "en-US": "**Hold Phase 3 pending validation:**",
+      "zh-Hans": "**暂缓实施第三阶段以待验证：**"
+    },
+    {
+      "en-US": "- Lean context needs real-world testing\n- Implementer-fix workflow change needs careful evaluation",
+      "zh-Hans": "* 精简上下文需经实际场景测试\n* 执行者修复工作流变更需谨慎评估"
+    },
+    {
+      "en-US": "These changes address real problems documented by users while minimizing risk of making skills worse.",
+      "zh-Hans": "这些改进措施针对用户记录的实际问题，同时最大限度降低了技能质量下降的风险。"
+    }
+  ]
+}

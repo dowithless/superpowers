@@ -1,0 +1,334 @@
+{
+  "sourceFile": "docs/superpowers/plans/2026-03-11-zero-dep-brainstorm-server.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Zero-Dependency Brainstorm Server Implementation Plan",
+      "zh-Hans": "# 零依赖头脑风暴服务器实现计划"
+    },
+    {
+      "en-US": "> **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.",
+      "zh-Hans": "> **针对智能体工作者：** 必需：使用 superpowers:子智能体驱动开发（如果子智能体可用）或 superpowers:执行计划 来实现此计划。步骤使用复选框（`- [ ]`）语法进行跟踪。"
+    },
+    {
+      "en-US": "**Goal:** Replace the brainstorm server's vendored node_modules with a single zero-dependency `server.js` using Node built-ins.",
+      "zh-Hans": "**目标：** 将头脑风暴服务器的第三方 node\\_modules 替换为单个零依赖的 `server.js`，仅使用 Node 内置模块。"
+    },
+    {
+      "en-US": "**Architecture:** Single file with WebSocket protocol (RFC 6455 text frames), HTTP server (`http` module), and file watching (`fs.watch`). Exports protocol functions for unit testing when required as a module.",
+      "zh-Hans": "**架构：** 单个文件，包含 WebSocket 协议（RFC 6455 文本帧）、HTTP 服务器（`http` 模块）和文件监视（`fs.watch`）。当作为模块被需要时，导出协议函数以供单元测试。"
+    },
+    {
+      "en-US": "**Tech Stack:** Node.js built-ins only: `http`, `crypto`, `fs`, `path`",
+      "zh-Hans": "**技术栈：** 仅使用 Node.js 内置模块：`http`, `crypto`, `fs`, `path`"
+    },
+    {
+      "en-US": "**Spec:** `docs/superpowers/specs/2026-03-11-zero-dep-brainstorm-server-design.md`",
+      "zh-Hans": "**规范：** `docs/superpowers/specs/2026-03-11-zero-dep-brainstorm-server-design.md`"
+    },
+    {
+      "en-US": "**Existing tests:** `tests/brainstorm-server/ws-protocol.test.js` (unit), `tests/brainstorm-server/server.test.js` (integration)",
+      "zh-Hans": "**现有测试：** `tests/brainstorm-server/ws-protocol.test.js`（单元测试），`tests/brainstorm-server/server.test.js`（集成测试）"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## File Map",
+      "zh-Hans": "## 文件映射"
+    },
+    {
+      "en-US": "- **Create:** `skills/brainstorming/scripts/server.js` — the zero-dep replacement\n- **Modify:** `skills/brainstorming/scripts/start-server.sh:94,100` — change `index.js` to `server.js`\n- **Modify:** `.gitignore:6` — remove the `!skills/brainstorming/scripts/node_modules/` exception\n- **Delete:** `skills/brainstorming/scripts/index.js`\n- **Delete:** `skills/brainstorming/scripts/package.json`\n- **Delete:** `skills/brainstorming/scripts/package-lock.json`\n- **Delete:** `skills/brainstorming/scripts/node_modules/` (714 files)\n- **No changes:** `skills/brainstorming/scripts/helper.js`, `skills/brainstorming/scripts/frame-template.html`, `skills/brainstorming/scripts/stop-server.sh`",
+      "zh-Hans": "* **创建：** `skills/brainstorming/scripts/server.js` — 零依赖替代文件\n* **修改：** `skills/brainstorming/scripts/start-server.sh:94,100` — 将 `index.js` 改为 `server.js`\n* **修改：** `.gitignore:6` — 移除 `!skills/brainstorming/scripts/node_modules/` 例外\n* **删除：** `skills/brainstorming/scripts/index.js`\n* **删除：** `skills/brainstorming/scripts/package.json`\n* **删除：** `skills/brainstorming/scripts/package-lock.json`\n* **删除：** `skills/brainstorming/scripts/node_modules/`（714 个文件）\n* **无更改：** `skills/brainstorming/scripts/helper.js`, `skills/brainstorming/scripts/frame-template.html`, `skills/brainstorming/scripts/stop-server.sh`"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Chunk 1: WebSocket Protocol Layer",
+      "zh-Hans": "## 区块 1：WebSocket 协议层"
+    },
+    {
+      "en-US": "### Task 1: Implement WebSocket protocol exports",
+      "zh-Hans": "### 任务 1：实现 WebSocket 协议导出"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Create: `skills/brainstorming/scripts/server.js`\n- Test: `tests/brainstorm-server/ws-protocol.test.js` (already exists)\n\n- [ ] **Step 1: Create server.js with OPCODES constant and computeAcceptKey**",
+      "zh-Hans": "* 创建：`skills/brainstorming/scripts/server.js`\n\n* 测试：`tests/brainstorm-server/ws-protocol.test.js`（已存在）\n\n* \\[ ] **步骤 1：创建 server.js，包含 OPCODES 常量和 computeAcceptKey 函数**"
+    },
+    {
+      "en-US": "```js\nconst crypto = require('crypto');\n\nconst OPCODES = { TEXT: 0x01, CLOSE: 0x08, PING: 0x09, PONG: 0x0A };\nconst WS_MAGIC = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';\n\nfunction computeAcceptKey(clientKey) {\n  return crypto.createHash('sha1').update(clientKey + WS_MAGIC).digest('base64');\n}\n```",
+      "zh-Hans": "```js\nconst crypto = require('crypto');\n\nconst OPCODES = { TEXT: 0x01, CLOSE: 0x08, PING: 0x09, PONG: 0x0A };\nconst WS_MAGIC = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';\n\nfunction computeAcceptKey(clientKey) {\n  return crypto.createHash('sha1').update(clientKey + WS_MAGIC).digest('base64');\n}\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Implement encodeFrame**",
+      "zh-Hans": "* \\[ ] **步骤 2：实现 encodeFrame 函数**"
+    },
+    {
+      "en-US": "Server frames are never masked. Three length encodings:",
+      "zh-Hans": "服务器帧从不掩码。三种长度编码："
+    },
+    {
+      "en-US": "- payload < 126: 2-byte header (FIN+opcode, length)\n- 126-65535: 4-byte header (FIN+opcode, 126, 16-bit length)\n- &gt; 65535: 10-byte header (FIN+opcode, 127, 64-bit length)",
+      "zh-Hans": "* 载荷 < 126：2 字节头部（FIN+操作码，长度）\n* 126-65535：4 字节头部（FIN+操作码，126，16 位长度）\n* \\> 65535：10 字节头部（FIN+操作码，127，64 位长度）"
+    },
+    {
+      "en-US": "```js\nfunction encodeFrame(opcode, payload) {\n  const fin = 0x80;\n  const len = payload.length;\n  let header;\n\n  if (len < 126) {\n    header = Buffer.alloc(2);\n    header[0] = fin | opcode;\n    header[1] = len;\n  } else if (len < 65536) {\n    header = Buffer.alloc(4);\n    header[0] = fin | opcode;\n    header[1] = 126;\n    header.writeUInt16BE(len, 2);\n  } else {\n    header = Buffer.alloc(10);\n    header[0] = fin | opcode;\n    header[1] = 127;\n    header.writeBigUInt64BE(BigInt(len), 2);\n  }\n\n  return Buffer.concat([header, payload]);\n}\n```",
+      "zh-Hans": "```js\nfunction encodeFrame(opcode, payload) {\n  const fin = 0x80;\n  const len = payload.length;\n  let header;\n\n  if (len < 126) {\n    header = Buffer.alloc(2);\n    header[0] = fin | opcode;\n    header[1] = len;\n  } else if (len < 65536) {\n    header = Buffer.alloc(4);\n    header[0] = fin | opcode;\n    header[1] = 126;\n    header.writeUInt16BE(len, 2);\n  } else {\n    header = Buffer.alloc(10);\n    header[0] = fin | opcode;\n    header[1] = 127;\n    header.writeBigUInt64BE(BigInt(len), 2);\n  }\n\n  return Buffer.concat([header, payload]);\n}\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 3: Implement decodeFrame**",
+      "zh-Hans": "* \\[ ] **步骤 3：实现 decodeFrame 函数**"
+    },
+    {
+      "en-US": "Client frames are always masked. Returns `{ opcode, payload, bytesConsumed }` or `null` for incomplete. Throws on unmasked frames.",
+      "zh-Hans": "客户端帧始终被掩码。返回 `{ opcode, payload, bytesConsumed }` 或 `null` 表示不完整。对未掩码的帧抛出错误。"
+    },
+    {
+      "en-US": "```js\nfunction decodeFrame(buffer) {\n  if (buffer.length < 2) return null;\n\n  const firstByte = buffer[0];\n  const secondByte = buffer[1];\n  const opcode = firstByte & 0x0F;\n  const masked = (secondByte & 0x80) !== 0;\n  let payloadLen = secondByte & 0x7F;\n  let offset = 2;\n\n  if (!masked) throw new Error('Client frames must be masked');\n\n  if (payloadLen === 126) {\n    if (buffer.length < 4) return null;\n    payloadLen = buffer.readUInt16BE(2);\n    offset = 4;\n  } else if (payloadLen === 127) {\n    if (buffer.length < 10) return null;\n    payloadLen = Number(buffer.readBigUInt64BE(2));\n    offset = 10;\n  }\n\n  const maskOffset = offset;\n  const dataOffset = offset + 4;\n  const totalLen = dataOffset + payloadLen;\n  if (buffer.length < totalLen) return null;\n\n  const mask = buffer.slice(maskOffset, dataOffset);\n  const data = Buffer.alloc(payloadLen);\n  for (let i = 0; i < payloadLen; i++) {\n    data[i] = buffer[dataOffset + i] ^ mask[i % 4];\n  }\n\n  return { opcode, payload: data, bytesConsumed: totalLen };\n}\n```",
+      "zh-Hans": "```js\nfunction decodeFrame(buffer) {\n  if (buffer.length < 2) return null;\n\n  const firstByte = buffer[0];\n  const secondByte = buffer[1];\n  const opcode = firstByte & 0x0F;\n  const masked = (secondByte & 0x80) !== 0;\n  let payloadLen = secondByte & 0x7F;\n  let offset = 2;\n\n  if (!masked) throw new Error('Client frames must be masked');\n\n  if (payloadLen === 126) {\n    if (buffer.length < 4) return null;\n    payloadLen = buffer.readUInt16BE(2);\n    offset = 4;\n  } else if (payloadLen === 127) {\n    if (buffer.length < 10) return null;\n    payloadLen = Number(buffer.readBigUInt64BE(2));\n    offset = 10;\n  }\n\n  const maskOffset = offset;\n  const dataOffset = offset + 4;\n  const totalLen = dataOffset + payloadLen;\n  if (buffer.length < totalLen) return null;\n\n  const mask = buffer.slice(maskOffset, dataOffset);\n  const data = Buffer.alloc(payloadLen);\n  for (let i = 0; i < payloadLen; i++) {\n    data[i] = buffer[dataOffset + i] ^ mask[i % 4];\n  }\n\n  return { opcode, payload: data, bytesConsumed: totalLen };\n}\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Add module exports at the bottom of the file**",
+      "zh-Hans": "* \\[ ] **步骤 4：在文件底部添加模块导出**"
+    },
+    {
+      "en-US": "```js\nmodule.exports = { computeAcceptKey, encodeFrame, decodeFrame, OPCODES };\n```",
+      "zh-Hans": "```js\nmodule.exports = { computeAcceptKey, encodeFrame, decodeFrame, OPCODES };\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 5: Run unit tests**",
+      "zh-Hans": "* \\[ ] **步骤 5：运行单元测试**"
+    },
+    {
+      "en-US": "Run: `cd tests/brainstorm-server && node ws-protocol.test.js`\nExpected: All tests pass (handshake, encoding, decoding, boundaries, edge cases)",
+      "zh-Hans": "运行：`cd tests/brainstorm-server && node ws-protocol.test.js`\n预期：所有测试通过（握手、编码、解码、边界情况、边缘情况）"
+    },
+    {
+      "en-US": "- [ ] **Step 6: Commit**",
+      "zh-Hans": "* \\[ ] **步骤 6：提交**"
+    },
+    {
+      "en-US": "```bash\ngit add skills/brainstorming/scripts/server.js\ngit commit -m \"Add WebSocket protocol layer for zero-dep brainstorm server\"\n```",
+      "zh-Hans": "```bash\ngit add skills/brainstorming/scripts/server.js\ngit commit -m \"Add WebSocket protocol layer for zero-dep brainstorm server\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Chunk 2: HTTP Server and Application Logic",
+      "zh-Hans": "## 区块 2：HTTP 服务器和应用逻辑"
+    },
+    {
+      "en-US": "### Task 2: Add HTTP server, file watching, and WebSocket connection handling",
+      "zh-Hans": "### 任务 2：添加 HTTP 服务器、文件监视和 WebSocket 连接处理"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `skills/brainstorming/scripts/server.js`\n- Test: `tests/brainstorm-server/server.test.js` (already exists)\n\n- [ ] **Step 1: Add configuration and constants at top of server.js (after requires)**",
+      "zh-Hans": "* 修改：`skills/brainstorming/scripts/server.js`\n\n* 测试：`tests/brainstorm-server/server.test.js`（已存在）\n\n* \\[ ] **步骤 1：在 server.js 顶部（require 之后）添加配置和常量**"
+    },
+    {
+      "en-US": "```js\nconst http = require('http');\nconst fs = require('fs');\nconst path = require('path');\n\nconst PORT = process.env.BRAINSTORM_PORT || (49152 + Math.floor(Math.random() * 16383));\nconst HOST = process.env.BRAINSTORM_HOST || '127.0.0.1';\nconst URL_HOST = process.env.BRAINSTORM_URL_HOST || (HOST === '127.0.0.1' ? 'localhost' : HOST);\nconst SCREEN_DIR = process.env.BRAINSTORM_DIR || '/tmp/brainstorm';\n\nconst MIME_TYPES = {\n  '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript',\n  '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg',\n  '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.svg': 'image/svg+xml'\n};\n```",
+      "zh-Hans": "```js\nconst http = require('http');\nconst fs = require('fs');\nconst path = require('path');\n\nconst PORT = process.env.BRAINSTORM_PORT || (49152 + Math.floor(Math.random() * 16383));\nconst HOST = process.env.BRAINSTORM_HOST || '127.0.0.1';\nconst URL_HOST = process.env.BRAINSTORM_URL_HOST || (HOST === '127.0.0.1' ? 'localhost' : HOST);\nconst SCREEN_DIR = process.env.BRAINSTORM_DIR || '/tmp/brainstorm';\n\nconst MIME_TYPES = {\n  '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript',\n  '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg',\n  '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.svg': 'image/svg+xml'\n};\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Add WAITING_PAGE, template loading at module scope, and helper functions**",
+      "zh-Hans": "* \\[ ] **步骤 2：添加 WAITING\\_PAGE、模板加载（模块作用域）和辅助函数**"
+    },
+    {
+      "en-US": "Load `frameTemplate` and `helperInjection` at module scope so they're accessible to `wrapInFrame` and `handleRequest`. They only read files from `__dirname` (the scripts directory), which is valid whether the module is required or run directly.",
+      "zh-Hans": "在模块作用域加载 `frameTemplate` 和 `helperInjection`，以便 `wrapInFrame` 和 `handleRequest` 可以访问。它们只从 `__dirname`（脚本目录）读取文件，无论模块是被 require 还是直接运行，这都是有效的。"
+    },
+    {
+      "en-US": "```js\nconst WAITING_PAGE = `<!DOCTYPE html>\n<html>\n<head><title>Brainstorm Companion</title>\n<style>body { font-family: system-ui, sans-serif; padding: 2rem; max-width: 800px; margin: 0 auto; }\nh1 { color: #333; } p { color: #666; }</style>\n</head>\n<body><h1>Brainstorm Companion</h1>\n<p>Waiting for Claude to push a screen...</p></body></html>`;\n\nconst frameTemplate = fs.readFileSync(path.join(__dirname, 'frame-template.html'), 'utf-8');\nconst helperScript = fs.readFileSync(path.join(__dirname, 'helper.js'), 'utf-8');\nconst helperInjection = '<script>\\n' + helperScript + '\\n</script>';\n\nfunction isFullDocument(html) {\n  const trimmed = html.trimStart().toLowerCase();\n  return trimmed.startsWith('<!doctype') || trimmed.startsWith('<html');\n}\n\nfunction wrapInFrame(content) {\n  return frameTemplate.replace('<!-- CONTENT -->', content);\n}\n\nfunction getNewestScreen() {\n  const files = fs.readdirSync(SCREEN_DIR)\n    .filter(f => f.endsWith('.html'))\n    .map(f => {\n      const fp = path.join(SCREEN_DIR, f);\n      return { path: fp, mtime: fs.statSync(fp).mtime.getTime() };\n    })\n    .sort((a, b) => b.mtime - a.mtime);\n  return files.length > 0 ? files[0].path : null;\n}\n```",
+      "zh-Hans": "```js\nconst WAITING_PAGE = `<!DOCTYPE html>\n<html>\n<head><title>Brainstorm Companion</title>\n<style>body { font-family: system-ui, sans-serif; padding: 2rem; max-width: 800px; margin: 0 auto; }\nh1 { color: #333; } p { color: #666; }</style>\n</head>\n<body><h1>Brainstorm Companion</h1>\n<p>Waiting for Claude to push a screen...</p></body></html>`;\n\nconst frameTemplate = fs.readFileSync(path.join(__dirname, 'frame-template.html'), 'utf-8');\nconst helperScript = fs.readFileSync(path.join(__dirname, 'helper.js'), 'utf-8');\nconst helperInjection = '<script>\\n' + helperScript + '\\n</script>';\n\nfunction isFullDocument(html) {\n  const trimmed = html.trimStart().toLowerCase();\n  return trimmed.startsWith('<!doctype') || trimmed.startsWith('<html');\n}\n\nfunction wrapInFrame(content) {\n  return frameTemplate.replace('<!-- CONTENT -->', content);\n}\n\nfunction getNewestScreen() {\n  const files = fs.readdirSync(SCREEN_DIR)\n    .filter(f => f.endsWith('.html'))\n    .map(f => {\n      const fp = path.join(SCREEN_DIR, f);\n      return { path: fp, mtime: fs.statSync(fp).mtime.getTime() };\n    })\n    .sort((a, b) => b.mtime - a.mtime);\n  return files.length > 0 ? files[0].path : null;\n}\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 3: Add HTTP request handler**",
+      "zh-Hans": "* \\[ ] **步骤 3：添加 HTTP 请求处理器**"
+    },
+    {
+      "en-US": "```js\nfunction handleRequest(req, res) {\n  if (req.method === 'GET' && req.url === '/') {\n    const screenFile = getNewestScreen();\n    let html = screenFile\n      ? (raw => isFullDocument(raw) ? raw : wrapInFrame(raw))(fs.readFileSync(screenFile, 'utf-8'))\n      : WAITING_PAGE;\n\n    if (html.includes('</body>')) {\n      html = html.replace('</body>', helperInjection + '\\n</body>');\n    } else {\n      html += helperInjection;\n    }\n\n    res.writeHead(200, { 'Content-Type': 'text/html' });\n    res.end(html);\n  } else if (req.method === 'GET' && req.url.startsWith('/files/')) {\n    const fileName = req.url.slice(7); // strip '/files/'\n    const filePath = path.join(SCREEN_DIR, path.basename(fileName));\n    if (!fs.existsSync(filePath)) {\n      res.writeHead(404);\n      res.end('Not found');\n      return;\n    }\n    const ext = path.extname(filePath).toLowerCase();\n    const contentType = MIME_TYPES[ext] || 'application/octet-stream';\n    res.writeHead(200, { 'Content-Type': contentType });\n    res.end(fs.readFileSync(filePath));\n  } else {\n    res.writeHead(404);\n    res.end('Not found');\n  }\n}\n```",
+      "zh-Hans": "```js\nfunction handleRequest(req, res) {\n  if (req.method === 'GET' && req.url === '/') {\n    const screenFile = getNewestScreen();\n    let html = screenFile\n      ? (raw => isFullDocument(raw) ? raw : wrapInFrame(raw))(fs.readFileSync(screenFile, 'utf-8'))\n      : WAITING_PAGE;\n\n    if (html.includes('</body>')) {\n      html = html.replace('</body>', helperInjection + '\\n</body>');\n    } else {\n      html += helperInjection;\n    }\n\n    res.writeHead(200, { 'Content-Type': 'text/html' });\n    res.end(html);\n  } else if (req.method === 'GET' && req.url.startsWith('/files/')) {\n    const fileName = req.url.slice(7); // strip '/files/'\n    const filePath = path.join(SCREEN_DIR, path.basename(fileName));\n    if (!fs.existsSync(filePath)) {\n      res.writeHead(404);\n      res.end('Not found');\n      return;\n    }\n    const ext = path.extname(filePath).toLowerCase();\n    const contentType = MIME_TYPES[ext] || 'application/octet-stream';\n    res.writeHead(200, { 'Content-Type': contentType });\n    res.end(fs.readFileSync(filePath));\n  } else {\n    res.writeHead(404);\n    res.end('Not found');\n  }\n}\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Add WebSocket connection handling**",
+      "zh-Hans": "* \\[ ] **步骤 4：添加 WebSocket 连接处理**"
+    },
+    {
+      "en-US": "```js\nconst clients = new Set();\n\nfunction handleUpgrade(req, socket) {\n  const key = req.headers['sec-websocket-key'];\n  if (!key) { socket.destroy(); return; }\n\n  const accept = computeAcceptKey(key);\n  socket.write(\n    'HTTP/1.1 101 Switching Protocols\\r\\n' +\n    'Upgrade: websocket\\r\\n' +\n    'Connection: Upgrade\\r\\n' +\n    'Sec-WebSocket-Accept: ' + accept + '\\r\\n\\r\\n'\n  );\n\n  let buffer = Buffer.alloc(0);\n  clients.add(socket);\n\n  socket.on('data', (chunk) => {\n    buffer = Buffer.concat([buffer, chunk]);\n    while (buffer.length > 0) {\n      let result;\n      try {\n        result = decodeFrame(buffer);\n      } catch (e) {\n        socket.end(encodeFrame(OPCODES.CLOSE, Buffer.alloc(0)));\n        clients.delete(socket);\n        return;\n      }\n      if (!result) break;\n      buffer = buffer.slice(result.bytesConsumed);\n\n      switch (result.opcode) {\n        case OPCODES.TEXT:\n          handleMessage(result.payload.toString());\n          break;\n        case OPCODES.CLOSE:\n          socket.end(encodeFrame(OPCODES.CLOSE, Buffer.alloc(0)));\n          clients.delete(socket);\n          return;\n        case OPCODES.PING:\n          socket.write(encodeFrame(OPCODES.PONG, result.payload));\n          break;\n        case OPCODES.PONG:\n          break;\n        default:\n          // Unsupported opcode — close with 1003\n          const closeBuf = Buffer.alloc(2);\n          closeBuf.writeUInt16BE(1003);\n          socket.end(encodeFrame(OPCODES.CLOSE, closeBuf));\n          clients.delete(socket);\n          return;\n      }\n    }\n  });\n\n  socket.on('close', () => clients.delete(socket));\n  socket.on('error', () => clients.delete(socket));\n}\n\nfunction handleMessage(text) {\n  let event;\n  try {\n    event = JSON.parse(text);\n  } catch (e) {\n    console.error('Failed to parse WebSocket message:', e.message);\n    return;\n  }\n  console.log(JSON.stringify({ source: 'user-event', ...event }));\n  if (event.choice) {\n    const eventsFile = path.join(SCREEN_DIR, '.events');\n    fs.appendFileSync(eventsFile, JSON.stringify(event) + '\\n');\n  }\n}\n\nfunction broadcast(msg) {\n  const frame = encodeFrame(OPCODES.TEXT, Buffer.from(JSON.stringify(msg)));\n  for (const socket of clients) {\n    try { socket.write(frame); } catch (e) { clients.delete(socket); }\n  }\n}\n```",
+      "zh-Hans": "```js\nconst clients = new Set();\n\nfunction handleUpgrade(req, socket) {\n  const key = req.headers['sec-websocket-key'];\n  if (!key) { socket.destroy(); return; }\n\n  const accept = computeAcceptKey(key);\n  socket.write(\n    'HTTP/1.1 101 Switching Protocols\\r\\n' +\n    'Upgrade: websocket\\r\\n' +\n    'Connection: Upgrade\\r\\n' +\n    'Sec-WebSocket-Accept: ' + accept + '\\r\\n\\r\\n'\n  );\n\n  let buffer = Buffer.alloc(0);\n  clients.add(socket);\n\n  socket.on('data', (chunk) => {\n    buffer = Buffer.concat([buffer, chunk]);\n    while (buffer.length > 0) {\n      let result;\n      try {\n        result = decodeFrame(buffer);\n      } catch (e) {\n        socket.end(encodeFrame(OPCODES.CLOSE, Buffer.alloc(0)));\n        clients.delete(socket);\n        return;\n      }\n      if (!result) break;\n      buffer = buffer.slice(result.bytesConsumed);\n\n      switch (result.opcode) {\n        case OPCODES.TEXT:\n          handleMessage(result.payload.toString());\n          break;\n        case OPCODES.CLOSE:\n          socket.end(encodeFrame(OPCODES.CLOSE, Buffer.alloc(0)));\n          clients.delete(socket);\n          return;\n        case OPCODES.PING:\n          socket.write(encodeFrame(OPCODES.PONG, result.payload));\n          break;\n        case OPCODES.PONG:\n          break;\n        default:\n          // Unsupported opcode — close with 1003\n          const closeBuf = Buffer.alloc(2);\n          closeBuf.writeUInt16BE(1003);\n          socket.end(encodeFrame(OPCODES.CLOSE, closeBuf));\n          clients.delete(socket);\n          return;\n      }\n    }\n  });\n\n  socket.on('close', () => clients.delete(socket));\n  socket.on('error', () => clients.delete(socket));\n}\n\nfunction handleMessage(text) {\n  let event;\n  try {\n    event = JSON.parse(text);\n  } catch (e) {\n    console.error('Failed to parse WebSocket message:', e.message);\n    return;\n  }\n  console.log(JSON.stringify({ source: 'user-event', ...event }));\n  if (event.choice) {\n    const eventsFile = path.join(SCREEN_DIR, '.events');\n    fs.appendFileSync(eventsFile, JSON.stringify(event) + '\\n');\n  }\n}\n\nfunction broadcast(msg) {\n  const frame = encodeFrame(OPCODES.TEXT, Buffer.from(JSON.stringify(msg)));\n  for (const socket of clients) {\n    try { socket.write(frame); } catch (e) { clients.delete(socket); }\n  }\n}\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 5: Add debounce timer map**",
+      "zh-Hans": "* \\[ ] **步骤 5：添加防抖计时器映射**"
+    },
+    {
+      "en-US": "```js\nconst debounceTimers = new Map();\n```",
+      "zh-Hans": "```js\nconst debounceTimers = new Map();\n```"
+    },
+    {
+      "en-US": "File watching logic is inlined in `startServer` (Step 6) to keep watcher lifecycle together with server lifecycle and include an `error` handler per spec.",
+      "zh-Hans": "文件监视逻辑内联在 `startServer`（步骤 6）中，以便将监视器生命周期与服务器生命周期保持在一起，并根据规范包含一个 `error` 处理器。"
+    },
+    {
+      "en-US": "- [ ] **Step 6: Add startServer function and conditional main**",
+      "zh-Hans": "* \\[ ] **步骤 6：添加 startServer 函数和条件主逻辑**"
+    },
+    {
+      "en-US": "`frameTemplate` and `helperInjection` are already at module scope (Step 2). `startServer` just creates the screen dir, starts the HTTP server, watcher, and logs startup info.",
+      "zh-Hans": "`frameTemplate` 和 `helperInjection` 已在模块作用域（步骤 2）。`startServer` 只是创建屏幕目录、启动 HTTP 服务器、监视器并记录启动信息。"
+    },
+    {
+      "en-US": "```js\nfunction startServer() {\n  if (!fs.existsSync(SCREEN_DIR)) fs.mkdirSync(SCREEN_DIR, { recursive: true });\n\n  const server = http.createServer(handleRequest);\n  server.on('upgrade', handleUpgrade);\n\n  const watcher = fs.watch(SCREEN_DIR, (eventType, filename) => {\n    if (!filename || !filename.endsWith('.html')) return;\n    if (debounceTimers.has(filename)) clearTimeout(debounceTimers.get(filename));\n    debounceTimers.set(filename, setTimeout(() => {\n      debounceTimers.delete(filename);\n      const filePath = path.join(SCREEN_DIR, filename);\n      if (eventType === 'rename' && fs.existsSync(filePath)) {\n        const eventsFile = path.join(SCREEN_DIR, '.events');\n        if (fs.existsSync(eventsFile)) fs.unlinkSync(eventsFile);\n        console.log(JSON.stringify({ type: 'screen-added', file: filePath }));\n      } else if (eventType === 'change') {\n        console.log(JSON.stringify({ type: 'screen-updated', file: filePath }));\n      }\n      broadcast({ type: 'reload' });\n    }, 100));\n  });\n  watcher.on('error', (err) => console.error('fs.watch error:', err.message));\n\n  server.listen(PORT, HOST, () => {\n    const info = JSON.stringify({\n      type: 'server-started', port: Number(PORT), host: HOST,\n      url_host: URL_HOST, url: 'http://' + URL_HOST + ':' + PORT,\n      screen_dir: SCREEN_DIR\n    });\n    console.log(info);\n    fs.writeFileSync(path.join(SCREEN_DIR, '.server-info'), info + '\\n');\n  });\n}\n\nif (require.main === module) {\n  startServer();\n}\n```",
+      "zh-Hans": "```js\nfunction startServer() {\n  if (!fs.existsSync(SCREEN_DIR)) fs.mkdirSync(SCREEN_DIR, { recursive: true });\n\n  const server = http.createServer(handleRequest);\n  server.on('upgrade', handleUpgrade);\n\n  const watcher = fs.watch(SCREEN_DIR, (eventType, filename) => {\n    if (!filename || !filename.endsWith('.html')) return;\n    if (debounceTimers.has(filename)) clearTimeout(debounceTimers.get(filename));\n    debounceTimers.set(filename, setTimeout(() => {\n      debounceTimers.delete(filename);\n      const filePath = path.join(SCREEN_DIR, filename);\n      if (eventType === 'rename' && fs.existsSync(filePath)) {\n        const eventsFile = path.join(SCREEN_DIR, '.events');\n        if (fs.existsSync(eventsFile)) fs.unlinkSync(eventsFile);\n        console.log(JSON.stringify({ type: 'screen-added', file: filePath }));\n      } else if (eventType === 'change') {\n        console.log(JSON.stringify({ type: 'screen-updated', file: filePath }));\n      }\n      broadcast({ type: 'reload' });\n    }, 100));\n  });\n  watcher.on('error', (err) => console.error('fs.watch error:', err.message));\n\n  server.listen(PORT, HOST, () => {\n    const info = JSON.stringify({\n      type: 'server-started', port: Number(PORT), host: HOST,\n      url_host: URL_HOST, url: 'http://' + URL_HOST + ':' + PORT,\n      screen_dir: SCREEN_DIR\n    });\n    console.log(info);\n    fs.writeFileSync(path.join(SCREEN_DIR, '.server-info'), info + '\\n');\n  });\n}\n\nif (require.main === module) {\n  startServer();\n}\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 7: Run integration tests**",
+      "zh-Hans": "* \\[ ] **步骤 7：运行集成测试**"
+    },
+    {
+      "en-US": "The test directory already has a `package.json` with `ws` as a dependency. Install it if needed, then run tests.",
+      "zh-Hans": "测试目录已有一个 `package.json`，依赖 `ws`。如果需要，请安装它，然后运行测试。"
+    },
+    {
+      "en-US": "Run: `cd tests/brainstorm-server && npm install && node server.test.js`\nExpected: All tests pass",
+      "zh-Hans": "运行：`cd tests/brainstorm-server && npm install && node server.test.js`\n预期：所有测试通过"
+    },
+    {
+      "en-US": "- [ ] **Step 8: Commit**",
+      "zh-Hans": "* \\[ ] **步骤 8：提交**"
+    },
+    {
+      "en-US": "```bash\ngit add skills/brainstorming/scripts/server.js\ngit commit -m \"Add HTTP server, WebSocket handling, and file watching to server.js\"\n```",
+      "zh-Hans": "```bash\ngit add skills/brainstorming/scripts/server.js\ngit commit -m \"Add HTTP server, WebSocket handling, and file watching to server.js\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Chunk 3: Swap and Cleanup",
+      "zh-Hans": "## 区块 3：替换和清理"
+    },
+    {
+      "en-US": "### Task 3: Update start-server.sh and remove old files",
+      "zh-Hans": "### 任务 3：更新 start-server.sh 并删除旧文件"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `skills/brainstorming/scripts/start-server.sh:94,100`\n- Modify: `.gitignore:6`\n- Delete: `skills/brainstorming/scripts/index.js`\n- Delete: `skills/brainstorming/scripts/package.json`\n- Delete: `skills/brainstorming/scripts/package-lock.json`\n- Delete: `skills/brainstorming/scripts/node_modules/` (entire directory)\n\n- [ ] **Step 1: Update start-server.sh — change `index.js` to `server.js`**",
+      "zh-Hans": "* 修改：`skills/brainstorming/scripts/start-server.sh:94,100`\n\n* 修改：`.gitignore:6`\n\n* 删除：`skills/brainstorming/scripts/index.js`\n\n* 删除：`skills/brainstorming/scripts/package.json`\n\n* 删除：`skills/brainstorming/scripts/package-lock.json`\n\n* 删除：`skills/brainstorming/scripts/node_modules/`（整个目录）\n\n* \\[ ] **步骤 1：更新 start-server.sh — 将 `index.js` 改为 `server.js`**"
+    },
+    {
+      "en-US": "Two lines to change:",
+      "zh-Hans": "需要更改两行："
+    },
+    {
+      "en-US": "Line 94: `env BRAINSTORM_DIR=\"$SCREEN_DIR\" BRAINSTORM_HOST=\"$BIND_HOST\" BRAINSTORM_URL_HOST=\"$URL_HOST\" node server.js`",
+      "zh-Hans": "第 94 行：`env BRAINSTORM_DIR=\"$SCREEN_DIR\" BRAINSTORM_HOST=\"$BIND_HOST\" BRAINSTORM_URL_HOST=\"$URL_HOST\" node server.js`"
+    },
+    {
+      "en-US": "Line 100: `nohup env BRAINSTORM_DIR=\"$SCREEN_DIR\" BRAINSTORM_HOST=\"$BIND_HOST\" BRAINSTORM_URL_HOST=\"$URL_HOST\" node server.js > \"$LOG_FILE\" 2>&1 &`",
+      "zh-Hans": "第 100 行：`nohup env BRAINSTORM_DIR=\"$SCREEN_DIR\" BRAINSTORM_HOST=\"$BIND_HOST\" BRAINSTORM_URL_HOST=\"$URL_HOST\" node server.js > \"$LOG_FILE\" 2>&1 &`"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Remove the gitignore exception for node_modules**",
+      "zh-Hans": "* \\[ ] **步骤 2：移除对 node\\_modules 的 gitignore 例外**"
+    },
+    {
+      "en-US": "In `.gitignore`, delete line 6: `!skills/brainstorming/scripts/node_modules/`",
+      "zh-Hans": "在 `.gitignore` 中，删除第 6 行：`!skills/brainstorming/scripts/node_modules/`"
+    },
+    {
+      "en-US": "- [ ] **Step 3: Delete old files**",
+      "zh-Hans": "* \\[ ] **步骤 3：删除旧文件**"
+    },
+    {
+      "en-US": "```bash\ngit rm skills/brainstorming/scripts/index.js\ngit rm skills/brainstorming/scripts/package.json\ngit rm skills/brainstorming/scripts/package-lock.json\ngit rm -r skills/brainstorming/scripts/node_modules/\n```",
+      "zh-Hans": "```bash\ngit rm skills/brainstorming/scripts/index.js\ngit rm skills/brainstorming/scripts/package.json\ngit rm skills/brainstorming/scripts/package-lock.json\ngit rm -r skills/brainstorming/scripts/node_modules/\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Run both test suites**",
+      "zh-Hans": "* \\[ ] **步骤 4：运行两个测试套件**"
+    },
+    {
+      "en-US": "Run: `cd tests/brainstorm-server && node ws-protocol.test.js && node server.test.js`\nExpected: All tests pass",
+      "zh-Hans": "运行：`cd tests/brainstorm-server && node ws-protocol.test.js && node server.test.js`\n预期：所有测试通过"
+    },
+    {
+      "en-US": "- [ ] **Step 5: Commit**",
+      "zh-Hans": "* \\[ ] **步骤 5：提交**"
+    },
+    {
+      "en-US": "```bash\ngit add skills/brainstorming/scripts/ .gitignore\ngit commit -m \"Remove vendored node_modules, swap to zero-dep server.js\"\n```",
+      "zh-Hans": "```bash\ngit add skills/brainstorming/scripts/ .gitignore\ngit commit -m \"Remove vendored node_modules, swap to zero-dep server.js\"\n```"
+    },
+    {
+      "en-US": "### Task 4: Manual smoke test",
+      "zh-Hans": "### 任务 4：手动冒烟测试"
+    },
+    {
+      "en-US": "- [ ] **Step 1: Start the server manually**",
+      "zh-Hans": "* \\[ ] **步骤 1：手动启动服务器**"
+    },
+    {
+      "en-US": "```bash\ncd skills/brainstorming/scripts\nBRAINSTORM_DIR=/tmp/brainstorm-smoke BRAINSTORM_PORT=9876 node server.js\n```",
+      "zh-Hans": "```bash\ncd skills/brainstorming/scripts\nBRAINSTORM_DIR=/tmp/brainstorm-smoke BRAINSTORM_PORT=9876 node server.js\n```"
+    },
+    {
+      "en-US": "Expected: `server-started` JSON printed with port 9876",
+      "zh-Hans": "预期：打印 `server-started` JSON，端口为 9876"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Open browser to http://localhost:9876**",
+      "zh-Hans": "* \\[ ] **步骤 2：在浏览器中打开 http://localhost:9876**"
+    },
+    {
+      "en-US": "Expected: Waiting page with \"Waiting for Claude to push a screen...\"",
+      "zh-Hans": "预期：显示等待页面，内容为\"Waiting for Claude to push a screen...\""
+    },
+    {
+      "en-US": "- [ ] **Step 3: Write an HTML file to the screen directory**",
+      "zh-Hans": "* \\[ ] **步骤 3：向屏幕目录写入一个 HTML 文件**"
+    },
+    {
+      "en-US": "```bash\necho '<h2>Hello from smoke test</h2>' > /tmp/brainstorm-smoke/test.html\n```",
+      "zh-Hans": "```bash\necho '<h2>Hello from smoke test</h2>' > /tmp/brainstorm-smoke/test.html\n```"
+    },
+    {
+      "en-US": "Expected: Browser reloads and shows \"Hello from smoke test\" wrapped in frame template",
+      "zh-Hans": "预期：浏览器刷新并显示\"Hello from smoke test\"，包裹在框架模板中"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Verify WebSocket works — check browser console**",
+      "zh-Hans": "* \\[ ] **步骤 4：验证 WebSocket 是否正常工作 — 检查浏览器控制台**"
+    },
+    {
+      "en-US": "Open browser dev tools. The WebSocket connection should show as connected (no errors in console). The frame template's status indicator should show \"Connected\".",
+      "zh-Hans": "打开浏览器开发者工具。WebSocket 连接应显示为已连接（控制台无错误）。框架模板的状态指示器应显示\"Connected\"。"
+    },
+    {
+      "en-US": "- [ ] **Step 5: Stop server with Ctrl-C, clean up**",
+      "zh-Hans": "* \\[ ] **步骤 5：使用 Ctrl-C 停止服务器，清理**"
+    },
+    {
+      "en-US": "```bash\nrm -rf /tmp/brainstorm-smoke\n```",
+      "zh-Hans": "```bash\nrm -rf /tmp/brainstorm-smoke\n```"
+    }
+  ]
+}

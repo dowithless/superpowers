@@ -1,0 +1,326 @@
+{
+  "sourceFile": "skills/writing-skills/persuasion-principles.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Persuasion Principles for Skill Design",
+      "zh-Hans": "# 技能设计中的说服原则"
+    },
+    {
+      "en-US": "## Overview",
+      "zh-Hans": "## 概述"
+    },
+    {
+      "en-US": "LLMs respond to the same persuasion principles as humans. Understanding this psychology helps you design more effective skills - not to manipulate, but to ensure critical practices are followed even under pressure.",
+      "zh-Hans": "大语言模型与人类对相同的说服原则产生反应。理解这种心理学有助于你设计更有效的技能——不是为了操纵，而是为了确保即使在压力下也能遵循关键实践。"
+    },
+    {
+      "en-US": "**Research foundation:** Meincke et al. (2025) tested 7 persuasion principles with N=28,000 AI conversations. Persuasion techniques more than doubled compliance rates (33% → 72%, p < .001).",
+      "zh-Hans": "**研究基础：** Meincke 等人（2025）在 N=28,000 次 AI 对话中测试了 7 个说服原则。说服技巧使遵从率提高了一倍以上（33% → 72%，p < .001）。"
+    },
+    {
+      "en-US": "## The Seven Principles",
+      "zh-Hans": "## 七项原则"
+    },
+    {
+      "en-US": "### 1. Authority",
+      "zh-Hans": "### 1. 权威性"
+    },
+    {
+      "en-US": "**What it is:** Deference to expertise, credentials, or official sources.",
+      "zh-Hans": "**是什么：** 对专业知识、资历或官方来源的遵从。"
+    },
+    {
+      "en-US": "**How it works in skills:**",
+      "zh-Hans": "**在技能中如何运作：**"
+    },
+    {
+      "en-US": "- Imperative language: \"YOU MUST\", \"Never\", \"Always\"\n- Non-negotiable framing: \"No exceptions\"\n- Eliminates decision fatigue and rationalization",
+      "zh-Hans": "* 命令式语言：\"你必须\"，\"绝不\"，\"始终\"\n* 不容商量的措辞：\"没有例外\"\n* 消除决策疲劳和合理化借口"
+    },
+    {
+      "en-US": "**When to use:**",
+      "zh-Hans": "**何时使用：**"
+    },
+    {
+      "en-US": "- Discipline-enforcing skills (TDD, verification requirements)\n- Safety-critical practices\n- Established best practices",
+      "zh-Hans": "* 纪律执行类技能（TDD、验证要求）\n* 安全关键实践\n* 既定的最佳实践"
+    },
+    {
+      "en-US": "**Example:**",
+      "zh-Hans": "**示例：**"
+    },
+    {
+      "en-US": "```markdown\n✅ Write code before test? Delete it. Start over. No exceptions.\n❌ Consider writing tests first when feasible.\n```",
+      "zh-Hans": "```markdown\n✅ 先写代码再测试？删掉重写。没有例外。\n❌ 在可行的情况下，优先考虑先写测试。\n```"
+    },
+    {
+      "en-US": "### 2. Commitment",
+      "zh-Hans": "### 2. 承诺一致性"
+    },
+    {
+      "en-US": "**What it is:** Consistency with prior actions, statements, or public declarations.",
+      "zh-Hans": "**是什么：** 与先前行动、声明或公开宣告保持一致。"
+    },
+    {
+      "en-US": "**How it works in skills:**",
+      "zh-Hans": "**在技能中如何运作：**"
+    },
+    {
+      "en-US": "- Require announcements: \"Announce skill usage\"\n- Force explicit choices: \"Choose A, B, or C\"\n- Use tracking: TodoWrite for checklists",
+      "zh-Hans": "* 要求宣告：\"宣布技能使用\"\n* 强制明确选择：\"选择 A、B 或 C\"\n* 使用追踪：用 TodoWrite 做清单"
+    },
+    {
+      "en-US": "**When to use:**",
+      "zh-Hans": "**何时使用：**"
+    },
+    {
+      "en-US": "- Ensuring skills are actually followed\n- Multi-step processes\n- Accountability mechanisms",
+      "zh-Hans": "* 确保技能得到实际遵循\n* 多步骤流程\n* 问责机制"
+    },
+    {
+      "en-US": "**Example:**",
+      "zh-Hans": "**示例：**"
+    },
+    {
+      "en-US": "```markdown\n✅ When you find a skill, you MUST announce: \"I'm using [Skill Name]\"\n❌ Consider letting your partner know which skill you're using.\n```",
+      "zh-Hans": "```markdown\n✅ 当你发现一项技能时，你必须宣布：“我正在使用【技能名称】”\n❌ 请考虑告知你的伙伴你正在使用哪项技能。\n```"
+    },
+    {
+      "en-US": "### 3. Scarcity",
+      "zh-Hans": "### 3. 稀缺性"
+    },
+    {
+      "en-US": "**What it is:** Urgency from time limits or limited availability.",
+      "zh-Hans": "**是什么：** 由时间限制或有限可用性产生的紧迫感。"
+    },
+    {
+      "en-US": "**How it works in skills:**",
+      "zh-Hans": "**在技能中如何运作：**"
+    },
+    {
+      "en-US": "- Time-bound requirements: \"Before proceeding\"\n- Sequential dependencies: \"Immediately after X\"\n- Prevents procrastination",
+      "zh-Hans": "* 有时限的要求：\"在继续之前\"\n* 顺序依赖：\"在 X 之后立即\"\n* 防止拖延"
+    },
+    {
+      "en-US": "**When to use:**",
+      "zh-Hans": "**何时使用：**"
+    },
+    {
+      "en-US": "- Immediate verification requirements\n- Time-sensitive workflows\n- Preventing \"I'll do it later\"",
+      "zh-Hans": "* 即时验证要求\n* 时间敏感的工作流\n* 防止\"我稍后再做\""
+    },
+    {
+      "en-US": "**Example:**",
+      "zh-Hans": "**示例：**"
+    },
+    {
+      "en-US": "```markdown\n✅ After completing a task, IMMEDIATELY request code review before proceeding.\n❌ You can review code when convenient.\n```",
+      "zh-Hans": "```markdown\n✅ 完成任务后，请立即申请代码审查，然后再继续下一步。\n❌ 您可以在方便时审查代码。\n```"
+    },
+    {
+      "en-US": "### 4. Social Proof",
+      "zh-Hans": "### 4. 社会认同"
+    },
+    {
+      "en-US": "**What it is:** Conformity to what others do or what's considered normal.",
+      "zh-Hans": "**是什么：** 遵从他人行为或被认为是常态的做法。"
+    },
+    {
+      "en-US": "**How it works in skills:**",
+      "zh-Hans": "**在技能中如何运作：**"
+    },
+    {
+      "en-US": "- Universal patterns: \"Every time\", \"Always\"\n- Failure modes: \"X without Y = failure\"\n- Establishes norms",
+      "zh-Hans": "* 普遍模式：\"每次\"，\"总是\"\n* 失败模式：\"没有 Y 的 X = 失败\"\n* 建立规范"
+    },
+    {
+      "en-US": "**When to use:**",
+      "zh-Hans": "**何时使用：**"
+    },
+    {
+      "en-US": "- Documenting universal practices\n- Warning about common failures\n- Reinforcing standards",
+      "zh-Hans": "* 记录普遍实践\n* 警告常见失败\n* 强化标准"
+    },
+    {
+      "en-US": "**Example:**",
+      "zh-Hans": "**示例：**"
+    },
+    {
+      "en-US": "```markdown\n✅ Checklists without TodoWrite tracking = steps get skipped. Every time.\n❌ Some people find TodoWrite helpful for checklists.\n```",
+      "zh-Hans": "```markdown\n✅ 没有 TodoWrite 追踪的清单 = 步骤总被跳过。每次都这样。\n❌ 有些人觉得 TodoWrite 对清单很有帮助。\n```"
+    },
+    {
+      "en-US": "### 5. Unity",
+      "zh-Hans": "### 5. 统一性"
+    },
+    {
+      "en-US": "**What it is:** Shared identity, \"we-ness\", in-group belonging.",
+      "zh-Hans": "**是什么：** 共享身份、\"我们\"感、群体归属感。"
+    },
+    {
+      "en-US": "**How it works in skills:**",
+      "zh-Hans": "**在技能中如何运作：**"
+    },
+    {
+      "en-US": "- Collaborative language: \"our codebase\", \"we're colleagues\"\n- Shared goals: \"we both want quality\"",
+      "zh-Hans": "* 协作性语言：\"我们的代码库\"，\"我们是同事\"\n* 共同目标：\"我们都想要高质量\""
+    },
+    {
+      "en-US": "**When to use:**",
+      "zh-Hans": "**何时使用：**"
+    },
+    {
+      "en-US": "- Collaborative workflows\n- Establishing team culture\n- Non-hierarchical practices",
+      "zh-Hans": "* 协作工作流\n* 建立团队文化\n* 非等级制的实践"
+    },
+    {
+      "en-US": "**Example:**",
+      "zh-Hans": "**示例：**"
+    },
+    {
+      "en-US": "```markdown\n✅ We're colleagues working together. I need your honest technical judgment.\n❌ You should probably tell me if I'm wrong.\n```",
+      "zh-Hans": "```markdown\n✅ 我们是共同工作的同事。我需要你诚实的技术判断。\n❌ 如果我错了，你或许应该告诉我。\n```"
+    },
+    {
+      "en-US": "### 6. Reciprocity",
+      "zh-Hans": "### 6. 互惠性"
+    },
+    {
+      "en-US": "**What it is:** Obligation to return benefits received.",
+      "zh-Hans": "**是什么：** 回报所获好处的义务。"
+    },
+    {
+      "en-US": "**How it works:**",
+      "zh-Hans": "**如何运作：**"
+    },
+    {
+      "en-US": "- Use sparingly - can feel manipulative\n- Rarely needed in skills",
+      "zh-Hans": "* 谨慎使用——可能让人觉得被操纵\n* 在技能中很少需要"
+    },
+    {
+      "en-US": "**When to avoid:**",
+      "zh-Hans": "**何时避免：**"
+    },
+    {
+      "en-US": "- Almost always (other principles more effective)",
+      "zh-Hans": "* 几乎总是（其他原则更有效）"
+    },
+    {
+      "en-US": "### 7. Liking",
+      "zh-Hans": "### 7. 喜好性"
+    },
+    {
+      "en-US": "**What it is:** Preference for cooperating with those we like.",
+      "zh-Hans": "**是什么：** 倾向于与我们喜欢的人合作。"
+    },
+    {
+      "en-US": "**How it works:**",
+      "zh-Hans": "**如何运作：**"
+    },
+    {
+      "en-US": "- **DON'T USE for compliance**\n- Conflicts with honest feedback culture\n- Creates sycophancy",
+      "zh-Hans": "* **切勿用于遵从性**\n* 与诚实反馈文化冲突\n* 产生阿谀奉承"
+    },
+    {
+      "en-US": "**When to avoid:**",
+      "zh-Hans": "**何时避免：**"
+    },
+    {
+      "en-US": "- Always for discipline enforcement",
+      "zh-Hans": "* 纪律执行时总是避免"
+    },
+    {
+      "en-US": "## Principle Combinations by Skill Type",
+      "zh-Hans": "## 按技能类型组合原则"
+    },
+    {
+      "en-US": "| Skill Type | Use | Avoid |\n|------------|-----|-------|\n| Discipline-enforcing | Authority + Commitment + Social Proof | Liking, Reciprocity |\n| Guidance/technique | Moderate Authority + Unity | Heavy authority |\n| Collaborative | Unity + Commitment | Authority, Liking |\n| Reference | Clarity only | All persuasion |",
+      "zh-Hans": "| 技能类型 | 使用 | 避免 |\n|------------|-----|-------|\n| 纪律执行类 | 权威性 + 承诺一致性 + 社会认同 | 喜好性，互惠性 |\n| 指导/技术类 | 适度的权威性 + 统一性 | 强权威性 |\n| 协作类 | 统一性 + 承诺一致性 | 权威性，喜好性 |\n| 参考类 | 仅需清晰 | 所有说服原则 |"
+    },
+    {
+      "en-US": "## Why This Works: The Psychology",
+      "zh-Hans": "## 为何有效：心理学原理"
+    },
+    {
+      "en-US": "**Bright-line rules reduce rationalization:**",
+      "zh-Hans": "**明确规则减少合理化：**"
+    },
+    {
+      "en-US": "- \"YOU MUST\" removes decision fatigue\n- Absolute language eliminates \"is this an exception?\" questions\n- Explicit anti-rationalization counters close specific loopholes",
+      "zh-Hans": "* \"你必须\"消除了决策疲劳\n* 绝对语言消除了\"这是例外吗？\"的疑问\n* 明确的防合理化措施堵住了特定漏洞"
+    },
+    {
+      "en-US": "**Implementation intentions create automatic behavior:**",
+      "zh-Hans": "**执行意图创造自动行为：**"
+    },
+    {
+      "en-US": "- Clear triggers + required actions = automatic execution\n- \"When X, do Y\" more effective than \"generally do Y\"\n- Reduces cognitive load on compliance",
+      "zh-Hans": "* 清晰的触发器 + 必要的行动 = 自动执行\n* \"当 X 时，做 Y\" 比\"通常做 Y\"更有效\n* 减少了遵从的认知负荷"
+    },
+    {
+      "en-US": "**LLMs are parahuman:**",
+      "zh-Hans": "**大语言模型是类人的：**"
+    },
+    {
+      "en-US": "- Trained on human text containing these patterns\n- Authority language precedes compliance in training data\n- Commitment sequences (statement → action) frequently modeled\n- Social proof patterns (everyone does X) establish norms",
+      "zh-Hans": "* 在包含这些模式的人类文本上训练\n* 训练数据中权威性语言先于遵从行为出现\n* 承诺序列（声明 → 行动）被频繁建模\n* 社会认同模式（每个人都做 X）建立了规范"
+    },
+    {
+      "en-US": "## Ethical Use",
+      "zh-Hans": "## 伦理使用"
+    },
+    {
+      "en-US": "**Legitimate:**",
+      "zh-Hans": "**正当的：**"
+    },
+    {
+      "en-US": "- Ensuring critical practices are followed\n- Creating effective documentation\n- Preventing predictable failures",
+      "zh-Hans": "* 确保关键实践得到遵循\n* 创建有效的文档\n* 防止可预见的失败"
+    },
+    {
+      "en-US": "**Illegitimate:**",
+      "zh-Hans": "**不正当的：**"
+    },
+    {
+      "en-US": "- Manipulating for personal gain\n- Creating false urgency\n- Guilt-based compliance",
+      "zh-Hans": "* 为个人利益而操纵\n* 制造虚假紧迫感\n* 基于内疚的遵从"
+    },
+    {
+      "en-US": "**The test:** Would this technique serve the user's genuine interests if they fully understood it?",
+      "zh-Hans": "**检验标准：** 如果用户完全理解，这项技术是否服务于他们真正的利益？"
+    },
+    {
+      "en-US": "## Research Citations",
+      "zh-Hans": "## 研究引用"
+    },
+    {
+      "en-US": "**Cialdini, R. B. (2021).** *Influence: The Psychology of Persuasion (New and Expanded).* Harper Business.",
+      "zh-Hans": "**Cialdini, R. B. (2021).** *《影响力：说服心理学（新版及扩展版）》.* Harper Business."
+    },
+    {
+      "en-US": "- Seven principles of persuasion\n- Empirical foundation for influence research",
+      "zh-Hans": "* 说服的七项原则\n* 影响力研究的实证基础"
+    },
+    {
+      "en-US": "**Meincke, L., Shapiro, D., Duckworth, A. L., Mollick, E., Mollick, L., & Cialdini, R. (2025).** Call Me A Jerk: Persuading AI to Comply with Objectionable Requests. University of Pennsylvania.",
+      "zh-Hans": "**Meincke, L., Shapiro, D., Duckworth, A. L., Mollick, E., Mollick, L., & Cialdini, R. (2025).** Call Me A Jerk: Persuading AI to Comply with Objectionable Requests. 宾夕法尼亚大学."
+    },
+    {
+      "en-US": "- Tested 7 principles with N=28,000 LLM conversations\n- Compliance increased 33% → 72% with persuasion techniques\n- Authority, commitment, scarcity most effective\n- Validates parahuman model of LLM behavior",
+      "zh-Hans": "* 在 N=28,000 次 LLM 对话中测试了 7 项原则\n* 使用说服技巧后遵从率从 33% 增加到 72%\n* 权威性、承诺一致性、稀缺性最有效\n* 验证了 LLM 行为的类人模型"
+    },
+    {
+      "en-US": "## Quick Reference",
+      "zh-Hans": "## 快速参考"
+    },
+    {
+      "en-US": "When designing a skill, ask:",
+      "zh-Hans": "设计技能时，问自己："
+    },
+    {
+      "en-US": "1. **What type is it?** (Discipline vs. guidance vs. reference)\n2. **What behavior am I trying to change?**\n3. **Which principle(s) apply?** (Usually authority + commitment for discipline)\n4. **Am I combining too many?** (Don't use all seven)\n5. **Is this ethical?** (Serves user's genuine interests?)",
+      "zh-Hans": "1. **它是什么类型？**（纪律类 vs. 指导类 vs. 参考类）\n2. **我想改变什么行为？**\n3. **哪些原则适用？**（对于纪律类通常用权威性 + 承诺一致性）\n4. **我组合的原则太多了吗？**（不要七项全用）\n5. **这合乎伦理吗？**（服务于用户真正的利益吗？）"
+    }
+  ]
+}

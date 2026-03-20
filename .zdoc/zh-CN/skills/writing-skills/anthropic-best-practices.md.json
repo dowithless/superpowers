@@ -1,0 +1,1070 @@
+{
+  "sourceFile": "skills/writing-skills/anthropic-best-practices.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Skill authoring best practices",
+      "zh-Hans": "# 技能创作最佳实践"
+    },
+    {
+      "en-US": "> Learn how to write effective Skills that Claude can discover and use successfully.",
+      "zh-Hans": "> 学习如何编写有效的技能，以便 Claude 能够成功发现和使用。"
+    },
+    {
+      "en-US": "Good Skills are concise, well-structured, and tested with real usage. This guide provides practical authoring decisions to help you write Skills that Claude can discover and use effectively.",
+      "zh-Hans": "好的技能应该简洁、结构良好，并经过实际使用测试。本指南提供了实用的创作决策，帮助您编写 Claude 能够有效发现和使用的技能。"
+    },
+    {
+      "en-US": "For conceptual background on how Skills work, see the [Skills overview](/en/docs/agents-and-tools/agent-skills/overview).",
+      "zh-Hans": "关于技能工作原理的概念背景，请参阅[技能概述](/en/docs/agents-and-tools/agent-skills/overview)。"
+    },
+    {
+      "en-US": "## Core principles",
+      "zh-Hans": "## 核心原则"
+    },
+    {
+      "en-US": "### Concise is key",
+      "zh-Hans": "### 简洁是关键"
+    },
+    {
+      "en-US": "The [context window](https://platform.claude.com/docs/en/build-with-claude/context-windows) is a public good. Your Skill shares the context window with everything else Claude needs to know, including:",
+      "zh-Hans": "[上下文窗口](https://platform.claude.com/docs/en/build-with-claude/context-windows)是公共资源。您的技能需要与 Claude 需要知道的所有其他内容共享上下文窗口，包括："
+    },
+    {
+      "en-US": "* The system prompt\n* Conversation history\n* Other Skills' metadata\n* Your actual request",
+      "zh-Hans": "* 系统提示\n* 对话历史\n* 其他技能的元数据\n* 您的实际请求"
+    },
+    {
+      "en-US": "Not every token in your Skill has an immediate cost. At startup, only the metadata (name and description) from all Skills is pre-loaded. Claude reads SKILL.md only when the Skill becomes relevant, and reads additional files only as needed. However, being concise in SKILL.md still matters: once Claude loads it, every token competes with conversation history and other context.",
+      "zh-Hans": "并非技能中的每个令牌都会立即产生成本。启动时，只会预加载所有技能的元数据（名称和描述）。Claude 只有在技能变得相关时才会读取 SKILL.md，并且仅在需要时读取其他文件。然而，保持 SKILL.md 的简洁仍然很重要：一旦 Claude 加载了它，每个令牌都会与对话历史和其他上下文竞争。"
+    },
+    {
+      "en-US": "**Default assumption**: Claude is already very smart",
+      "zh-Hans": "**默认假设**：Claude 已经非常智能"
+    },
+    {
+      "en-US": "Only add context Claude doesn't already have. Challenge each piece of information:",
+      "zh-Hans": "只添加 Claude 尚未掌握的上下文。挑战每一条信息："
+    },
+    {
+      "en-US": "* \"Does Claude really need this explanation?\"\n* \"Can I assume Claude knows this?\"\n* \"Does this paragraph justify its token cost?\"",
+      "zh-Hans": "* “Claude 真的需要这个解释吗？”\n* “我可以假设 Claude 知道这个吗？”\n* “这个段落是否值得其令牌成本？”"
+    },
+    {
+      "en-US": "**Good example: Concise** (approximately 50 tokens):",
+      "zh-Hans": "**良好示例：简洁**（约 50 个令牌）："
+    },
+    {
+      "en-US": "````markdown  theme={null}\n## Extract PDF text\n\nUse pdfplumber for text extraction:\n\n```python\nimport pdfplumber\n\nwith pdfplumber.open(\"file.pdf\") as pdf:\n    text = pdf.pages[0].extract_text()\n```\n````",
+      "zh-Hans": "````markdown\n## 提取 PDF 文本\n\n使用 pdfplumber 进行文本提取：\n\n```python\nimport pdfplumber\n\nwith pdfplumber.open(\"file.pdf\") as pdf:\n    text = pdf.pages[0].extract_text()\n```\n````"
+    },
+    {
+      "en-US": "**Bad example: Too verbose** (approximately 150 tokens):",
+      "zh-Hans": "**不良示例：过于冗长**（约 150 个令牌）："
+    },
+    {
+      "en-US": "```markdown  theme={null}\n## Extract PDF text\n\nPDF (Portable Document Format) files are a common file format that contains\ntext, images, and other content. To extract text from a PDF, you'll need to\nuse a library. There are many libraries available for PDF processing, but we\nrecommend pdfplumber because it's easy to use and handles most cases well.\nFirst, you'll need to install it using pip. Then you can use the code below...\n```",
+      "zh-Hans": "```markdown\n## 提取 PDF 文本\n\nPDF（便携式文档格式）文件是一种常见的文件格式，其中包含文本、图像和其他内容。要从 PDF 中提取文本，你需要使用一个库。有许多可用于 PDF 处理的库，但我们推荐 pdfplumber，因为它易于使用且能很好地处理大多数情况。首先，你需要使用 pip 安装它。然后你可以使用下面的代码...\n```"
+    },
+    {
+      "en-US": "The concise version assumes Claude knows what PDFs are and how libraries work.",
+      "zh-Hans": "简洁版本假设 Claude 知道 PDF 是什么以及库如何工作。"
+    },
+    {
+      "en-US": "### Set appropriate degrees of freedom",
+      "zh-Hans": "### 设置适当的自由度"
+    },
+    {
+      "en-US": "Match the level of specificity to the task's fragility and variability.",
+      "zh-Hans": "将详细程度与任务的脆弱性和可变性相匹配。"
+    },
+    {
+      "en-US": "**High freedom** (text-based instructions):",
+      "zh-Hans": "**高自由度**（基于文本的指令）："
+    },
+    {
+      "en-US": "Use when:",
+      "zh-Hans": "适用于："
+    },
+    {
+      "en-US": "* Multiple approaches are valid\n* Decisions depend on context\n* Heuristics guide the approach",
+      "zh-Hans": "* 多种方法都有效\n* 决策取决于上下文\n* 启发式方法指导操作"
+    },
+    {
+      "en-US": "Example:",
+      "zh-Hans": "示例："
+    },
+    {
+      "en-US": "```markdown  theme={null}\n## Code review process\n\n1. Analyze the code structure and organization\n2. Check for potential bugs or edge cases\n3. Suggest improvements for readability and maintainability\n4. Verify adherence to project conventions\n```",
+      "zh-Hans": "```markdown\n## 代码审查流程\n\n1. 分析代码结构与组织方式\n2. 检查潜在缺陷与边界情况\n3. 提出可读性与可维护性改进建议\n4. 验证是否符合项目规范\n```"
+    },
+    {
+      "en-US": "**Medium freedom** (pseudocode or scripts with parameters):",
+      "zh-Hans": "**中等自由度**（带参数的伪代码或脚本）："
+    },
+    {
+      "en-US": "Use when:",
+      "zh-Hans": "适用于："
+    },
+    {
+      "en-US": "* A preferred pattern exists\n* Some variation is acceptable\n* Configuration affects behavior",
+      "zh-Hans": "* 存在首选模式\n* 接受一定的变化\n* 配置影响行为"
+    },
+    {
+      "en-US": "Example:",
+      "zh-Hans": "示例："
+    },
+    {
+      "en-US": "````markdown  theme={null}\n## Generate report\n\nUse this template and customize as needed:\n\n```python\ndef generate_report(data, format=\"markdown\", include_charts=True):\n    # Process data\n    # Generate output in specified format\n    # Optionally include visualizations\n```\n````",
+      "zh-Hans": "````markdown\n## 生成报告\n\n使用此模板并根据需要自定义：\n\n```python\ndef generate_report(data, format=\"markdown\", include_charts=True):\n    # Process data\n    # Generate output in specified format\n    # Optionally include visualizations\n```\n````"
+    },
+    {
+      "en-US": "**Low freedom** (specific scripts, few or no parameters):",
+      "zh-Hans": "**低自由度**（特定脚本，参数很少或没有）："
+    },
+    {
+      "en-US": "Use when:",
+      "zh-Hans": "适用于："
+    },
+    {
+      "en-US": "* Operations are fragile and error-prone\n* Consistency is critical\n* A specific sequence must be followed",
+      "zh-Hans": "* 操作脆弱且容易出错\n* 一致性至关重要\n* 必须遵循特定顺序"
+    },
+    {
+      "en-US": "Example:",
+      "zh-Hans": "示例："
+    },
+    {
+      "en-US": "````markdown  theme={null}\n## Database migration\n\nRun exactly this script:\n\n```bash\npython scripts/migrate.py --verify --backup\n```\n\nDo not modify the command or add additional flags.\n````",
+      "zh-Hans": "````markdown\n## 数据库迁移\n\n请严格运行以下脚本：\n\n```bash\npython scripts/migrate.py --verify --backup\n```\n\n请勿修改命令或添加额外参数。\n````"
+    },
+    {
+      "en-US": "**Analogy**: Think of Claude as a robot exploring a path:",
+      "zh-Hans": "**类比**：将 Claude 想象成一个探索路径的机器人："
+    },
+    {
+      "en-US": "* **Narrow bridge with cliffs on both sides**: There's only one safe way forward. Provide specific guardrails and exact instructions (low freedom). Example: database migrations that must run in exact sequence.\n* **Open field with no hazards**: Many paths lead to success. Give general direction and trust Claude to find the best route (high freedom). Example: code reviews where context determines the best approach.",
+      "zh-Hans": "* **两侧是悬崖的狭窄桥梁**：只有一种安全的前进方式。提供具体的防护栏和确切的指令（低自由度）。示例：必须按确切顺序运行的数据库迁移。\n* **没有危险的开放田野**：许多路径都能通向成功。给出大致方向，并相信 Claude 能找到最佳路线（高自由度）。示例：代码审查，其中上下文决定了最佳方法。"
+    },
+    {
+      "en-US": "### Test with all models you plan to use",
+      "zh-Hans": "### 使用计划使用的所有模型进行测试"
+    },
+    {
+      "en-US": "Skills act as additions to models, so effectiveness depends on the underlying model. Test your Skill with all the models you plan to use it with.",
+      "zh-Hans": "技能作为模型的补充，因此其有效性取决于底层模型。请使用您计划使用的所有模型测试您的技能。"
+    },
+    {
+      "en-US": "**Testing considerations by model**:",
+      "zh-Hans": "**按模型划分的测试注意事项**："
+    },
+    {
+      "en-US": "* **Claude Haiku** (fast, economical): Does the Skill provide enough guidance?\n* **Claude Sonnet** (balanced): Is the Skill clear and efficient?\n* **Claude Opus** (powerful reasoning): Does the Skill avoid over-explaining?",
+      "zh-Hans": "* **Claude Haiku**（快速、经济）：技能是否提供了足够的指导？\n* **Claude Sonnet**（平衡）：技能是否清晰高效？\n* **Claude Opus**（强大的推理能力）：技能是否避免了过度解释？"
+    },
+    {
+      "en-US": "What works perfectly for Opus might need more detail for Haiku. If you plan to use your Skill across multiple models, aim for instructions that work well with all of them.",
+      "zh-Hans": "对 Opus 完美有效的内容可能需要对 Haiku 提供更多细节。如果您计划在多个模型中使用您的技能，请力求指令在所有模型上都能良好工作。"
+    },
+    {
+      "en-US": "## Skill structure",
+      "zh-Hans": "## 技能结构"
+    },
+    {
+      "en-US": "<Note>\n  **YAML Frontmatter**: The SKILL.md frontmatter supports two fields:",
+      "zh-Hans": "<Note>\n  **YAML Frontmatter**：SKILL.md 前置元数据支持两个字段："
+    },
+    {
+      "en-US": "* `name` - Human-readable name of the Skill (64 characters maximum)\n  * `description` - One-line description of what the Skill does and when to use it (1024 characters maximum)",
+      "zh-Hans": "* `name` - 技能的人类可读名称（最多 64 个字符）\n  * `description` - 对技能功能及使用场景的单行描述（最多 1024 个字符）"
+    },
+    {
+      "en-US": "For complete Skill structure details, see the [Skills overview](/en/docs/agents-and-tools/agent-skills/overview#skill-structure).\n</Note>",
+      "zh-Hans": "有关完整技能结构详情，请参阅[技能概述](/en/docs/agents-and-tools/agent-skills/overview#skill-structure)。</Note>"
+    },
+    {
+      "en-US": "### Naming conventions",
+      "zh-Hans": "### 命名规范"
+    },
+    {
+      "en-US": "Use consistent naming patterns to make Skills easier to reference and discuss. We recommend using **gerund form** (verb + -ing) for Skill names, as this clearly describes the activity or capability the Skill provides.",
+      "zh-Hans": "使用一致的命名模式，使技能更容易引用和讨论。我们建议在技能名称中使用**动名词形式**（动词 + -ing），因为这能清晰地描述技能提供的活动或能力。"
+    },
+    {
+      "en-US": "**Good naming examples (gerund form)**:",
+      "zh-Hans": "**良好的命名示例（动名词形式）**："
+    },
+    {
+      "en-US": "* \"Processing PDFs\"\n* \"Analyzing spreadsheets\"\n* \"Managing databases\"\n* \"Testing code\"\n* \"Writing documentation\"",
+      "zh-Hans": "* “Processing PDFs”\n* “Analyzing spreadsheets”\n* “Managing databases”\n* “Testing code”\n* “Writing documentation”"
+    },
+    {
+      "en-US": "**Acceptable alternatives**:",
+      "zh-Hans": "**可接受的替代方案**："
+    },
+    {
+      "en-US": "* Noun phrases: \"PDF Processing\", \"Spreadsheet Analysis\"\n* Action-oriented: \"Process PDFs\", \"Analyze Spreadsheets\"",
+      "zh-Hans": "* 名词短语：“PDF Processing”、“Spreadsheet Analysis”\n* 面向行动的：“Process PDFs”、“Analyze Spreadsheets”"
+    },
+    {
+      "en-US": "**Avoid**:",
+      "zh-Hans": "**避免**："
+    },
+    {
+      "en-US": "* Vague names: \"Helper\", \"Utils\", \"Tools\"\n* Overly generic: \"Documents\", \"Data\", \"Files\"\n* Inconsistent patterns within your skill collection",
+      "zh-Hans": "* 模糊的名称：“Helper”、“Utils”、“Tools”\n* 过于通用：“Documents”、“Data”、“Files”\n* 在您的技能集合中使用不一致的模式"
+    },
+    {
+      "en-US": "Consistent naming makes it easier to:",
+      "zh-Hans": "一致的命名使得："
+    },
+    {
+      "en-US": "* Reference Skills in documentation and conversations\n* Understand what a Skill does at a glance\n* Organize and search through multiple Skills\n* Maintain a professional, cohesive skill library",
+      "zh-Hans": "* 在文档和对话中引用技能更容易\n* 一目了然地理解技能的功能\n* 组织和搜索多个技能更容易\n* 保持专业、连贯的技能库"
+    },
+    {
+      "en-US": "### Writing effective descriptions",
+      "zh-Hans": "### 编写有效的描述"
+    },
+    {
+      "en-US": "The `description` field enables Skill discovery and should include both what the Skill does and when to use it.",
+      "zh-Hans": "`description` 字段支持技能发现，应同时包含技能的功能和使用时机。"
+    },
+    {
+      "en-US": "<Warning>\n  **Always write in third person**. The description is injected into the system prompt, and inconsistent point-of-view can cause discovery problems.",
+      "zh-Hans": "<Warning>\n  **始终使用第三人称写作**。描述信息会被注入系统提示中，人称不一致可能导致发现错误。"
+    },
+    {
+      "en-US": "* **Good:** \"Processes Excel files and generates reports\"\n  * **Avoid:** \"I can help you process Excel files\"\n  * **Avoid:** \"You can use this to process Excel files\"\n</Warning>",
+      "zh-Hans": "* **良好：** “Processes Excel files and generates reports”\n  * **避免：** “I can help you process Excel files”\n  * **避免：** “You can use this to process Excel files” </Warning>"
+    },
+    {
+      "en-US": "**Be specific and include key terms**. Include both what the Skill does and specific triggers/contexts for when to use it.",
+      "zh-Hans": "**具体并包含关键术语**。包含技能的功能以及何时使用它的具体触发条件/上下文。"
+    },
+    {
+      "en-US": "Each Skill has exactly one description field. The description is critical for skill selection: Claude uses it to choose the right Skill from potentially 100+ available Skills. Your description must provide enough detail for Claude to know when to select this Skill, while the rest of SKILL.md provides the implementation details.",
+      "zh-Hans": "每个技能只有一个描述字段。描述对于技能选择至关重要：Claude 使用它从可能 100 多个可用技能中选择正确的技能。您的描述必须提供足够的细节，以便 Claude 知道何时选择此技能，而 SKILL.md 的其余部分则提供实现细节。"
+    },
+    {
+      "en-US": "Effective examples:",
+      "zh-Hans": "有效示例："
+    },
+    {
+      "en-US": "**PDF Processing skill:**",
+      "zh-Hans": "**PDF 处理技能：**"
+    },
+    {
+      "en-US": "```yaml  theme={null}\ndescription: Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.\n```",
+      "zh-Hans": "```yaml theme={null}\ndescription: Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.\n```"
+    },
+    {
+      "en-US": "**Excel Analysis skill:**",
+      "zh-Hans": "**Excel 分析技能：**"
+    },
+    {
+      "en-US": "```yaml  theme={null}\ndescription: Analyze Excel spreadsheets, create pivot tables, generate charts. Use when analyzing Excel files, spreadsheets, tabular data, or .xlsx files.\n```",
+      "zh-Hans": "```yaml theme={null}\ndescription: Analyze Excel spreadsheets, create pivot tables, generate charts. Use when analyzing Excel files, spreadsheets, tabular data, or .xlsx files.\n```"
+    },
+    {
+      "en-US": "**Git Commit Helper skill:**",
+      "zh-Hans": "**Git 提交助手技能：**"
+    },
+    {
+      "en-US": "```yaml  theme={null}\ndescription: Generate descriptive commit messages by analyzing git diffs. Use when the user asks for help writing commit messages or reviewing staged changes.\n```",
+      "zh-Hans": "```yaml theme={null}\ndescription: Generate descriptive commit messages by analyzing git diffs. Use when the user asks for help writing commit messages or reviewing staged changes.\n```"
+    },
+    {
+      "en-US": "Avoid vague descriptions like these:",
+      "zh-Hans": "避免像这样的模糊描述："
+    },
+    {
+      "en-US": "```yaml  theme={null}\ndescription: Helps with documents\n```",
+      "zh-Hans": "```yaml theme={null}\ndescription: Helps with documents\n```"
+    },
+    {
+      "en-US": "```yaml  theme={null}\ndescription: Processes data\n```",
+      "zh-Hans": "```yaml theme={null}\ndescription: Processes data\n```"
+    },
+    {
+      "en-US": "```yaml  theme={null}\ndescription: Does stuff with files\n```",
+      "zh-Hans": "```yaml theme={null}\ndescription: Does stuff with files\n```"
+    },
+    {
+      "en-US": "### Progressive disclosure patterns",
+      "zh-Hans": "### 渐进式披露模式"
+    },
+    {
+      "en-US": "SKILL.md serves as an overview that points Claude to detailed materials as needed, like a table of contents in an onboarding guide. For an explanation of how progressive disclosure works, see [How Skills work](/en/docs/agents-and-tools/agent-skills/overview#how-skills-work) in the overview.",
+      "zh-Hans": "SKILL.md 作为一个概述，根据需要将 Claude 指向详细资料，就像入职指南中的目录一样。关于渐进式披露工作原理的解释，请参阅概述中的[技能工作原理](/en/docs/agents-and-tools/agent-skills/overview#how-skills-work)。"
+    },
+    {
+      "en-US": "**Practical guidance:**",
+      "zh-Hans": "**实用指南**："
+    },
+    {
+      "en-US": "* Keep SKILL.md body under 500 lines for optimal performance\n* Split content into separate files when approaching this limit\n* Use the patterns below to organize instructions, code, and resources effectively",
+      "zh-Hans": "* 为获得最佳性能，保持 SKILL.md 主体在 500 行以内\n* 接近此限制时，将内容拆分为单独的文件\n* 使用以下模式有效地组织指令、代码和资源"
+    },
+    {
+      "en-US": "#### Visual overview: From simple to complex",
+      "zh-Hans": "#### 视觉概述：从简单到复杂"
+    },
+    {
+      "en-US": "A basic Skill starts with just a SKILL.md file containing metadata and instructions:",
+      "zh-Hans": "一个基本的技能开始时只有一个包含元数据和指令的 SKILL.md 文件："
+    },
+    {
+      "en-US": "<img src=\"https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-simple-file.png?fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=87782ff239b297d9a9e8e1b72ed72db9\" alt=\"Simple SKILL.md file showing YAML frontmatter and markdown body\" data-og-width=\"2048\" width=\"2048\" data-og-height=\"1153\" height=\"1153\" data-path=\"images/agent-skills-simple-file.png\" data-optimize=\"true\" data-opv=\"3\" srcset=\"https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-simple-file.png?w=280&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=c61cc33b6f5855809907f7fda94cd80e 280w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-simple-file.png?w=560&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=90d2c0c1c76b36e8d485f49e0810dbfd 560w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-simple-file.png?w=840&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=ad17d231ac7b0bea7e5b4d58fb4aeabb 840w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-simple-file.png?w=1100&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=f5d0a7a3c668435bb0aee9a3a8f8c329 1100w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-simple-file.png?w=1650&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=0e927c1af9de5799cfe557d12249f6e6 1650w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-simple-file.png?w=2500&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=46bbb1a51dd4c8202a470ac8c80a893d 2500w\" />",
+      "zh-Hans": "<img src=\"https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-simple-file.png?fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=87782ff239b297d9a9e8e1b72ed72db9\" alt=\"展示YAML前置元数据和Markdown正文的简单SKILL.md文件\" data-og-width=\"2048\" width=\"2048\" data-og-height=\"1153\" height=\"1153\" data-path=\"images/agent-skills-simple-file.png\" data-optimize=\"true\" data-opv=\"3\" srcset=\"https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-simple-file.png?w=280&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=c61cc33b6f5855809907f7fda94cd80e 280w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-simple-file.png?w=560&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=90d2c0c1c76b36e8d485f49e0810dbfd 560w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-simple-file.png?w=840&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=ad17d231ac7b0bea7e5b4d58fb4aeabb 840w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-simple-file.png?w=1100&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=f5d0a7a3c668435bb0aee9a3a8f8c329 1100w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-simple-file.png?w=1650&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=0e927c1af9de5799cfe557d12249f6e6 1650w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-simple-file.png?w=2500&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=46bbb1a51dd4c8202a470ac8c80a893d 2500w\" />"
+    },
+    {
+      "en-US": "As your Skill grows, you can bundle additional content that Claude loads only when needed:",
+      "zh-Hans": "随着技能的增长，您可以捆绑 Claude 仅在需要时加载的额外内容："
+    },
+    {
+      "en-US": "<img src=\"https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=a5e0aa41e3d53985a7e3e43668a33ea3\" alt=\"Bundling additional reference files like reference.md and forms.md.\" data-og-width=\"2048\" width=\"2048\" data-og-height=\"1327\" height=\"1327\" data-path=\"images/agent-skills-bundling-content.png\" data-optimize=\"true\" data-opv=\"3\" srcset=\"https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=280&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=f8a0e73783e99b4a643d79eac86b70a2 280w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=560&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=dc510a2a9d3f14359416b706f067904a 560w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=840&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=82cd6286c966303f7dd914c28170e385 840w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=1100&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=56f3be36c77e4fe4b523df209a6824c6 1100w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=1650&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=d22b5161b2075656417d56f41a74f3dd 1650w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=2500&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=3dd4bdd6850ffcc96c6c45fcb0acd6eb 2500w\" />",
+      "zh-Hans": "<img src=\"https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=a5e0aa41e3d53985a7e3e43668a33ea3\" alt=\"捆绑额外的参考文件，如reference.md和forms.md。\" data-og-width=\"2048\" width=\"2048\" data-og-height=\"1327\" height=\"1327\" data-path=\"images/agent-skills-bundling-content.png\" data-optimize=\"true\" data-opv=\"3\" srcset=\"https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=280&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=f8a0e73783e99b4a643d79eac86b70a2 280w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=560&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=dc510a2a9d3f14359416b706f067904a 560w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=840&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=82cd6286c966303f7dd914c28170e385 840w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=1100&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=56f3be36c77e4fe4b523df209a6824c6 1100w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=1650&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=d22b5161b2075656417d56f41a74f3dd 1650w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=2500&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=3dd4bdd6850ffcc96c6c45fcb0acd6eb 2500w\" />"
+    },
+    {
+      "en-US": "The complete Skill directory structure might look like this:",
+      "zh-Hans": "完整的技能目录结构可能如下所示："
+    },
+    {
+      "en-US": "```\npdf/\n├── SKILL.md              # Main instructions (loaded when triggered)\n├── FORMS.md              # Form-filling guide (loaded as needed)\n├── reference.md          # API reference (loaded as needed)\n├── examples.md           # Usage examples (loaded as needed)\n└── scripts/\n    ├── analyze_form.py   # Utility script (executed, not loaded)\n    ├── fill_form.py      # Form filling script\n    └── validate.py       # Validation script\n```",
+      "zh-Hans": "```\npdf/\n├── SKILL.md              # Main instructions (loaded when triggered)\n├── FORMS.md              # Form-filling guide (loaded as needed)\n├── reference.md          # API reference (loaded as needed)\n├── examples.md           # Usage examples (loaded as needed)\n└── scripts/\n    ├── analyze_form.py   # Utility script (executed, not loaded)\n    ├── fill_form.py      # Form filling script\n    └── validate.py       # Validation script\n```"
+    },
+    {
+      "en-US": "#### Pattern 1: High-level guide with references",
+      "zh-Hans": "#### 模式 1：带引用的高级指南"
+    },
+    {
+      "en-US": "````markdown  theme={null}\n---\nname: PDF Processing\ndescription: Extracts text and tables from PDF files, fills forms, and merges documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.\n---\n\n# PDF Processing\n\n## Quick start\n\nExtract text with pdfplumber:\n```python\nimport pdfplumber\nwith pdfplumber.open(\"file.pdf\") as pdf:\n    text = pdf.pages[0].extract_text()\n```\n\n## Advanced features\n\n**Form filling**: See [FORMS.md](FORMS.md) for complete guide\n**API reference**: See [REFERENCE.md](REFERENCE.md) for all methods\n**Examples**: See [EXAMPLES.md](EXAMPLES.md) for common patterns\n````",
+      "zh-Hans": "````markdown\n---\nname: PDF Processing\ndescription: Extracts text and tables from PDF files, fills forms, and merges documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.\n---\n\n# PDF 处理\n\n## 快速开始\n\n使用 pdfplumber 提取文本：\n```python\nimport pdfplumber\nwith pdfplumber.open(\"file.pdf\") as pdf:\n    text = pdf.pages[0].extract_text()\n```\n\n## 高级功能\n\n**表单填写**：完整指南请参见 [FORMS.md](FORMS.md)\n**API 参考**：所有方法请参见 [REFERENCE.md](REFERENCE.md)\n**示例**：常见模式请参见 [EXAMPLES.md](EXAMPLES.md)\n````"
+    },
+    {
+      "en-US": "Claude loads FORMS.md, REFERENCE.md, or EXAMPLES.md only when needed.",
+      "zh-Hans": "Claude 仅在需要时加载 FORMS.md、REFERENCE.md 或 EXAMPLES.md。"
+    },
+    {
+      "en-US": "#### Pattern 2: Domain-specific organization",
+      "zh-Hans": "#### 模式 2：特定领域组织"
+    },
+    {
+      "en-US": "For Skills with multiple domains, organize content by domain to avoid loading irrelevant context. When a user asks about sales metrics, Claude only needs to read sales-related schemas, not finance or marketing data. This keeps token usage low and context focused.",
+      "zh-Hans": "对于具有多个领域的技能，按领域组织内容，以避免加载不相关的上下文。当用户询问销售指标时，Claude 只需要读取与销售相关的模式，而不是财务或营销数据。这可以保持令牌使用量低且上下文集中。"
+    },
+    {
+      "en-US": "```\nbigquery-skill/\n├── SKILL.md (overview and navigation)\n└── reference/\n    ├── finance.md (revenue, billing metrics)\n    ├── sales.md (opportunities, pipeline)\n    ├── product.md (API usage, features)\n    └── marketing.md (campaigns, attribution)\n```",
+      "zh-Hans": "```\nbigquery-skill/\n├── SKILL.md (overview and navigation)\n└── reference/\n    ├── finance.md (revenue, billing metrics)\n    ├── sales.md (opportunities, pipeline)\n    ├── product.md (API usage, features)\n    └── marketing.md (campaigns, attribution)\n```"
+    },
+    {
+      "en-US": "````markdown SKILL.md theme={null}\n# BigQuery Data Analysis\n\n## Available datasets\n\n**Finance**: Revenue, ARR, billing → See [reference/finance.md](reference/finance.md)\n**Sales**: Opportunities, pipeline, accounts → See [reference/sales.md](reference/sales.md)\n**Product**: API usage, features, adoption → See [reference/product.md](reference/product.md)\n**Marketing**: Campaigns, attribution, email → See [reference/marketing.md](reference/marketing.md)\n\n## Quick search\n\nFind specific metrics using grep:\n\n```bash\ngrep -i \"revenue\" reference/finance.md\ngrep -i \"pipeline\" reference/sales.md\ngrep -i \"api usage\" reference/product.md\n```\n````",
+      "zh-Hans": "````markdown\n# BigQuery 数据分析\n\n## 可用数据集\n\n**财务**：收入、年度经常性收入、账单 → 参见 [reference/finance.md](reference/finance.md)\n**销售**：商机、销售管道、客户 → 参见 [reference/sales.md](reference/sales.md)\n**产品**：API 使用情况、功能、采用率 → 参见 [reference/product.md](reference/product.md)\n**营销**：营销活动、归因分析、电子邮件 → 参见 [reference/marketing.md](reference/marketing.md)\n\n## 快速搜索\n\n使用 grep 查找特定指标：\n\n```bash\ngrep -i \"revenue\" reference/finance.md\ngrep -i \"pipeline\" reference/sales.md\ngrep -i \"api usage\" reference/product.md\n```\n````"
+    },
+    {
+      "en-US": "#### Pattern 3: Conditional details",
+      "zh-Hans": "#### 模式 3：条件性细节"
+    },
+    {
+      "en-US": "Show basic content, link to advanced content:",
+      "zh-Hans": "显示基本内容，链接到高级内容："
+    },
+    {
+      "en-US": "```markdown  theme={null}\n# DOCX Processing\n\n## Creating documents\n\nUse docx-js for new documents. See [DOCX-JS.md](DOCX-JS.md).\n\n## Editing documents\n\nFor simple edits, modify the XML directly.\n\n**For tracked changes**: See [REDLINING.md](REDLINING.md)\n**For OOXML details**: See [OOXML.md](OOXML.md)\n```",
+      "zh-Hans": "```markdown\n# DOCX 文档处理\n\n## 创建文档\n\n新建文档请使用 docx-js。详见 [DOCX-JS.md](DOCX-JS.md)。\n\n## 编辑文档\n\n简单编辑可直接修改 XML。\n\n**修订追踪功能**：参见 [REDLINING.md](REDLINING.md)\n**OOXML 技术细节**：参见 [OOXML.md](OOXML.md)\n```"
+    },
+    {
+      "en-US": "Claude reads REDLINING.md or OOXML.md only when the user needs those features.",
+      "zh-Hans": "Claude 仅在用户需要这些功能时读取 REDLINING.md 或 OOXML.md。"
+    },
+    {
+      "en-US": "### Avoid deeply nested references",
+      "zh-Hans": "### 避免深度嵌套引用"
+    },
+    {
+      "en-US": "Claude may partially read files when they're referenced from other referenced files. When encountering nested references, Claude might use commands like `head -100` to preview content rather than reading entire files, resulting in incomplete information.",
+      "zh-Hans": "当从其他引用的文件引用时，Claude 可能会部分读取文件。遇到嵌套引用时，Claude 可能会使用像 `head -100` 这样的命令来预览内容，而不是读取整个文件，从而导致信息不完整。"
+    },
+    {
+      "en-US": "**Keep references one level deep from SKILL.md**. All reference files should link directly from SKILL.md to ensure Claude reads complete files when needed.",
+      "zh-Hans": "**保持引用从 SKILL.md 开始只有一级深度**。所有引用文件都应直接从 SKILL.md 链接，以确保 Claude 在需要时读取完整的文件。"
+    },
+    {
+      "en-US": "**Bad example: Too deep**:",
+      "zh-Hans": "**不良示例：太深**："
+    },
+    {
+      "en-US": "```markdown  theme={null}\n# SKILL.md\nSee [advanced.md](advanced.md)...\n\n# advanced.md\nSee [details.md](details.md)...\n\n# details.md\nHere's the actual information...\n```",
+      "zh-Hans": "```markdown\n# SKILL.md\n参见 [advanced.md](advanced.md)...\n\n# advanced.md\n参见 [details.md](details.md)...\n\n# details.md\n以下是实际信息...\n```"
+    },
+    {
+      "en-US": "**Good example: One level deep**:",
+      "zh-Hans": "**良好示例：一级深度**："
+    },
+    {
+      "en-US": "```markdown  theme={null}\n# SKILL.md\n\n**Basic usage**: [instructions in SKILL.md]\n**Advanced features**: See [advanced.md](advanced.md)\n**API reference**: See [reference.md](reference.md)\n**Examples**: See [examples.md](examples.md)\n```",
+      "zh-Hans": "```markdown\n# SKILL.md\n\n**基本用法**： [SKILL.md 中的说明]\n**高级功能**： 参见 [advanced.md](advanced.md)\n**API 参考**： 参见 [reference.md](reference.md)\n**示例**： 参见 [examples.md](examples.md)\n```"
+    },
+    {
+      "en-US": "### Structure longer reference files with table of contents",
+      "zh-Hans": "### 使用目录结构组织较长的引用文件"
+    },
+    {
+      "en-US": "For reference files longer than 100 lines, include a table of contents at the top. This ensures Claude can see the full scope of available information even when previewing with partial reads.",
+      "zh-Hans": "对于超过 100 行的引用文件，在顶部包含一个目录。这确保即使在部分读取预览时，Claude 也能看到可用信息的完整范围。"
+    },
+    {
+      "en-US": "**Example**:",
+      "zh-Hans": "**示例**："
+    },
+    {
+      "en-US": "```markdown  theme={null}\n# API Reference\n\n## Contents\n- Authentication and setup\n- Core methods (create, read, update, delete)\n- Advanced features (batch operations, webhooks)\n- Error handling patterns\n- Code examples\n\n## Authentication and setup\n...\n\n## Core methods\n...\n```",
+      "zh-Hans": "```markdown\n# API 参考\n\n## 目录\n- 身份验证与设置\n- 核心方法（创建、读取、更新、删除）\n- 高级功能（批量操作、Webhooks）\n- 错误处理模式\n- 代码示例\n\n## 身份验证与设置\n...\n\n## 核心方法\n...\n```"
+    },
+    {
+      "en-US": "Claude can then read the complete file or jump to specific sections as needed.",
+      "zh-Hans": "然后，Claude 可以根据需要读取完整文件或跳转到特定部分。"
+    },
+    {
+      "en-US": "For details on how this filesystem-based architecture enables progressive disclosure, see the [Runtime environment](#runtime-environment) section in the Advanced section below.",
+      "zh-Hans": "有关这种基于文件系统的架构如何实现渐进式披露的详细信息，请参阅下面高级部分中的[运行时环境](#运行时环境)部分。"
+    },
+    {
+      "en-US": "## Workflows and feedback loops",
+      "zh-Hans": "## 工作流和反馈循环"
+    },
+    {
+      "en-US": "### Use workflows for complex tasks",
+      "zh-Hans": "### 对复杂任务使用工作流"
+    },
+    {
+      "en-US": "Break complex operations into clear, sequential steps. For particularly complex workflows, provide a checklist that Claude can copy into its response and check off as it progresses.",
+      "zh-Hans": "将复杂操作分解为清晰、连续的步骤。对于特别复杂的工作流，提供一个检查清单，Claude 可以将其复制到其响应中，并在进展过程中勾选。"
+    },
+    {
+      "en-US": "**Example 1: Research synthesis workflow** (for Skills without code):",
+      "zh-Hans": "**示例 1：研究综合工作流**（适用于无代码技能）："
+    },
+    {
+      "en-US": "````markdown  theme={null}\n## Research synthesis workflow\n\nCopy this checklist and track your progress:\n\n```\nResearch Progress:\n- [ ] Step 1: Read all source documents\n- [ ] Step 2: Identify key themes\n- [ ] Step 3: Cross-reference claims\n- [ ] Step 4: Create structured summary\n- [ ] Step 5: Verify citations\n```\n\n**Step 1: Read all source documents**\n\nReview each document in the `sources/` directory. Note the main arguments and supporting evidence.\n\n**Step 2: Identify key themes**\n\nLook for patterns across sources. What themes appear repeatedly? Where do sources agree or disagree?\n\n**Step 3: Cross-reference claims**\n\nFor each major claim, verify it appears in the source material. Note which source supports each point.\n\n**Step 4: Create structured summary**\n\nOrganize findings by theme. Include:\n- Main claim\n- Supporting evidence from sources\n- Conflicting viewpoints (if any)\n\n**Step 5: Verify citations**\n\nCheck that every claim references the correct source document. If citations are incomplete, return to Step 3.\n````",
+      "zh-Hans": "````markdown\n## 研究综合工作流程\n\n复制此清单并追踪进度：\n\n```\nResearch Progress:\n- [ ] Step 1: Read all source documents\n- [ ] Step 2: Identify key themes\n- [ ] Step 3: Cross-reference claims\n- [ ] Step 4: Create structured summary\n- [ ] Step 5: Verify citations\n```\n\n**步骤 1：阅读所有源文件**\n\n审阅 `sources/` 目录中的每份文件。记录主要论点及支撑证据。\n\n**步骤 2：识别关键主题**\n\n寻找各来源间的模式。哪些主题反复出现？来源间在何处达成一致或存在分歧？\n\n**步骤 3：交叉核对主张**\n\n针对每个主要主张，核实其是否出现于源材料中。注明每个观点由哪个来源支撑。\n\n**步骤 4：创建结构化摘要**\n\n按主题组织发现。包含：\n- 核心主张\n- 来自来源的支撑证据\n- 冲突观点（如有）\n\n**步骤 5：核对引用**\n\n检查每个主张是否引用了正确的源文件。若引用不完整，则返回步骤 3。\n````"
+    },
+    {
+      "en-US": "This example shows how workflows apply to analysis tasks that don't require code. The checklist pattern works for any complex, multi-step process.",
+      "zh-Hans": "此示例展示了工作流如何应用于不需要代码的分析任务。检查清单模式适用于任何复杂的多步骤过程。"
+    },
+    {
+      "en-US": "**Example 2: PDF form filling workflow** (for Skills with code):",
+      "zh-Hans": "**示例 2：PDF 表单填写工作流**（适用于有代码技能）："
+    },
+    {
+      "en-US": "````markdown  theme={null}\n## PDF form filling workflow\n\nCopy this checklist and check off items as you complete them:\n\n```\nTask Progress:\n- [ ] Step 1: Analyze the form (run analyze_form.py)\n- [ ] Step 2: Create field mapping (edit fields.json)\n- [ ] Step 3: Validate mapping (run validate_fields.py)\n- [ ] Step 4: Fill the form (run fill_form.py)\n- [ ] Step 5: Verify output (run verify_output.py)\n```\n\n**Step 1: Analyze the form**\n\nRun: `python scripts/analyze_form.py input.pdf`\n\nThis extracts form fields and their locations, saving to `fields.json`.\n\n**Step 2: Create field mapping**\n\nEdit `fields.json` to add values for each field.\n\n**Step 3: Validate mapping**\n\nRun: `python scripts/validate_fields.py fields.json`\n\nFix any validation errors before continuing.\n\n**Step 4: Fill the form**\n\nRun: `python scripts/fill_form.py input.pdf fields.json output.pdf`\n\n**Step 5: Verify output**\n\nRun: `python scripts/verify_output.py output.pdf`\n\nIf verification fails, return to Step 2.\n````",
+      "zh-Hans": "````markdown\n## PDF 表单填写工作流程\n\n复制此清单，并在完成各项时勾选：\n\n```\nTask Progress:\n- [ ] Step 1: Analyze the form (run analyze_form.py)\n- [ ] Step 2: Create field mapping (edit fields.json)\n- [ ] Step 3: Validate mapping (run validate_fields.py)\n- [ ] Step 4: Fill the form (run fill_form.py)\n- [ ] Step 5: Verify output (run verify_output.py)\n```\n\n**步骤 1：分析表单**\n\n运行：`python scripts/analyze_form.py input.pdf`\n\n这将提取表单字段及其位置，并保存到 `fields.json`。\n\n**步骤 2：创建字段映射**\n\n编辑 `fields.json` 以添加每个字段的值。\n\n**步骤 3：验证映射**\n\n运行：`python scripts/validate_fields.py fields.json`\n\n在继续之前修复任何验证错误。\n\n**步骤 4：填写表单**\n\n运行：`python scripts/fill_form.py input.pdf fields.json output.pdf`\n\n**步骤 5：验证输出**\n\n运行：`python scripts/verify_output.py output.pdf`\n\n如果验证失败，请返回步骤 2。\n````"
+    },
+    {
+      "en-US": "Clear steps prevent Claude from skipping critical validation. The checklist helps both Claude and you track progress through multi-step workflows.",
+      "zh-Hans": "清晰的步骤可以防止 Claude 跳过关键验证。检查清单帮助 Claude 和您跟踪多步骤工作流的进度。"
+    },
+    {
+      "en-US": "### Implement feedback loops",
+      "zh-Hans": "### 实现反馈循环"
+    },
+    {
+      "en-US": "**Common pattern**: Run validator → fix errors → repeat",
+      "zh-Hans": "**常见模式**：运行验证器 → 修复错误 → 重复"
+    },
+    {
+      "en-US": "This pattern greatly improves output quality.",
+      "zh-Hans": "这种模式极大地提高了输出质量。"
+    },
+    {
+      "en-US": "**Example 1: Style guide compliance** (for Skills without code):",
+      "zh-Hans": "**示例 1：风格指南合规性**（适用于无代码技能）："
+    },
+    {
+      "en-US": "```markdown  theme={null}\n## Content review process\n\n1. Draft your content following the guidelines in STYLE_GUIDE.md\n2. Review against the checklist:\n   - Check terminology consistency\n   - Verify examples follow the standard format\n   - Confirm all required sections are present\n3. If issues found:\n   - Note each issue with specific section reference\n   - Revise the content\n   - Review the checklist again\n4. Only proceed when all requirements are met\n5. Finalize and save the document\n```",
+      "zh-Hans": "```markdown\n## 内容审核流程\n\n1. 根据 STYLE_GUIDE.md 中的指南起草内容\n2. 对照检查清单进行审核：\n   - 检查术语一致性\n   - 验证示例是否符合标准格式\n   - 确认所有必需章节均已包含\n3. 若发现问题：\n   - 记录每个问题并注明具体章节位置\n   - 修订内容\n   - 再次审核检查清单\n4. 仅在所有要求均满足时继续\n5. 定稿并保存文档\n```"
+    },
+    {
+      "en-US": "This shows the validation loop pattern using reference documents instead of scripts. The \"validator\" is STYLE\\_GUIDE.md, and Claude performs the check by reading and comparing.",
+      "zh-Hans": "这展示了使用参考文档而非脚本的验证循环模式。“验证器”是 STYLE\\_GUIDE.md，Claude 通过读取和比较来执行检查。"
+    },
+    {
+      "en-US": "**Example 2: Document editing process** (for Skills with code):",
+      "zh-Hans": "**示例 2：文档编辑过程**（适用于有代码技能）："
+    },
+    {
+      "en-US": "```markdown  theme={null}\n## Document editing process\n\n1. Make your edits to `word/document.xml`\n2. **Validate immediately**: `python ooxml/scripts/validate.py unpacked_dir/`\n3. If validation fails:\n   - Review the error message carefully\n   - Fix the issues in the XML\n   - Run validation again\n4. **Only proceed when validation passes**\n5. Rebuild: `python ooxml/scripts/pack.py unpacked_dir/ output.docx`\n6. Test the output document\n```",
+      "zh-Hans": "```markdown\n## 文档编辑流程\n\n1. 在 `word/document.xml` 中进行编辑\n2. **立即验证**：`python ooxml/scripts/validate.py unpacked_dir/`\n3. 若验证失败：\n   - 仔细查看错误信息\n   - 修复 XML 中的问题\n   - 重新运行验证\n4. **仅当验证通过后方可继续**\n5. 重新构建：`python ooxml/scripts/pack.py unpacked_dir/ output.docx`\n6. 测试输出文档\n```"
+    },
+    {
+      "en-US": "The validation loop catches errors early.",
+      "zh-Hans": "验证循环能及早发现错误。"
+    },
+    {
+      "en-US": "## Content guidelines",
+      "zh-Hans": "## 内容指南"
+    },
+    {
+      "en-US": "### Avoid time-sensitive information",
+      "zh-Hans": "### 避免时间敏感信息"
+    },
+    {
+      "en-US": "Don't include information that will become outdated:",
+      "zh-Hans": "不要包含会过时的信息："
+    },
+    {
+      "en-US": "**Bad example: Time-sensitive** (will become wrong):",
+      "zh-Hans": "**不良示例：时间敏感**（会变得错误）："
+    },
+    {
+      "en-US": "```markdown  theme={null}\nIf you're doing this before August 2025, use the old API.\nAfter August 2025, use the new API.\n```",
+      "zh-Hans": "```markdown\n如果你在 2025 年 8 月之前进行此操作，请使用旧版 API。\n2025 年 8 月之后，请使用新版 API。\n```"
+    },
+    {
+      "en-US": "**Good example** (use \"old patterns\" section):",
+      "zh-Hans": "**良好示例**（使用“旧模式”部分）："
+    },
+    {
+      "en-US": "```markdown  theme={null}\n## Current method\n\nUse the v2 API endpoint: `api.example.com/v2/messages`\n\n## Old patterns\n\n<details>\n<summary>Legacy v1 API (deprecated 2025-08)</summary>\n\nThe v1 API used: `api.example.com/v1/messages`\n\nThis endpoint is no longer supported.\n</details>\n```",
+      "zh-Hans": "```markdown\n## 当前方法\n\n使用 v2 API 端点：`api.example.com/v2/messages`\n\n## 旧模式\n\n<details>\n<summary>Legacy v1 API (deprecated 2025-08)</summary>\n\nv1 API 曾使用：`api.example.com/v1/messages`\n\n该端点不再受支持。\n</details>\n```"
+    },
+    {
+      "en-US": "The old patterns section provides historical context without cluttering the main content.",
+      "zh-Hans": "旧模式部分提供了历史背景，而不会使主要内容变得杂乱。"
+    },
+    {
+      "en-US": "### Use consistent terminology",
+      "zh-Hans": "### 使用一致的术语"
+    },
+    {
+      "en-US": "Choose one term and use it throughout the Skill:",
+      "zh-Hans": "选择一个术语并在整个技能中一致使用："
+    },
+    {
+      "en-US": "**Good - Consistent**:",
+      "zh-Hans": "**良好 - 一致**："
+    },
+    {
+      "en-US": "* Always \"API endpoint\"\n* Always \"field\"\n* Always \"extract\"",
+      "zh-Hans": "* 始终使用“API endpoint”\n* 始终使用“field”\n* 始终使用“extract”"
+    },
+    {
+      "en-US": "**Bad - Inconsistent**:",
+      "zh-Hans": "**不良 - 不一致**："
+    },
+    {
+      "en-US": "* Mix \"API endpoint\", \"URL\", \"API route\", \"path\"\n* Mix \"field\", \"box\", \"element\", \"control\"\n* Mix \"extract\", \"pull\", \"get\", \"retrieve\"",
+      "zh-Hans": "* 混合使用“API endpoint”、“URL”、“API route”、“path”\n* 混合使用“field”、“box”、“element”、“control”\n* 混合使用“extract”、“pull”、“get”、“retrieve”"
+    },
+    {
+      "en-US": "Consistency helps Claude understand and follow instructions.",
+      "zh-Hans": "一致性有助于 Claude 理解和遵循指令。"
+    },
+    {
+      "en-US": "## Common patterns",
+      "zh-Hans": "## 常见模式"
+    },
+    {
+      "en-US": "### Template pattern",
+      "zh-Hans": "### 模板模式"
+    },
+    {
+      "en-US": "Provide templates for output format. Match the level of strictness to your needs.",
+      "zh-Hans": "为输出格式提供模板。根据需求匹配严格程度。"
+    },
+    {
+      "en-US": "**For strict requirements** (like API responses or data formats):",
+      "zh-Hans": "**对于严格要求**（如 API 响应或数据格式）："
+    },
+    {
+      "en-US": "````markdown  theme={null}\n## Report structure\n\nALWAYS use this exact template structure:\n\n```markdown\n# [Analysis Title]\n\n## Executive summary\n[One-paragraph overview of key findings]\n\n## Key findings\n- Finding 1 with supporting data\n- Finding 2 with supporting data\n- Finding 3 with supporting data\n\n## Recommendations\n1. Specific actionable recommendation\n2. Specific actionable recommendation\n```\n````",
+      "zh-Hans": "````markdown\n## 报告结构\n\n请始终使用以下确切的模板结构：\n\n```markdown\n# [分析标题]\n\n## 执行摘要\n[关键发现的一段概述]\n\n## 关键发现\n- 发现 1 及支持数据\n- 发现 2 及支持数据\n- 发现 3 及支持数据\n\n## 建议\n1. 具体的、可操作的建议\n2. 具体的、可操作的建议\n```\n````"
+    },
+    {
+      "en-US": "**For flexible guidance** (when adaptation is useful):",
+      "zh-Hans": "**对于灵活指导**（当适应有用时）："
+    },
+    {
+      "en-US": "````markdown  theme={null}\n## Report structure\n\nHere is a sensible default format, but use your best judgment based on the analysis:\n\n```markdown\n# [Analysis Title]\n\n## Executive summary\n[Overview]\n\n## Key findings\n[Adapt sections based on what you discover]\n\n## Recommendations\n[Tailor to the specific context]\n```\n\nAdjust sections as needed for the specific analysis type.\n````",
+      "zh-Hans": "````markdown\n## 报告结构\n\n以下是一个合理的默认格式，但请根据分析内容运用最佳判断进行调整：\n\n```markdown\n# [分析标题]\n\n## 执行摘要\n[概述]\n\n## 主要发现\n[根据发现的内容调整章节]\n\n## 建议\n[根据具体情境定制]\n```\n\n请根据具体分析类型的需要调整相应章节。\n````"
+    },
+    {
+      "en-US": "### Examples pattern",
+      "zh-Hans": "### 示例模式"
+    },
+    {
+      "en-US": "For Skills where output quality depends on seeing examples, provide input/output pairs just like in regular prompting:",
+      "zh-Hans": "对于输出质量取决于看到示例的技能，提供输入/输出对，就像在常规提示中一样："
+    },
+    {
+      "en-US": "````markdown  theme={null}\n## Commit message format\n\nGenerate commit messages following these examples:\n\n**Example 1:**\nInput: Added user authentication with JWT tokens\nOutput:\n```\nfeat(auth): implement JWT-based authentication\n\nAdd login endpoint and token validation middleware\n```\n\n**Example 2:**\nInput: Fixed bug where dates displayed incorrectly in reports\nOutput:\n```\nfix(reports): correct date formatting in timezone conversion\n\nUse UTC timestamps consistently across report generation\n```\n\n**Example 3:**\nInput: Updated dependencies and refactored error handling\nOutput:\n```\nchore: update dependencies and refactor error handling\n\n- Upgrade lodash to 4.17.21\n- Standardize error response format across endpoints\n```\n\nFollow this style: type(scope): brief description, then detailed explanation.\n````",
+      "zh-Hans": "````markdown\n## 提交信息格式\n\n请按照以下示例生成提交信息：\n\n**示例 1：**\n输入：Added user authentication with JWT tokens\n输出：\n```\nfeat(auth): implement JWT-based authentication\n\nAdd login endpoint and token validation middleware\n```\n\n**示例 2：**\n输入：Fixed bug where dates displayed incorrectly in reports\n输出：\n```\nfix(reports): correct date formatting in timezone conversion\n\nUse UTC timestamps consistently across report generation\n```\n\n**示例 3：**\n输入：Updated dependencies and refactored error handling\n输出：\n```\nchore: update dependencies and refactor error handling\n\n- Upgrade lodash to 4.17.21\n- Standardize error response format across endpoints\n```\n\n遵循此风格：type(scope): 简要描述，然后详细说明。\n````"
+    },
+    {
+      "en-US": "Examples help Claude understand the desired style and level of detail more clearly than descriptions alone.",
+      "zh-Hans": "示例比单独的描述更能帮助 Claude 理解所需的风格和详细程度。"
+    },
+    {
+      "en-US": "### Conditional workflow pattern",
+      "zh-Hans": "### 条件工作流模式"
+    },
+    {
+      "en-US": "Guide Claude through decision points:",
+      "zh-Hans": "指导 Claude 通过决策点："
+    },
+    {
+      "en-US": "```markdown  theme={null}\n## Document modification workflow\n\n1. Determine the modification type:\n\n   **Creating new content?** → Follow \"Creation workflow\" below\n   **Editing existing content?** → Follow \"Editing workflow\" below\n\n2. Creation workflow:\n   - Use docx-js library\n   - Build document from scratch\n   - Export to .docx format\n\n3. Editing workflow:\n   - Unpack existing document\n   - Modify XML directly\n   - Validate after each change\n   - Repack when complete\n```",
+      "zh-Hans": "```markdown\n## 文档修改工作流程\n\n1. 确定修改类型：\n\n   **创建新内容？** → 遵循下方的“创建流程”\n   **编辑现有内容？** → 遵循下方的“编辑流程”\n\n2. 创建流程：\n   - 使用 docx-js 库\n   - 从零开始构建文档\n   - 导出为 .docx 格式\n\n3. 编辑流程：\n   - 解包现有文档\n   - 直接修改 XML\n   - 每次更改后进行验证\n   - 完成后重新打包\n```"
+    },
+    {
+      "en-US": "<Tip>\n  If workflows become large or complicated with many steps, consider pushing them into separate files and tell Claude to read the appropriate file based on the task at hand.\n</Tip>",
+      "zh-Hans": "<Tip>\n  如果工作流程变得庞大或复杂，包含许多步骤，请考虑将它们推送到单独的文件中，并指示Claude根据当前任务读取相应的文件。\n</Tip>"
+    },
+    {
+      "en-US": "## Evaluation and iteration",
+      "zh-Hans": "## 评估与迭代"
+    },
+    {
+      "en-US": "### Build evaluations first",
+      "zh-Hans": "### 先构建评估"
+    },
+    {
+      "en-US": "**Create evaluations BEFORE writing extensive documentation.** This ensures your Skill solves real problems rather than documenting imagined ones.",
+      "zh-Hans": "**在编写大量文档之前创建评估**。这确保您的技能解决的是真实问题，而不是记录想象中的问题。"
+    },
+    {
+      "en-US": "**Evaluation-driven development:**",
+      "zh-Hans": "**评估驱动开发**："
+    },
+    {
+      "en-US": "1. **Identify gaps**: Run Claude on representative tasks without a Skill. Document specific failures or missing context\n2. **Create evaluations**: Build three scenarios that test these gaps\n3. **Establish baseline**: Measure Claude's performance without the Skill\n4. **Write minimal instructions**: Create just enough content to address the gaps and pass evaluations\n5. **Iterate**: Execute evaluations, compare against baseline, and refine",
+      "zh-Hans": "1. **识别差距**：在没有技能的情况下，让 Claude 处理代表性任务。记录具体的失败或缺失的上下文\n2. **创建评估**：构建三个测试这些差距的场景\n3. **建立基线**：衡量没有技能时 Claude 的表现\n4. **编写最小指令**：创建刚好足够的内容来弥补差距并通过评估\n5. **迭代**：执行评估，与基线比较，并完善"
+    },
+    {
+      "en-US": "This approach ensures you're solving actual problems rather than anticipating requirements that may never materialize.",
+      "zh-Hans": "这种方法确保您解决的是实际问题，而不是预测可能永远不会出现的要求。"
+    },
+    {
+      "en-US": "**Evaluation structure**:",
+      "zh-Hans": "**评估结构**："
+    },
+    {
+      "en-US": "```json  theme={null}\n{\n  \"skills\": [\"pdf-processing\"],\n  \"query\": \"Extract all text from this PDF file and save it to output.txt\",\n  \"files\": [\"test-files/document.pdf\"],\n  \"expected_behavior\": [\n    \"Successfully reads the PDF file using an appropriate PDF processing library or command-line tool\",\n    \"Extracts text content from all pages in the document without missing any pages\",\n    \"Saves the extracted text to a file named output.txt in a clear, readable format\"\n  ]\n}\n```",
+      "zh-Hans": "```json theme={null}\n{\n  \"skills\": [\"pdf-processing\"],\n  \"query\": \"Extract all text from this PDF file and save it to output.txt\",\n  \"files\": [\"test-files/document.pdf\"],\n  \"expected_behavior\": [\n    \"Successfully reads the PDF file using an appropriate PDF processing library or command-line tool\",\n    \"Extracts text content from all pages in the document without missing any pages\",\n    \"Saves the extracted text to a file named output.txt in a clear, readable format\"\n  ]\n}\n```"
+    },
+    {
+      "en-US": "<Note>\n  This example demonstrates a data-driven evaluation with a simple testing rubric. We do not currently provide a built-in way to run these evaluations. Users can create their own evaluation system. Evaluations are your source of truth for measuring Skill effectiveness.\n</Note>",
+      "zh-Hans": "<Note>\n  本示例展示了一个基于数据驱动的评估，采用简单的测试评分标准。目前我们未提供内置方式来运行这些评估。用户可以创建自己的评估系统。评估是衡量技能有效性的真实来源。\n</Note>"
+    },
+    {
+      "en-US": "### Develop Skills iteratively with Claude",
+      "zh-Hans": "### 通过迭代方式开发技能"
+    },
+    {
+      "en-US": "The most effective Skill development process involves Claude itself. Work with one instance of Claude (\"Claude A\") to create a Skill that will be used by other instances (\"Claude B\"). Claude A helps you design and refine instructions, while Claude B tests them in real tasks. This works because Claude models understand both how to write effective agent instructions and what information agents need.",
+      "zh-Hans": "最有效的技能开发过程需要Claude自身的参与。与一个Claude实例（“Claude A”）协作创建一个技能，供其他实例（“Claude B”）使用。Claude A帮助你设计和优化指令，而Claude B在真实任务中测试它们。这种方式之所以有效，是因为Claude模型既理解如何编写有效的智能体指令，也了解智能体需要哪些信息。"
+    },
+    {
+      "en-US": "**Creating a new Skill:**",
+      "zh-Hans": "**创建新技能：**"
+    },
+    {
+      "en-US": "1. **Complete a task without a Skill**: Work through a problem with Claude A using normal prompting. As you work, you'll naturally provide context, explain preferences, and share procedural knowledge. Notice what information you repeatedly provide.\n\n2. **Identify the reusable pattern**: After completing the task, identify what context you provided that would be useful for similar future tasks.\n\n   **Example**: If you worked through a BigQuery analysis, you might have provided table names, field definitions, filtering rules (like \"always exclude test accounts\"), and common query patterns.\n\n3. **Ask Claude A to create a Skill**: \"Create a Skill that captures this BigQuery analysis pattern we just used. Include the table schemas, naming conventions, and the rule about filtering test accounts.\"\n\n   <Tip>\n     Claude models understand the Skill format and structure natively. You don't need special system prompts or a \"writing skills\" skill to get Claude to help create Skills. Simply ask Claude to create a Skill and it will generate properly structured SKILL.md content with appropriate frontmatter and body content.\n   </Tip>\n\n4. **Review for conciseness**: Check that Claude A hasn't added unnecessary explanations. Ask: \"Remove the explanation about what win rate means - Claude already knows that.\"\n\n5. **Improve information architecture**: Ask Claude A to organize the content more effectively. For example: \"Organize this so the table schema is in a separate reference file. We might add more tables later.\"\n\n6. **Test on similar tasks**: Use the Skill with Claude B (a fresh instance with the Skill loaded) on related use cases. Observe whether Claude B finds the right information, applies rules correctly, and handles the task successfully.\n\n7. **Iterate based on observation**: If Claude B struggles or misses something, return to Claude A with specifics: \"When Claude used this Skill, it forgot to filter by date for Q4. Should we add a section about date filtering patterns?\"",
+      "zh-Hans": "1. **在没有技能的情况下完成任务**：与Claude A一起，使用常规提示方式解决一个问题。在协作过程中，你自然会提供上下文、解释偏好并分享过程性知识。留意你反复提供了哪些信息。\n\n2. **识别可复用的模式**：完成任务后，识别你提供的、对类似未来任务有用的上下文信息。\n\n   **示例**：如果你处理了一个BigQuery分析任务，你可能提供了表名、字段定义、过滤规则（如“始终排除测试账户”）以及常见的查询模式。\n\n3. **请Claude A创建技能**：“创建一个技能，捕捉我们刚刚使用的这个BigQuery分析模式。包括表结构、命名约定以及关于过滤测试账户的规则。”\n\n   <Tip>\n     Claude模型天生理解技能的格式和结构。你不需要特殊的系统提示或“编写技能”的技能来让Claude帮助创建技能。只需请Claude创建一个技能，它就会生成结构正确的SKILL.md内容，包含适当的前置元数据和主体内容。\n   </Tip>\n\n4. **审查简洁性**：检查Claude A是否添加了不必要的解释。询问：“删除关于胜率含义的解释——Claude已经知道这一点。”\n\n5. **改进信息架构**：请Claude A更有效地组织内容。例如：“重新组织一下，把表结构放在一个单独的参考文件中。我们以后可能会添加更多的表。”\n\n6. **在类似任务上测试**：将技能与Claude B（一个加载了该技能的新实例）一起用于相关用例。观察Claude B是否能找到正确的信息、正确应用规则并成功完成任务。\n\n7. **根据观察进行迭代**：如果Claude B遇到困难或遗漏了什么，带着具体问题回到Claude A：“当Claude使用这个技能时，它忘记为第四季度按日期过滤。我们是否应该添加一个关于日期过滤模式的部分？”"
+    },
+    {
+      "en-US": "**Iterating on existing Skills:**",
+      "zh-Hans": "**迭代现有技能：**"
+    },
+    {
+      "en-US": "The same hierarchical pattern continues when improving Skills. You alternate between:",
+      "zh-Hans": "改进技能时，同样的分层模式会继续。你在以下两者之间交替："
+    },
+    {
+      "en-US": "* **Working with Claude A** (the expert who helps refine the Skill)\n* **Testing with Claude B** (the agent using the Skill to perform real work)\n* **Observing Claude B's behavior** and bringing insights back to Claude A",
+      "zh-Hans": "* **与Claude A协作**（帮助优化技能的专家）\n* **与Claude B测试**（使用技能执行实际工作的智能体）\n* **观察Claude B的行为**，并将见解带回给Claude A"
+    },
+    {
+      "en-US": "1. **Use the Skill in real workflows**: Give Claude B (with the Skill loaded) actual tasks, not test scenarios\n\n2. **Observe Claude B's behavior**: Note where it struggles, succeeds, or makes unexpected choices\n\n   **Example observation**: \"When I asked Claude B for a regional sales report, it wrote the query but forgot to filter out test accounts, even though the Skill mentions this rule.\"\n\n3. **Return to Claude A for improvements**: Share the current SKILL.md and describe what you observed. Ask: \"I noticed Claude B forgot to filter test accounts when I asked for a regional report. The Skill mentions filtering, but maybe it's not prominent enough?\"\n\n4. **Review Claude A's suggestions**: Claude A might suggest reorganizing to make rules more prominent, using stronger language like \"MUST filter\" instead of \"always filter\", or restructuring the workflow section.\n\n5. **Apply and test changes**: Update the Skill with Claude A's refinements, then test again with Claude B on similar requests\n\n6. **Repeat based on usage**: Continue this observe-refine-test cycle as you encounter new scenarios. Each iteration improves the Skill based on real agent behavior, not assumptions.",
+      "zh-Hans": "1. **在真实工作流中使用技能**：给Claude B（已加载技能）分配实际任务，而不是测试场景。\n\n2. **观察Claude B的行为**：注意它在何处遇到困难、取得成功或做出意外选择。\n\n   **观察示例**：“当我请Claude B提供区域销售报告时，它编写了查询，但忘记了过滤掉测试账户，即使技能提到了这个规则。”\n\n3. **回到Claude A进行改进**：分享当前的SKILL.md并描述你的观察。询问：“我注意到当我请求区域报告时，Claude B忘记了过滤测试账户。技能提到了过滤，但也许它不够突出？”\n\n4. **审查Claude A的建议**：Claude A可能会建议重组以使规则更突出，使用更强烈的语言如“必须过滤”而不是“始终过滤”，或者重构工作流程部分。\n\n5. **应用并测试更改**：用Claude A的改进方案更新技能，然后在类似的请求上再次用Claude B测试。\n\n6. **根据使用情况重复**：随着遇到新的场景，继续这个观察-优化-测试的循环。每次迭代都会根据智能体的实际行为（而非假设）来改进技能。"
+    },
+    {
+      "en-US": "**Gathering team feedback:**",
+      "zh-Hans": "**收集团队反馈：**"
+    },
+    {
+      "en-US": "1. Share Skills with teammates and observe their usage\n2. Ask: Does the Skill activate when expected? Are instructions clear? What's missing?\n3. Incorporate feedback to address blind spots in your own usage patterns",
+      "zh-Hans": "1. 与团队成员分享技能并观察他们的使用情况。\n2. 询问：技能是否在预期时被激活？指令是否清晰？缺少什么？\n3. 整合反馈，以解决你自己使用模式中的盲点。"
+    },
+    {
+      "en-US": "**Why this approach works**: Claude A understands agent needs, you provide domain expertise, Claude B reveals gaps through real usage, and iterative refinement improves Skills based on observed behavior rather than assumptions.",
+      "zh-Hans": "**为什么这种方法有效**：Claude A理解智能体的需求，你提供领域专业知识，Claude B通过实际使用揭示差距，而迭代优化则基于观察到的行为（而非假设）来改进技能。"
+    },
+    {
+      "en-US": "### Observe how Claude navigates Skills",
+      "zh-Hans": "### 观察Claude如何使用技能"
+    },
+    {
+      "en-US": "As you iterate on Skills, pay attention to how Claude actually uses them in practice. Watch for:",
+      "zh-Hans": "在迭代技能时，注意Claude在实践中实际如何使用它们。观察："
+    },
+    {
+      "en-US": "* **Unexpected exploration paths**: Does Claude read files in an order you didn't anticipate? This might indicate your structure isn't as intuitive as you thought\n* **Missed connections**: Does Claude fail to follow references to important files? Your links might need to be more explicit or prominent\n* **Overreliance on certain sections**: If Claude repeatedly reads the same file, consider whether that content should be in the main SKILL.md instead\n* **Ignored content**: If Claude never accesses a bundled file, it might be unnecessary or poorly signaled in the main instructions",
+      "zh-Hans": "* **意外的探索路径**：Claude是否以你未预料到的顺序读取文件？这可能表明你的结构不如你想象的直观。\n* **错过的连接**：Claude是否未能遵循对重要文件的引用？你的链接可能需要更明确或更突出。\n* **过度依赖某些部分**：如果Claude反复读取同一个文件，请考虑该内容是否应该放在主SKILL.md中。\n* **被忽略的内容**：如果Claude从未访问某个捆绑文件，它可能是不必要的，或者在主指令中信号传递不佳。"
+    },
+    {
+      "en-US": "Iterate based on these observations rather than assumptions. The 'name' and 'description' in your Skill's metadata are particularly critical. Claude uses these when deciding whether to trigger the Skill in response to the current task. Make sure they clearly describe what the Skill does and when it should be used.",
+      "zh-Hans": "根据这些观察（而非假设）进行迭代。技能元数据中的`name`和`description`尤其关键。Claude在决定是否针对当前任务触发技能时会使用它们。确保它们清楚地描述了技能的作用以及何时应该使用它。"
+    },
+    {
+      "en-US": "## Anti-patterns to avoid",
+      "zh-Hans": "## 需要避免的反模式"
+    },
+    {
+      "en-US": "### Avoid Windows-style paths",
+      "zh-Hans": "### 避免使用Windows风格路径"
+    },
+    {
+      "en-US": "Always use forward slashes in file paths, even on Windows:",
+      "zh-Hans": "即使在Windows上，也始终在文件路径中使用正斜杠："
+    },
+    {
+      "en-US": "* ✓ **Good**: `scripts/helper.py`, `reference/guide.md`\n* ✗ **Avoid**: `scripts\\helper.py`, `reference\\guide.md`",
+      "zh-Hans": "* ✓ **正确**：`scripts/helper.py`，`reference/guide.md`\n* ✗ **避免**：`scripts\\helper.py`，`reference\\guide.md`"
+    },
+    {
+      "en-US": "Unix-style paths work across all platforms, while Windows-style paths cause errors on Unix systems.",
+      "zh-Hans": "Unix风格路径在所有平台上都有效，而Windows风格路径在Unix系统上会导致错误。"
+    },
+    {
+      "en-US": "### Avoid offering too many options",
+      "zh-Hans": "### 避免提供过多选项"
+    },
+    {
+      "en-US": "Don't present multiple approaches unless necessary:",
+      "zh-Hans": "除非必要，不要提供多种方法："
+    },
+    {
+      "en-US": "````markdown  theme={null}\n**Bad example: Too many choices** (confusing):\n\"You can use pypdf, or pdfplumber, or PyMuPDF, or pdf2image, or...\"\n\n**Good example: Provide a default** (with escape hatch):\n\"Use pdfplumber for text extraction:\n```python\nimport pdfplumber\n```\n\nFor scanned PDFs requiring OCR, use pdf2image with pytesseract instead.\"\n````",
+      "zh-Hans": "````markdown\n**反面示例：选项过多**（令人困惑）：\n“你可以使用 pypdf，或者 pdfplumber，或者 PyMuPDF，或者 pdf2image，或者……”\n\n**正面示例：提供默认选项**（并预留替代方案）：\n“使用 pdfplumber 进行文本提取：\n```python\nimport pdfplumber\n```\n\n对于需要 OCR 的扫描版 PDF，请改用 pdf2image 配合 pytesseract。”\n````"
+    },
+    {
+      "en-US": "## Advanced: Skills with executable code",
+      "zh-Hans": "## 进阶：包含可执行代码的技能"
+    },
+    {
+      "en-US": "The sections below focus on Skills that include executable scripts. If your Skill uses only markdown instructions, skip to [Checklist for effective Skills](#checklist-for-effective-skills).",
+      "zh-Hans": "以下部分重点介绍包含可执行脚本的技能。如果你的技能仅使用markdown指令，请跳转到[有效技能的清单](#有效技能的清单)。"
+    },
+    {
+      "en-US": "### Solve, don't punt",
+      "zh-Hans": "### 解决问题，而非推诿"
+    },
+    {
+      "en-US": "When writing scripts for Skills, handle error conditions rather than punting to Claude.",
+      "zh-Hans": "为技能编写脚本时，应处理错误条件，而不是推诿给Claude。"
+    },
+    {
+      "en-US": "**Good example: Handle errors explicitly**:",
+      "zh-Hans": "**良好示例：明确处理错误**："
+    },
+    {
+      "en-US": "```python  theme={null}\ndef process_file(path):\n    \"\"\"Process a file, creating it if it doesn't exist.\"\"\"\n    try:\n        with open(path) as f:\n            return f.read()\n    except FileNotFoundError:\n        # Create file with default content instead of failing\n        print(f\"File {path} not found, creating default\")\n        with open(path, 'w') as f:\n            f.write('')\n        return ''\n    except PermissionError:\n        # Provide alternative instead of failing\n        print(f\"Cannot access {path}, using default\")\n        return ''\n```",
+      "zh-Hans": "```python theme={null}\ndef process_file(path):\n    \"\"\"Process a file, creating it if it doesn't exist.\"\"\"\n    try:\n        with open(path) as f:\n            return f.read()\n    except FileNotFoundError:\n        # Create file with default content instead of failing\n        print(f\"File {path} not found, creating default\")\n        with open(path, 'w') as f:\n            f.write('')\n        return ''\n    except PermissionError:\n        # Provide alternative instead of failing\n        print(f\"Cannot access {path}, using default\")\n        return ''\n```"
+    },
+    {
+      "en-US": "**Bad example: Punt to Claude**:",
+      "zh-Hans": "**不良示例：推诿给Claude**："
+    },
+    {
+      "en-US": "```python  theme={null}\ndef process_file(path):\n    # Just fail and let Claude figure it out\n    return open(path).read()\n```",
+      "zh-Hans": "```python theme={null}\ndef process_file(path):\n    # Just fail and let Claude figure it out\n    return open(path).read()\n```"
+    },
+    {
+      "en-US": "Configuration parameters should also be justified and documented to avoid \"voodoo constants\" (Ousterhout's law). If you don't know the right value, how will Claude determine it?",
+      "zh-Hans": "配置参数也应经过论证和记录，以避免“魔法常量”（Ousterhout定律）。如果你不知道正确的值，Claude如何确定它？"
+    },
+    {
+      "en-US": "**Good example: Self-documenting**:",
+      "zh-Hans": "**良好示例：自文档化**："
+    },
+    {
+      "en-US": "```python  theme={null}\n# HTTP requests typically complete within 30 seconds\n# Longer timeout accounts for slow connections\nREQUEST_TIMEOUT = 30\n\n# Three retries balances reliability vs speed\n# Most intermittent failures resolve by the second retry\nMAX_RETRIES = 3\n```",
+      "zh-Hans": "```python theme={null}\n# HTTP requests typically complete within 30 seconds\n# Longer timeout accounts for slow connections\nREQUEST_TIMEOUT = 30\n\n# Three retries balances reliability vs speed\n# Most intermittent failures resolve by the second retry\nMAX_RETRIES = 3\n```"
+    },
+    {
+      "en-US": "**Bad example: Magic numbers**:",
+      "zh-Hans": "**不良示例：魔法数字**："
+    },
+    {
+      "en-US": "```python  theme={null}\nTIMEOUT = 47  # Why 47?\nRETRIES = 5   # Why 5?\n```",
+      "zh-Hans": "```python theme={null}\nTIMEOUT = 47  # Why 47?\nRETRIES = 5   # Why 5?\n```"
+    },
+    {
+      "en-US": "### Provide utility scripts",
+      "zh-Hans": "### 提供实用脚本"
+    },
+    {
+      "en-US": "Even if Claude could write a script, pre-made scripts offer advantages:",
+      "zh-Hans": "即使Claude可以编写脚本，预先制作的脚本也有其优势："
+    },
+    {
+      "en-US": "**Benefits of utility scripts**:",
+      "zh-Hans": "**实用脚本的好处**："
+    },
+    {
+      "en-US": "* More reliable than generated code\n* Save tokens (no need to include code in context)\n* Save time (no code generation required)\n* Ensure consistency across uses",
+      "zh-Hans": "* 比生成的代码更可靠\n* 节省token（无需在上下文中包含代码）\n* 节省时间（无需生成代码）\n* 确保跨使用的一致性"
+    },
+    {
+      "en-US": "<img src=\"https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=4bbc45f2c2e0bee9f2f0d5da669bad00\" alt=\"Bundling executable scripts alongside instruction files\" data-og-width=\"2048\" width=\"2048\" data-og-height=\"1154\" height=\"1154\" data-path=\"images/agent-skills-executable-scripts.png\" data-optimize=\"true\" data-opv=\"3\" srcset=\"https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=280&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=9a04e6535a8467bfeea492e517de389f 280w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=560&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=e49333ad90141af17c0d7651cca7216b 560w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=840&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=954265a5df52223d6572b6214168c428 840w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=1100&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=2ff7a2d8f2a83ee8af132b29f10150fd 1100w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=1650&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=48ab96245e04077f4d15e9170e081cfb 1650w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=2500&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=0301a6c8b3ee879497cc5b5483177c90 2500w\" />",
+      "zh-Hans": "<img src=\"https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=4bbc45f2c2e0bee9f2f0d5da669bad00\" alt=\"将可执行脚本与指令文件捆绑在一起\" data-og-width=\"2048\" width=\"2048\" data-og-height=\"1154\" height=\"1154\" data-path=\"images/agent-skills-executable-scripts.png\" data-optimize=\"true\" data-opv=\"3\" srcset=\"https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=280&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=9a04e6535a8467bfeea492e517de389f 280w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=560&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=e49333ad90141af17c0d7651cca7216b 560w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=840&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=954265a5df52223d6572b6214168c428 840w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=1100&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=2ff7a2d8f2a83ee8af132b29f10150fd 1100w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=1650&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=48ab96245e04077f4d15e9170e081cfb 1650w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=2500&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=0301a6c8b3ee879497cc5b5483177c90 2500w\" />"
+    },
+    {
+      "en-US": "The diagram above shows how executable scripts work alongside instruction files. The instruction file (forms.md) references the script, and Claude can execute it without loading its contents into context.",
+      "zh-Hans": "上图展示了可执行脚本如何与指令文件协同工作。指令文件（forms.md）引用了脚本，Claude可以在不将其内容加载到上下文的情况下执行它。"
+    },
+    {
+      "en-US": "**Important distinction**: Make clear in your instructions whether Claude should:",
+      "zh-Hans": "**重要区别**：在你的指令中明确说明Claude应该："
+    },
+    {
+      "en-US": "* **Execute the script** (most common): \"Run `analyze_form.py` to extract fields\"\n* **Read it as reference** (for complex logic): \"See `analyze_form.py` for the field extraction algorithm\"",
+      "zh-Hans": "* **执行脚本**（最常见）：“运行`analyze_form.py`以提取字段”\n* **将其作为参考阅读**（针对复杂逻辑）：“查看`analyze_form.py`了解字段提取算法”"
+    },
+    {
+      "en-US": "For most utility scripts, execution is preferred because it's more reliable and efficient. See the [Runtime environment](#runtime-environment) section below for details on how script execution works.",
+      "zh-Hans": "对于大多数实用脚本，首选执行方式，因为它更可靠和高效。有关脚本执行如何工作的详细信息，请参阅下面的[运行时环境](#运行时环境)部分。"
+    },
+    {
+      "en-US": "**Example**:",
+      "zh-Hans": "**示例**："
+    },
+    {
+      "en-US": "````markdown  theme={null}\n## Utility scripts\n\n**analyze_form.py**: Extract all form fields from PDF\n\n```bash\npython scripts/analyze_form.py input.pdf > fields.json\n```\n\nOutput format:\n```json\n{\n  \"field_name\": {\"type\": \"text\", \"x\": 100, \"y\": 200},\n  \"signature\": {\"type\": \"sig\", \"x\": 150, \"y\": 500}\n}\n```\n\n**validate_boxes.py**: Check for overlapping bounding boxes\n\n```bash\npython scripts/validate_boxes.py fields.json\n# Returns: \"OK\" or lists conflicts\n```\n\n**fill_form.py**: Apply field values to PDF\n\n```bash\npython scripts/fill_form.py input.pdf fields.json output.pdf\n```\n````",
+      "zh-Hans": "````markdown\n## 实用脚本\n\n**analyze_form.py**：从 PDF 提取所有表单字段\n\n```bash\npython scripts/analyze_form.py input.pdf > fields.json\n```\n\n输出格式：\n```json\n{\n  \"field_name\": {\"type\": \"text\", \"x\": 100, \"y\": 200},\n  \"signature\": {\"type\": \"sig\", \"x\": 150, \"y\": 500}\n}\n```\n\n**validate_boxes.py**：检查是否存在重叠的边界框\n\n```bash\npython scripts/validate_boxes.py fields.json\n# Returns: \"OK\" or lists conflicts\n```\n\n**fill_form.py**：将字段值应用到 PDF\n\n```bash\npython scripts/fill_form.py input.pdf fields.json output.pdf\n```\n````"
+    },
+    {
+      "en-US": "### Use visual analysis",
+      "zh-Hans": "### 使用视觉分析"
+    },
+    {
+      "en-US": "When inputs can be rendered as images, have Claude analyze them:",
+      "zh-Hans": "当输入可以渲染为图像时，让Claude对其进行分析："
+    },
+    {
+      "en-US": "````markdown  theme={null}\n## Form layout analysis\n\n1. Convert PDF to images:\n   ```bash\n   python scripts/pdf_to_images.py form.pdf\n   ```\n\n2. Analyze each page image to identify form fields\n3. Claude can see field locations and types visually\n````",
+      "zh-Hans": "````markdown\n## 表单布局分析\n\n1. 将PDF转换为图像：\n   ```bash\n   python scripts/pdf_to_images.py form.pdf\n   ```\n\n2. 分析每个页面图像以识别表单字段\n3. Claude可以直观地查看字段位置和类型\n````"
+    },
+    {
+      "en-US": "<Note>\n  In this example, you'd need to write the `pdf_to_images.py` script.\n</Note>",
+      "zh-Hans": "<Note>\n  在此示例中，您需要编写 `pdf_to_images.py` 脚本。\n</Note>"
+    },
+    {
+      "en-US": "Claude's vision capabilities help understand layouts and structures.",
+      "zh-Hans": "Claude的视觉能力有助于理解布局和结构。"
+    },
+    {
+      "en-US": "### Create verifiable intermediate outputs",
+      "zh-Hans": "### 创建可验证的中间输出"
+    },
+    {
+      "en-US": "When Claude performs complex, open-ended tasks, it can make mistakes. The \"plan-validate-execute\" pattern catches errors early by having Claude first create a plan in a structured format, then validate that plan with a script before executing it.",
+      "zh-Hans": "当Claude执行复杂的、开放式任务时，它可能会出错。“计划-验证-执行”模式通过让Claude首先以结构化格式创建计划，然后在执行前用脚本验证该计划，从而及早发现错误。"
+    },
+    {
+      "en-US": "**Example**: Imagine asking Claude to update 50 form fields in a PDF based on a spreadsheet. Without validation, Claude might reference non-existent fields, create conflicting values, miss required fields, or apply updates incorrectly.",
+      "zh-Hans": "**示例**：假设你要求Claude根据电子表格更新PDF中的50个表单字段。如果没有验证，Claude可能会引用不存在的字段、创建冲突的值、遗漏必填字段或错误地应用更新。"
+    },
+    {
+      "en-US": "**Solution**: Use the workflow pattern shown above (PDF form filling), but add an intermediate `changes.json` file that gets validated before applying changes. The workflow becomes: analyze → **create plan file** → **validate plan** → execute → verify.",
+      "zh-Hans": "**解决方案**：使用上面显示的工作流模式（PDF表单填写），但添加一个中间`changes.json`文件，在应用更改前进行验证。工作流变为：分析 → **创建计划文件** → **验证计划** → 执行 → 验证。"
+    },
+    {
+      "en-US": "**Why this pattern works:**",
+      "zh-Hans": "**为什么这种模式有效：**"
+    },
+    {
+      "en-US": "* **Catches errors early**: Validation finds problems before changes are applied\n* **Machine-verifiable**: Scripts provide objective verification\n* **Reversible planning**: Claude can iterate on the plan without touching originals\n* **Clear debugging**: Error messages point to specific problems",
+      "zh-Hans": "* **及早发现错误**：验证在应用更改前发现问题\n* **机器可验证**：脚本提供客观验证\n* **可逆规划**：Claude可以迭代计划，而无需触及原始文件\n* **清晰的调试**：错误消息指向具体问题"
+    },
+    {
+      "en-US": "**When to use**: Batch operations, destructive changes, complex validation rules, high-stakes operations.",
+      "zh-Hans": "**何时使用**：批量操作、破坏性更改、复杂验证规则、高风险操作。"
+    },
+    {
+      "en-US": "**Implementation tip**: Make validation scripts verbose with specific error messages like \"Field 'signature\\_date' not found. Available fields: customer\\_name, order\\_total, signature\\_date\\_signed\" to help Claude fix issues.",
+      "zh-Hans": "**实现技巧**：使验证脚本详细，并提供具体的错误消息，如“未找到字段‘signature\\_date’。可用字段：customer\\_name, order\\_total, signature\\_date\\_signed”，以帮助Claude修复问题。"
+    },
+    {
+      "en-US": "### Package dependencies",
+      "zh-Hans": "### 打包依赖项"
+    },
+    {
+      "en-US": "Skills run in the code execution environment with platform-specific limitations:",
+      "zh-Hans": "技能在代码执行环境中运行，存在平台特定的限制："
+    },
+    {
+      "en-US": "* **claude.ai**: Can install packages from npm and PyPI and pull from GitHub repositories\n* **Anthropic API**: Has no network access and no runtime package installation",
+      "zh-Hans": "* **claude.ai**：可以从npm和PyPI安装包，并从GitHub仓库拉取\n* **Anthropic API**：无网络访问权限，无法运行时安装包"
+    },
+    {
+      "en-US": "List required packages in your SKILL.md and verify they're available in the [code execution tool documentation](/en/docs/agents-and-tools/tool-use/code-execution-tool).",
+      "zh-Hans": "在SKILL.md中列出所需的包，并在[代码执行工具文档](/en/docs/agents-and-tools/tool-use/code-execution-tool)中验证它们是否可用。"
+    },
+    {
+      "en-US": "### Runtime environment",
+      "zh-Hans": "### 运行时环境"
+    },
+    {
+      "en-US": "Skills run in a code execution environment with filesystem access, bash commands, and code execution capabilities. For the conceptual explanation of this architecture, see [The Skills architecture](/en/docs/agents-and-tools/agent-skills/overview#the-skills-architecture) in the overview.",
+      "zh-Hans": "技能在具有文件系统访问权限、bash命令和代码执行能力的代码执行环境中运行。有关此架构的概念性解释，请参阅概述中的[技能架构](/en/docs/agents-and-tools/agent-skills/overview#the-skills-architecture)。"
+    },
+    {
+      "en-US": "**How this affects your authoring:**",
+      "zh-Hans": "**这对你的创作有何影响：**"
+    },
+    {
+      "en-US": "**How Claude accesses Skills:**",
+      "zh-Hans": "**Claude如何访问技能：**"
+    },
+    {
+      "en-US": "1. **Metadata pre-loaded**: At startup, the name and description from all Skills' YAML frontmatter are loaded into the system prompt\n2. **Files read on-demand**: Claude uses bash Read tools to access SKILL.md and other files from the filesystem when needed\n3. **Scripts executed efficiently**: Utility scripts can be executed via bash without loading their full contents into context. Only the script's output consumes tokens\n4. **No context penalty for large files**: Reference files, data, or documentation don't consume context tokens until actually read",
+      "zh-Hans": "1. **元数据预加载**：启动时，所有技能的YAML前置元数据中的名称和描述都会加载到系统提示中\n2. **按需读取文件**：Claude使用bash读取工具在需要时从文件系统访问SKILL.md和其他文件\n3. **高效执行脚本**：可以通过bash执行实用脚本，而无需将其全部内容加载到上下文中。只有脚本的输出会消耗token\n4. **大文件无上下文惩罚**：参考文件、数据或文档在实际被读取之前不会消耗上下文token"
+    },
+    {
+      "en-US": "* **File paths matter**: Claude navigates your skill directory like a filesystem. Use forward slashes (`reference/guide.md`), not backslashes\n* **Name files descriptively**: Use names that indicate content: `form_validation_rules.md`, not `doc2.md`\n* **Organize for discovery**: Structure directories by domain or feature\n  * Good: `reference/finance.md`, `reference/sales.md`\n  * Bad: `docs/file1.md`, `docs/file2.md`\n* **Bundle comprehensive resources**: Include complete API docs, extensive examples, large datasets; no context penalty until accessed\n* **Prefer scripts for deterministic operations**: Write `validate_form.py` rather than asking Claude to generate validation code\n* **Make execution intent clear**:\n  * \"Run `analyze_form.py` to extract fields\" (execute)\n  * \"See `analyze_form.py` for the extraction algorithm\" (read as reference)\n* **Test file access patterns**: Verify Claude can navigate your directory structure by testing with real requests",
+      "zh-Hans": "* **文件路径很重要**：Claude像浏览文件系统一样浏览你的技能目录。使用正斜杠（`reference/guide.md`），而非反斜杠\n* **描述性命名文件**：使用能指示内容的名称：`form_validation_rules.md`，而不是`doc2.md`\n* **为发现而组织**：按领域或功能构建目录结构\n  * 良好：`reference/finance.md`，`reference/sales.md`\n  * 不良：`docs/file1.md`，`docs/file2.md`\n* **捆绑全面的资源**：包含完整的API文档、大量示例、大型数据集；在被访问前无上下文惩罚\n* **对于确定性操作，首选脚本**：编写`validate_form.py`，而不是要求Claude生成验证代码\n* **明确执行意图**：\n  * “运行`analyze_form.py`以提取字段”（执行）\n  * “查看`analyze_form.py`了解提取算法”（作为参考阅读）\n* **测试文件访问模式**：通过真实请求测试，验证Claude能否浏览你的目录结构"
+    },
+    {
+      "en-US": "**Example:**",
+      "zh-Hans": "**示例：**"
+    },
+    {
+      "en-US": "```\nbigquery-skill/\n├── SKILL.md (overview, points to reference files)\n└── reference/\n    ├── finance.md (revenue metrics)\n    ├── sales.md (pipeline data)\n    └── product.md (usage analytics)\n```",
+      "zh-Hans": "```\nbigquery-skill/\n├── SKILL.md (overview, points to reference files)\n└── reference/\n    ├── finance.md (revenue metrics)\n    ├── sales.md (pipeline data)\n    └── product.md (usage analytics)\n```"
+    },
+    {
+      "en-US": "When the user asks about revenue, Claude reads SKILL.md, sees the reference to `reference/finance.md`, and invokes bash to read just that file. The sales.md and product.md files remain on the filesystem, consuming zero context tokens until needed. This filesystem-based model is what enables progressive disclosure. Claude can navigate and selectively load exactly what each task requires.",
+      "zh-Hans": "当用户询问收入时，Claude 会读取 SKILL.md，看到对 `reference/finance.md` 的引用，并调用 bash 来读取该文件。sales.md 和 product.md 文件仍保留在文件系统中，在需要之前消耗零上下文令牌。这种基于文件系统的模型实现了渐进式披露。Claude 可以导航并选择性地加载每个任务所需的确切内容。"
+    },
+    {
+      "en-US": "For complete details on the technical architecture, see [How Skills work](/en/docs/agents-and-tools/agent-skills/overview#how-skills-work) in the Skills overview.",
+      "zh-Hans": "有关技术架构的完整详细信息，请参阅技能概述中的[技能如何工作](/en/docs/agents-and-tools/agent-skills/overview#how-skills-work)。"
+    },
+    {
+      "en-US": "### MCP tool references",
+      "zh-Hans": "### MCP 工具引用"
+    },
+    {
+      "en-US": "If your Skill uses MCP (Model Context Protocol) tools, always use fully qualified tool names to avoid \"tool not found\" errors.",
+      "zh-Hans": "如果你的技能使用 MCP（模型上下文协议）工具，请始终使用完全限定的工具名称，以避免出现“找不到工具”的错误。"
+    },
+    {
+      "en-US": "**Format**: `ServerName:tool_name`",
+      "zh-Hans": "**格式**：`ServerName:tool_name`"
+    },
+    {
+      "en-US": "**Example**:",
+      "zh-Hans": "**示例**："
+    },
+    {
+      "en-US": "```markdown  theme={null}\nUse the BigQuery:bigquery_schema tool to retrieve table schemas.\nUse the GitHub:create_issue tool to create issues.\n```",
+      "zh-Hans": "```markdown\n使用 BigQuery:bigquery_schema 工具来检索表结构。\n使用 GitHub:create_issue 工具来创建问题。\n```"
+    },
+    {
+      "en-US": "Where:",
+      "zh-Hans": "其中："
+    },
+    {
+      "en-US": "* `BigQuery` and `GitHub` are MCP server names\n* `bigquery_schema` and `create_issue` are the tool names within those servers",
+      "zh-Hans": "* `BigQuery` 和 `GitHub` 是 MCP 服务器名称\n* `bigquery_schema` 和 `create_issue` 是这些服务器内的工具名称"
+    },
+    {
+      "en-US": "Without the server prefix, Claude may fail to locate the tool, especially when multiple MCP servers are available.",
+      "zh-Hans": "如果没有服务器前缀，Claude 可能无法定位到该工具，尤其是在有多个 MCP 服务器可用时。"
+    },
+    {
+      "en-US": "### Avoid assuming tools are installed",
+      "zh-Hans": "### 避免假设工具已安装"
+    },
+    {
+      "en-US": "Don't assume packages are available:",
+      "zh-Hans": "不要假设软件包可用："
+    },
+    {
+      "en-US": "````markdown  theme={null}\n**Bad example: Assumes installation**:\n\"Use the pdf library to process the file.\"\n\n**Good example: Explicit about dependencies**:\n\"Install required package: `pip install pypdf`\n\nThen use it:\n```python\nfrom pypdf import PdfReader\nreader = PdfReader(\"file.pdf\")\n```\"\n````",
+      "zh-Hans": "````markdown\n**错误示例：假设已安装**：\n\"使用 pdf 库处理文件。\"\n\n**正确示例：明确说明依赖项**：\n\"安装所需包：`pip install pypdf`\n\n然后使用：\n```python\nfrom pypdf import PdfReader\nreader = PdfReader(\"file.pdf\")\n```\"\n````"
+    },
+    {
+      "en-US": "## Technical notes",
+      "zh-Hans": "## 技术说明"
+    },
+    {
+      "en-US": "### YAML frontmatter requirements",
+      "zh-Hans": "### YAML 前置元数据要求"
+    },
+    {
+      "en-US": "The SKILL.md frontmatter includes only `name` (64 characters max) and `description` (1024 characters max) fields. See the [Skills overview](/en/docs/agents-and-tools/agent-skills/overview#skill-structure) for complete structure details.",
+      "zh-Hans": "SKILL.md 的前置元数据仅包含 `name`（最长 64 个字符）和 `description`（最长 1024 个字符）字段。有关完整结构详情，请参阅[技能概述](/en/docs/agents-and-tools/agent-skills/overview#skill-structure)。"
+    },
+    {
+      "en-US": "### Token budgets",
+      "zh-Hans": "### 令牌预算"
+    },
+    {
+      "en-US": "Keep SKILL.md body under 500 lines for optimal performance. If your content exceeds this, split it into separate files using the progressive disclosure patterns described earlier. For architectural details, see the [Skills overview](/en/docs/agents-and-tools/agent-skills/overview#how-skills-work).",
+      "zh-Hans": "为了获得最佳性能，请将 SKILL.md 正文控制在 500 行以内。如果你的内容超过此限制，请使用前面描述的渐进式披露模式将其拆分为单独的文件。有关架构详情，请参阅[技能概述](/en/docs/agents-and-tools/agent-skills/overview#how-skills-work)。"
+    },
+    {
+      "en-US": "## Checklist for effective Skills",
+      "zh-Hans": "## 有效技能的清单"
+    },
+    {
+      "en-US": "Before sharing a Skill, verify:",
+      "zh-Hans": "在分享技能之前，请验证："
+    },
+    {
+      "en-US": "### Core quality",
+      "zh-Hans": "### 核心质量"
+    },
+    {
+      "en-US": "* [ ] Description is specific and includes key terms\n* [ ] Description includes both what the Skill does and when to use it\n* [ ] SKILL.md body is under 500 lines\n* [ ] Additional details are in separate files (if needed)\n* [ ] No time-sensitive information (or in \"old patterns\" section)\n* [ ] Consistent terminology throughout\n* [ ] Examples are concrete, not abstract\n* [ ] File references are one level deep\n* [ ] Progressive disclosure used appropriately\n* [ ] Workflows have clear steps",
+      "zh-Hans": "* \\[ ] 描述具体并包含关键术语\n* \\[ ] 描述包含技能的作用以及何时使用它\n* \\[ ] SKILL.md 正文在 500 行以内\n* \\[ ] 附加细节在单独的文件中（如果需要）\n* \\[ ] 没有时间敏感信息（或在“旧模式”部分中）\n* \\[ ] 术语在整个文档中保持一致\n* \\[ ] 示例具体，而非抽象\n* \\[ ] 文件引用仅深一层\n* \\[ ] 适当使用渐进式披露\n* \\[ ] 工作流程步骤清晰"
+    },
+    {
+      "en-US": "### Code and scripts",
+      "zh-Hans": "### 代码和脚本"
+    },
+    {
+      "en-US": "* [ ] Scripts solve problems rather than punt to Claude\n* [ ] Error handling is explicit and helpful\n* [ ] No \"voodoo constants\" (all values justified)\n* [ ] Required packages listed in instructions and verified as available\n* [ ] Scripts have clear documentation\n* [ ] No Windows-style paths (all forward slashes)\n* [ ] Validation/verification steps for critical operations\n* [ ] Feedback loops included for quality-critical tasks",
+      "zh-Hans": "* \\[ ] 脚本解决问题，而非推给 Claude\n* \\[ ] 错误处理明确且有帮助\n* \\[ ] 没有“魔法常量”（所有值都有合理解释）\n* \\[ ] 所需软件包在说明中列出并验证为可用\n* \\[ ] 脚本有清晰的文档\n* \\[ ] 没有 Windows 风格的路径（全部使用正斜杠）\n* \\[ ] 对关键操作有验证/确认步骤\n* \\[ ] 包含对质量关键任务的反馈循环"
+    },
+    {
+      "en-US": "### Testing",
+      "zh-Hans": "### 测试"
+    },
+    {
+      "en-US": "* [ ] At least three evaluations created\n* [ ] Tested with Haiku, Sonnet, and Opus\n* [ ] Tested with real usage scenarios\n* [ ] Team feedback incorporated (if applicable)",
+      "zh-Hans": "* \\[ ] 至少创建了三个评估\n* \\[ ] 使用 Haiku、Sonnet 和 Opus 进行测试\n* \\[ ] 使用真实使用场景进行测试\n* \\[ ] 已纳入团队反馈（如果适用）"
+    },
+    {
+      "en-US": "## Next steps",
+      "zh-Hans": "## 后续步骤"
+    },
+    {
+      "en-US": "<CardGroup cols={2}>\n  <Card title=\"Get started with Agent Skills\" icon=\"rocket\" href=\"/en/docs/agents-and-tools/agent-skills/quickstart\">\n    Create your first Skill\n  </Card>",
+      "zh-Hans": "<CardGroup cols={2}>\n  <Card title=\"开始使用代理技能\" icon=\"rocket\" href=\"/en/docs/agents-and-tools/agent-skills/quickstart\">\n    创建您的第一个技能\n  </Card>"
+    },
+    {
+      "en-US": "  <Card title=\"Use Skills in Claude Code\" icon=\"terminal\" href=\"/en/docs/claude-code/skills\">\n    Create and manage Skills in Claude Code\n  </Card>",
+      "zh-Hans": "  <Card title=\"在Claude Code中使用技能\" icon=\"terminal\" href=\"/en/docs/claude-code/skills\">\n    在Claude Code中创建和管理技能\n  </Card>"
+    },
+    {
+      "en-US": "  <Card title=\"Use Skills with the API\" icon=\"code\" href=\"/en/api/skills-guide\">\n    Upload and use Skills programmatically\n  </Card>\n</CardGroup>",
+      "zh-Hans": "  <Card title=\"使用 API 技能\" icon=\"code\" href=\"/en/api/skills-guide\">\n    以编程方式上传和使用技能\n  </Card>\n</CardGroup>"
+    }
+  ]
+}

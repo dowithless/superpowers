@@ -1,0 +1,58 @@
+{
+  "sourceFile": "tests/subagent-driven-dev/svelte-todo/design.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Svelte Todo List - Design",
+      "zh-Hans": "# Svelte 待办事项列表 - 设计"
+    },
+    {
+      "en-US": "## Overview",
+      "zh-Hans": "## 概述"
+    },
+    {
+      "en-US": "A simple todo list application built with Svelte. Supports creating, completing, and deleting todos with localStorage persistence.",
+      "zh-Hans": "一个使用 Svelte 构建的简单待办事项列表应用。支持创建、完成和删除待办事项，并具备 localStorage 持久化功能。"
+    },
+    {
+      "en-US": "## Features",
+      "zh-Hans": "## 功能"
+    },
+    {
+      "en-US": "- Add new todos\n- Mark todos as complete/incomplete\n- Delete todos\n- Filter by: All / Active / Completed\n- Clear all completed todos\n- Persist to localStorage\n- Show count of remaining items",
+      "zh-Hans": "* 添加新待办事项\n* 将待办事项标记为完成/未完成\n* 删除待办事项\n* 按以下方式筛选：全部 / 进行中 / 已完成\n* 清除所有已完成的待办事项\n* 持久化到 localStorage\n* 显示剩余项目数量"
+    },
+    {
+      "en-US": "## User Interface",
+      "zh-Hans": "## 用户界面"
+    },
+    {
+      "en-US": "```\n┌─────────────────────────────────────────┐\n│  Svelte Todos                           │\n├─────────────────────────────────────────┤\n│  [________________________] [Add]       │\n├─────────────────────────────────────────┤\n│  [ ] Buy groceries                  [x] │\n│  [✓] Walk the dog                   [x] │\n│  [ ] Write code                     [x] │\n├─────────────────────────────────────────┤\n│  2 items left                           │\n│  [All] [Active] [Completed]  [Clear ✓]  │\n└─────────────────────────────────────────┘\n```",
+      "zh-Hans": "```\n┌─────────────────────────────────────────┐\n│  Svelte Todos                           │\n├─────────────────────────────────────────┤\n│  [________________________] [Add]       │\n├─────────────────────────────────────────┤\n│  [ ] Buy groceries                  [x] │\n│  [✓] Walk the dog                   [x] │\n│  [ ] Write code                     [x] │\n├─────────────────────────────────────────┤\n│  2 items left                           │\n│  [All] [Active] [Completed]  [Clear ✓]  │\n└─────────────────────────────────────────┘\n```"
+    },
+    {
+      "en-US": "## Components",
+      "zh-Hans": "## 组件"
+    },
+    {
+      "en-US": "```\nsrc/\n  App.svelte           # Main app, state management\n  lib/\n    TodoInput.svelte   # Text input + Add button\n    TodoList.svelte    # List container\n    TodoItem.svelte    # Single todo with checkbox, text, delete\n    FilterBar.svelte   # Filter buttons + clear completed\n    store.ts           # Svelte store for todos\n    storage.ts         # localStorage persistence\n```",
+      "zh-Hans": "```\nsrc/\n  App.svelte           # Main app, state management\n  lib/\n    TodoInput.svelte   # Text input + Add button\n    TodoList.svelte    # List container\n    TodoItem.svelte    # Single todo with checkbox, text, delete\n    FilterBar.svelte   # Filter buttons + clear completed\n    store.ts           # Svelte store for todos\n    storage.ts         # localStorage persistence\n```"
+    },
+    {
+      "en-US": "## Data Model",
+      "zh-Hans": "## 数据模型"
+    },
+    {
+      "en-US": "```typescript\ninterface Todo {\n  id: string;        // UUID\n  text: string;      // Todo text\n  completed: boolean;\n}\n\ntype Filter = 'all' | 'active' | 'completed';\n```",
+      "zh-Hans": "```typescript\ninterface Todo {\n  id: string;        // UUID\n  text: string;      // Todo text\n  completed: boolean;\n}\n\ntype Filter = 'all' | 'active' | 'completed';\n```"
+    },
+    {
+      "en-US": "## Acceptance Criteria",
+      "zh-Hans": "## 验收标准"
+    },
+    {
+      "en-US": "1. Can add a todo by typing and pressing Enter or clicking Add\n2. Can toggle todo completion by clicking checkbox\n3. Can delete a todo by clicking X button\n4. Filter buttons show correct subset of todos\n5. \"X items left\" shows count of incomplete todos\n6. \"Clear completed\" removes all completed todos\n7. Todos persist across page refresh (localStorage)\n8. Empty state shows helpful message\n9. All tests pass",
+      "zh-Hans": "1. 可以通过输入并按 Enter 键或点击\"添加\"来添加待办事项\n2. 可以通过点击复选框来切换待办事项的完成状态\n3. 可以通过点击 X 按钮来删除待办事项\n4. 筛选按钮显示正确的待办事项子集\n5. \"X 项待办\"显示未完成的待办事项数量\n6. \"清除已完成\"移除所有已完成的待办事项\n7. 待办事项在页面刷新后仍然存在（localStorage）\n8. 空状态显示有帮助的信息\n9. 所有测试通过"
+    }
+  ]
+}

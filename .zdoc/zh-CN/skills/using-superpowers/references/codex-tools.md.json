@@ -1,0 +1,34 @@
+{
+  "sourceFile": "skills/using-superpowers/references/codex-tools.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Codex Tool Mapping",
+      "zh-Hans": "# Codex 工具映射"
+    },
+    {
+      "en-US": "Skills use Claude Code tool names. When you encounter these in a skill, use your platform equivalent:",
+      "zh-Hans": "技能使用 Claude Code 工具名称。当您在技能中遇到这些时，请使用您平台的等效工具："
+    },
+    {
+      "en-US": "| Skill references | Codex equivalent |\n|-----------------|------------------|\n| `Task` tool (dispatch subagent) | `spawn_agent` |\n| Multiple `Task` calls (parallel) | Multiple `spawn_agent` calls |\n| Task returns result | `wait` |\n| Task completes automatically | `close_agent` to free slot |\n| `TodoWrite` (task tracking) | `update_plan` |\n| `Skill` tool (invoke a skill) | Skills load natively — just follow the instructions |\n| `Read`, `Write`, `Edit` (files) | Use your native file tools |\n| `Bash` (run commands) | Use your native shell tools |",
+      "zh-Hans": "| 技能引用 | Codex 等效工具 |\n|-----------------|------------------|\n| `Task` 工具（派遣子代理） | `spawn_agent` |\n| 多个 `Task` 调用（并行） | 多个 `spawn_agent` 调用 |\n| 任务返回结果 | `wait` |\n| 任务自动完成 | `close_agent` 以释放槽位 |\n| `TodoWrite`（任务跟踪） | `update_plan` |\n| `Skill` 工具（调用技能） | 技能原生加载——只需遵循指令 |\n| `Read`、`Write`、`Edit`（文件） | 使用您原生的文件工具 |\n| `Bash`（运行命令） | 使用您原生的 shell 工具 |"
+    },
+    {
+      "en-US": "## Subagent dispatch requires multi-agent support",
+      "zh-Hans": "## 子代理分发需要多代理支持"
+    },
+    {
+      "en-US": "Add to your Codex config (`~/.codex/config.toml`):",
+      "zh-Hans": "添加到您的 Codex 配置（`~/.codex/config.toml`）："
+    },
+    {
+      "en-US": "```toml\n[features]\nmulti_agent = true\n```",
+      "zh-Hans": "```toml\n[features]\nmulti_agent = true\n```"
+    },
+    {
+      "en-US": "This enables `spawn_agent`, `wait`, and `close_agent` for skills like `dispatching-parallel-agents` and `subagent-driven-development`.",
+      "zh-Hans": "这将启用 `spawn_agent`、`wait` 和 `close_agent`，适用于像 `dispatching-parallel-agents` 和 `subagent-driven-development` 这样的技能。"
+    }
+  ]
+}

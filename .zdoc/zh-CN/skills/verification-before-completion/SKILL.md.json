@@ -1,0 +1,166 @@
+{
+  "sourceFile": "skills/verification-before-completion/SKILL.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "---\nname: verification-before-completion\ndescription: Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always\n---",
+      "zh-Hans": "---\nname: verification-before-completion\ndescription: 在准备声明工作完成、已修复或通过时使用，需在提交或创建PR之前运行验证命令并确认输出，然后才能做出任何成功声明；始终先提供证据再进行断言\n---"
+    },
+    {
+      "en-US": "# Verification Before Completion",
+      "zh-Hans": "# 完成前验证"
+    },
+    {
+      "en-US": "## Overview",
+      "zh-Hans": "## 概述"
+    },
+    {
+      "en-US": "Claiming work is complete without verification is dishonesty, not efficiency.",
+      "zh-Hans": "未经验证就声称工作已完成是不诚实，而非高效。"
+    },
+    {
+      "en-US": "**Core principle:** Evidence before claims, always.",
+      "zh-Hans": "**核心原则：** 证据优先于声明，始终如此。"
+    },
+    {
+      "en-US": "**Violating the letter of this rule is violating the spirit of this rule.**",
+      "zh-Hans": "**违反此规则的字面意义即是违反其精神。**"
+    },
+    {
+      "en-US": "## The Iron Law",
+      "zh-Hans": "## 铁律"
+    },
+    {
+      "en-US": "```\nNO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE\n```",
+      "zh-Hans": "```\nNO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE\n```"
+    },
+    {
+      "en-US": "If you haven't run the verification command in this message, you cannot claim it passes.",
+      "zh-Hans": "如果你尚未运行此消息中的验证命令，就不能声称它通过了。"
+    },
+    {
+      "en-US": "## The Gate Function",
+      "zh-Hans": "## 守门函数"
+    },
+    {
+      "en-US": "```\nBEFORE claiming any status or expressing satisfaction:\n\n1. IDENTIFY: What command proves this claim?\n2. RUN: Execute the FULL command (fresh, complete)\n3. READ: Full output, check exit code, count failures\n4. VERIFY: Does output confirm the claim?\n   - If NO: State actual status with evidence\n   - If YES: State claim WITH evidence\n5. ONLY THEN: Make the claim\n\nSkip any step = lying, not verifying\n```",
+      "zh-Hans": "```\nBEFORE claiming any status or expressing satisfaction:\n\n1. IDENTIFY: What command proves this claim?\n2. RUN: Execute the FULL command (fresh, complete)\n3. READ: Full output, check exit code, count failures\n4. VERIFY: Does output confirm the claim?\n   - If NO: State actual status with evidence\n   - If YES: State claim WITH evidence\n5. ONLY THEN: Make the claim\n\nSkip any step = lying, not verifying\n```"
+    },
+    {
+      "en-US": "## Common Failures",
+      "zh-Hans": "## 常见失败情况"
+    },
+    {
+      "en-US": "| Claim | Requires | Not Sufficient |\n|-------|----------|----------------|\n| Tests pass | Test command output: 0 failures | Previous run, \"should pass\" |\n| Linter clean | Linter output: 0 errors | Partial check, extrapolation |\n| Build succeeds | Build command: exit 0 | Linter passing, logs look good |\n| Bug fixed | Test original symptom: passes | Code changed, assumed fixed |\n| Regression test works | Red-green cycle verified | Test passes once |\n| Agent completed | VCS diff shows changes | Agent reports \"success\" |\n| Requirements met | Line-by-line checklist | Tests passing |",
+      "zh-Hans": "| 声称 | 需要 | 不足够 |\n|-------|----------|----------------|\n| 测试通过 | 测试命令输出：0 失败 | 之前运行过、\"应该能通过\" |\n| 代码检查通过 | 检查器输出：0 错误 | 部分检查、推断 |\n| 构建成功 | 构建命令：退出码 0 | 检查器通过、日志看起来没问题 |\n| Bug 已修复 | 原始症状测试：通过 | 代码已更改、假设已修复 |\n| 回归测试有效 | 红绿循环已验证 | 测试通过一次 |\n| 代理已完成 | 版本控制系统差异显示变更 | 代理报告\"成功\" |\n| 需求已满足 | 逐项核对清单 | 测试通过 |"
+    },
+    {
+      "en-US": "## Red Flags - STOP",
+      "zh-Hans": "## 危险信号 - 立即停止"
+    },
+    {
+      "en-US": "- Using \"should\", \"probably\", \"seems to\"\n- Expressing satisfaction before verification (\"Great!\", \"Perfect!\", \"Done!\", etc.)\n- About to commit/push/PR without verification\n- Trusting agent success reports\n- Relying on partial verification\n- Thinking \"just this once\"\n- Tired and wanting work over\n- **ANY wording implying success without having run verification**",
+      "zh-Hans": "* 使用\"应该\"、\"可能\"、\"似乎\"\n* 在验证前表达满意（\"太好了！\"、\"完美！\"、\"完成了！\"等）\n* 即将提交/推送/创建拉取请求而未验证\n* 信任代理的成功报告\n* 依赖部分验证\n* 认为\"就这一次\"\n* 感到疲倦且希望工作结束\n* **任何暗示成功但未运行验证的措辞**"
+    },
+    {
+      "en-US": "## Rationalization Prevention",
+      "zh-Hans": "## 防止合理化借口"
+    },
+    {
+      "en-US": "| Excuse | Reality |\n|--------|---------|\n| \"Should work now\" | RUN the verification |\n| \"I'm confident\" | Confidence ≠ evidence |\n| \"Just this once\" | No exceptions |\n| \"Linter passed\" | Linter ≠ compiler |\n| \"Agent said success\" | Verify independently |\n| \"I'm tired\" | Exhaustion ≠ excuse |\n| \"Partial check is enough\" | Partial proves nothing |\n| \"Different words so rule doesn't apply\" | Spirit over letter |",
+      "zh-Hans": "| 借口 | 现实 |\n|--------|---------|\n| \"现在应该能工作了\" | **运行**验证 |\n| \"我有信心\" | 信心 ≠ 证据 |\n| \"就这一次\" | 没有例外 |\n| \"代码检查通过了\" | 检查器 ≠ 编译器 |\n| \"代理说成功了\" | 独立验证 |\n| \"我累了\" | 疲惫 ≠ 借口 |\n| \"部分检查就够了\" | 部分证明不了什么 |\n| \"措辞不同所以规则不适用\" | 精神重于字面 |"
+    },
+    {
+      "en-US": "## Key Patterns",
+      "zh-Hans": "## 关键模式"
+    },
+    {
+      "en-US": "**Tests:**",
+      "zh-Hans": "**测试：**"
+    },
+    {
+      "en-US": "```\n✅ [Run test command] [See: 34/34 pass] \"All tests pass\"\n❌ \"Should pass now\" / \"Looks correct\"\n```",
+      "zh-Hans": "```\n✅ [Run test command] [See: 34/34 pass] \"All tests pass\"\n❌ \"Should pass now\" / \"Looks correct\"\n```"
+    },
+    {
+      "en-US": "**Regression tests (TDD Red-Green):**",
+      "zh-Hans": "**回归测试（TDD 红绿循环）：**"
+    },
+    {
+      "en-US": "```\n✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)\n❌ \"I've written a regression test\" (without red-green verification)\n```",
+      "zh-Hans": "```\n✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)\n❌ \"I've written a regression test\" (without red-green verification)\n```"
+    },
+    {
+      "en-US": "**Build:**",
+      "zh-Hans": "**构建：**"
+    },
+    {
+      "en-US": "```\n✅ [Run build] [See: exit 0] \"Build passes\"\n❌ \"Linter passed\" (linter doesn't check compilation)\n```",
+      "zh-Hans": "```\n✅ [Run build] [See: exit 0] \"Build passes\"\n❌ \"Linter passed\" (linter doesn't check compilation)\n```"
+    },
+    {
+      "en-US": "**Requirements:**",
+      "zh-Hans": "**需求：**"
+    },
+    {
+      "en-US": "```\n✅ Re-read plan → Create checklist → Verify each → Report gaps or completion\n❌ \"Tests pass, phase complete\"\n```",
+      "zh-Hans": "```\n✅ Re-read plan → Create checklist → Verify each → Report gaps or completion\n❌ \"Tests pass, phase complete\"\n```"
+    },
+    {
+      "en-US": "**Agent delegation:**",
+      "zh-Hans": "**代理委托：**"
+    },
+    {
+      "en-US": "```\n✅ Agent reports success → Check VCS diff → Verify changes → Report actual state\n❌ Trust agent report\n```",
+      "zh-Hans": "```\n✅ Agent reports success → Check VCS diff → Verify changes → Report actual state\n❌ Trust agent report\n```"
+    },
+    {
+      "en-US": "## Why This Matters",
+      "zh-Hans": "## 为何重要"
+    },
+    {
+      "en-US": "From 24 failure memories:",
+      "zh-Hans": "基于 24 次失败记忆："
+    },
+    {
+      "en-US": "- your human partner said \"I don't believe you\" - trust broken\n- Undefined functions shipped - would crash\n- Missing requirements shipped - incomplete features\n- Time wasted on false completion → redirect → rework\n- Violates: \"Honesty is a core value. If you lie, you'll be replaced.\"",
+      "zh-Hans": "* 你的人类伙伴说\"我不相信你\" - 信任破裂\n* 未定义的函数被发布 - 会导致崩溃\n* 缺失的需求被发布 - 功能不完整\n* 时间浪费在虚假的完成 → 重定向 → 返工\n* 违反：\"诚实是核心价值观。如果你撒谎，你将被替换。\""
+    },
+    {
+      "en-US": "## When To Apply",
+      "zh-Hans": "## 何时应用"
+    },
+    {
+      "en-US": "**ALWAYS before:**",
+      "zh-Hans": "**在以下任何情况之前，始终应用：**"
+    },
+    {
+      "en-US": "- ANY variation of success/completion claims\n- ANY expression of satisfaction\n- ANY positive statement about work state\n- Committing, PR creation, task completion\n- Moving to next task\n- Delegating to agents",
+      "zh-Hans": "* 任何形式的成功/完成声明\n* 任何满意度的表达\n* 任何关于工作状态的正面陈述\n* 提交、创建拉取请求、完成任务\n* 转向下一项任务\n* 委托给代理"
+    },
+    {
+      "en-US": "**Rule applies to:**",
+      "zh-Hans": "**规则适用于：**"
+    },
+    {
+      "en-US": "- Exact phrases\n- Paraphrases and synonyms\n- Implications of success\n- ANY communication suggesting completion/correctness",
+      "zh-Hans": "* 确切的措辞\n* 释义和同义词\n* 成功的暗示\n* **任何**暗示完成/正确性的沟通"
+    },
+    {
+      "en-US": "## The Bottom Line",
+      "zh-Hans": "## 底线"
+    },
+    {
+      "en-US": "**No shortcuts for verification.**",
+      "zh-Hans": "**验证没有捷径。**"
+    },
+    {
+      "en-US": "Run the command. Read the output. THEN claim the result.",
+      "zh-Hans": "运行命令。阅读输出。**然后**声明结果。"
+    },
+    {
+      "en-US": "This is non-negotiable.",
+      "zh-Hans": "这是不可协商的。"
+    }
+  ]
+}

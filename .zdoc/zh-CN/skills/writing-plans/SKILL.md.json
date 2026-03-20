@@ -1,0 +1,166 @@
+{
+  "sourceFile": "skills/writing-plans/SKILL.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "---\nname: writing-plans\ndescription: Use when you have a spec or requirements for a multi-step task, before touching code\n---",
+      "zh-Hans": "---\nname: writing-plans\ndescription: 当您有一个多步骤任务的规范或需求时，在编写代码之前使用\n---"
+    },
+    {
+      "en-US": "# Writing Plans",
+      "zh-Hans": "# 编写计划"
+    },
+    {
+      "en-US": "## Overview",
+      "zh-Hans": "## 概述"
+    },
+    {
+      "en-US": "Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.",
+      "zh-Hans": "编写全面的实施计划，假设工程师对我们的代码库零了解且品味存疑。记录他们需要知道的一切：每项任务需要修改哪些文件、代码、需要查阅的测试和文档、如何测试。将整个计划分解为易于处理的小任务。保持 DRY。遵循 YAGNI。采用 TDD。频繁提交。"
+    },
+    {
+      "en-US": "Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well.",
+      "zh-Hans": "假设他们是有经验的开发者，但几乎不了解我们的工具集或问题领域。假设他们不太擅长设计良好的测试。"
+    },
+    {
+      "en-US": "**Announce at start:** \"I'm using the writing-plans skill to create the implementation plan.\"",
+      "zh-Hans": "**开始时声明：** \"我正在使用 writing-plans 技能来创建实施计划。\""
+    },
+    {
+      "en-US": "**Context:** This should be run in a dedicated worktree (created by brainstorming skill).",
+      "zh-Hans": "**上下文：** 这应该在专用工作树中运行（由 brainstorming 技能创建）。"
+    },
+    {
+      "en-US": "**Save plans to:** `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`",
+      "zh-Hans": "**计划保存至：** `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`"
+    },
+    {
+      "en-US": "- (User preferences for plan location override this default)",
+      "zh-Hans": "* （用户对计划位置的偏好会覆盖此默认设置）"
+    },
+    {
+      "en-US": "## Scope Check",
+      "zh-Hans": "## 范围检查"
+    },
+    {
+      "en-US": "If the spec covers multiple independent subsystems, it should have been broken into sub-project specs during brainstorming. If it wasn't, suggest breaking this into separate plans — one per subsystem. Each plan should produce working, testable software on its own.",
+      "zh-Hans": "如果规范涵盖多个独立的子系统，则应在头脑风暴阶段将其分解为子项目规范。如果未分解，建议将其拆分为独立的计划——每个子系统一个计划。每个计划都应能独立产出可工作、可测试的软件。"
+    },
+    {
+      "en-US": "## File Structure",
+      "zh-Hans": "## 文件结构"
+    },
+    {
+      "en-US": "Before defining tasks, map out which files will be created or modified and what each one is responsible for. This is where decomposition decisions get locked in.",
+      "zh-Hans": "在定义任务之前，先规划将要创建或修改的文件，并说明每个文件的职责。这是分解决策确定的地方。"
+    },
+    {
+      "en-US": "- Design units with clear boundaries and well-defined interfaces. Each file should have one clear responsibility.\n- You reason best about code you can hold in context at once, and your edits are more reliable when files are focused. Prefer smaller, focused files over large ones that do too much.\n- Files that change together should live together. Split by responsibility, not by technical layer.\n- In existing codebases, follow established patterns. If the codebase uses large files, don't unilaterally restructure - but if a file you're modifying has grown unwieldy, including a split in the plan is reasonable.",
+      "zh-Hans": "* 设计具有清晰边界和明确定义接口的单元。每个文件应有一个明确的职责。\n* 你对自己能一次性在上下文中理解的代码推理效果最好，当文件聚焦时，你的编辑也更可靠。倾向于更小、聚焦的文件，而不是功能过多的大文件。\n* 一起变化的文件应该放在一起。按职责拆分，而不是按技术层拆分。\n* 在现有代码库中，遵循既定模式。如果代码库使用大文件，不要单方面重构——但如果你要修改的文件已经变得难以管理，在计划中包含拆分是合理的。"
+    },
+    {
+      "en-US": "This structure informs the task decomposition. Each task should produce self-contained changes that make sense independently.",
+      "zh-Hans": "这个结构决定了任务分解。每个任务应产生独立且有意义的自包含变更。"
+    },
+    {
+      "en-US": "## Bite-Sized Task Granularity",
+      "zh-Hans": "## 易于处理的任务粒度"
+    },
+    {
+      "en-US": "**Each step is one action (2-5 minutes):**",
+      "zh-Hans": "**每个步骤是一个动作（2-5分钟）：**"
+    },
+    {
+      "en-US": "- \"Write the failing test\" - step\n- \"Run it to make sure it fails\" - step\n- \"Implement the minimal code to make the test pass\" - step\n- \"Run the tests and make sure they pass\" - step\n- \"Commit\" - step",
+      "zh-Hans": "* \"编写失败的测试\" - 步骤\n* \"运行它以确认失败\" - 步骤\n* \"实现使测试通过的最简代码\" - 步骤\n* \"运行测试并确认通过\" - 步骤\n* \"提交\" - 步骤"
+    },
+    {
+      "en-US": "## Plan Document Header",
+      "zh-Hans": "## 计划文档头部"
+    },
+    {
+      "en-US": "**Every plan MUST start with this header:**",
+      "zh-Hans": "**每个计划必须以以下头部开始：**"
+    },
+    {
+      "en-US": "```markdown\n# [Feature Name] Implementation Plan\n\n> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.\n\n**Goal:** [One sentence describing what this builds]\n\n**Architecture:** [2-3 sentences about approach]\n\n**Tech Stack:** [Key technologies/libraries]\n\n---\n```",
+      "zh-Hans": "```markdown\n# [功能名称] 实施方案\n\n> **面向智能体工作者：** 必备子技能：使用 superpowers：子智能体驱动开发（推荐）或 superpowers：执行计划来按任务逐步实施此方案。步骤使用复选框（`- [ ]`）语法进行跟踪。\n\n**目标：** [一句话描述本方案构建的内容]\n\n**架构：** [2-3句话描述方法]\n\n**技术栈：** [关键技术/库]\n\n---\n```"
+    },
+    {
+      "en-US": "## Task Structure",
+      "zh-Hans": "## 任务结构"
+    },
+    {
+      "en-US": "````markdown\n### Task N: [Component Name]\n\n**Files:**\n- Create: `exact/path/to/file.py`\n- Modify: `exact/path/to/existing.py:123-145`\n- Test: `tests/exact/path/to/test.py`\n\n- [ ] **Step 1: Write the failing test**\n\n```python\ndef test_specific_behavior():\n    result = function(input)\n    assert result == expected\n```\n\n- [ ] **Step 2: Run test to verify it fails**\n\nRun: `pytest tests/path/test.py::test_name -v`\nExpected: FAIL with \"function not defined\"\n\n- [ ] **Step 3: Write minimal implementation**\n\n```python\ndef function(input):\n    return expected\n```\n\n- [ ] **Step 4: Run test to verify it passes**\n\nRun: `pytest tests/path/test.py::test_name -v`\nExpected: PASS\n\n- [ ] **Step 5: Commit**\n\n```bash\ngit add tests/path/test.py src/path/file.py\ngit commit -m \"feat: add specific feature\"\n```\n````",
+      "zh-Hans": "````markdown\n### 任务 N: [组件名称]\n\n**文件：**\n- 创建：`exact/path/to/file.py`\n- 修改：`exact/path/to/existing.py:123-145`\n- 测试：`tests/exact/path/to/test.py`\n\n- [ ] **步骤 1：编写失败测试**\n\n```python\ndef test_specific_behavior():\n    result = function(input)\n    assert result == expected\n```\n\n- [ ] **步骤 2：运行测试以确认其失败**\n\n运行：`pytest tests/path/test.py::test_name -v`\n预期：失败，提示\"函数未定义\"\n\n- [ ] **步骤 3：编写最小实现**\n\n```python\ndef function(input):\n    return expected\n```\n\n- [ ] **步骤 4：运行测试以确认其通过**\n\n运行：`pytest tests/path/test.py::test_name -v`\n预期：通过\n\n- [ ] **步骤 5：提交**\n\n```bash\ngit add tests/path/test.py src/path/file.py\ngit commit -m \"feat: add specific feature\"\n```\n````"
+    },
+    {
+      "en-US": "## Remember",
+      "zh-Hans": "## 记住"
+    },
+    {
+      "en-US": "- Exact file paths always\n- Complete code in plan (not \"add validation\")\n- Exact commands with expected output\n- Reference relevant skills with @ syntax\n- DRY, YAGNI, TDD, frequent commits",
+      "zh-Hans": "* 始终使用精确的文件路径\n* 计划中包含完整的代码（而不是\"添加验证\"）\n* 使用精确的命令和预期输出\n* 使用 @ 语法引用相关技能\n* DRY, YAGNI, TDD, 频繁提交"
+    },
+    {
+      "en-US": "## Plan Review Loop",
+      "zh-Hans": "## 计划审查循环"
+    },
+    {
+      "en-US": "After writing the complete plan:",
+      "zh-Hans": "完成计划编写后："
+    },
+    {
+      "en-US": "1. Dispatch a single plan-document-reviewer subagent (see plan-document-reviewer-prompt.md) with precisely crafted review context — never your session history. This keeps the reviewer focused on the plan, not your thought process.\n   - Provide: path to the plan document, path to spec document\n2. If ❌ Issues Found: fix the issues, re-dispatch reviewer for the whole plan\n3. If ✅ Approved: proceed to execution handoff",
+      "zh-Hans": "1. 派遣一个计划文档评审子代理（参见 plan-document-reviewer-prompt.md），并提供精心构建的评审上下文——切勿使用您的会话历史。这使评审员专注于计划本身，而非您的思考过程。\n   * 提供：计划文档路径、规格文档路径\n2. 如果 ❌ 发现问题：修复问题，并重新派遣评审员评审整个计划\n3. 如果 ✅ 获得批准：继续执行交接"
+    },
+    {
+      "en-US": "**Review loop guidance:**",
+      "zh-Hans": "**审查循环指南：**"
+    },
+    {
+      "en-US": "- Same agent that wrote the plan fixes it (preserves context)\n- If loop exceeds 3 iterations, surface to human for guidance\n- Reviewers are advisory — explain disagreements if you believe feedback is incorrect",
+      "zh-Hans": "* 由编写计划的同一代理进行修复（保持上下文）\n* 如果循环超过3次，则向人类寻求指导\n* 评审员仅提供建议——如果您认为反馈不正确，请解释分歧"
+    },
+    {
+      "en-US": "## Execution Handoff",
+      "zh-Hans": "## 执行交接"
+    },
+    {
+      "en-US": "After saving the plan, offer execution choice:",
+      "zh-Hans": "保存计划后，提供执行选项："
+    },
+    {
+      "en-US": "**\"Plan complete and saved to `docs/superpowers/plans/<filename>.md`. Two execution options:**",
+      "zh-Hans": "**“计划已完成并保存至 `docs/superpowers/plans/<filename>.md`。提供两种执行选项：**"
+    },
+    {
+      "en-US": "**1. Subagent-Driven (recommended)** - I dispatch a fresh subagent per task, review between tasks, fast iteration",
+      "zh-Hans": "**1. 子代理驱动（推荐）** - 我为每个任务派遣一个全新的子代理，任务间进行评审，快速迭代"
+    },
+    {
+      "en-US": "**2. Inline Execution** - Execute tasks in this session using executing-plans, batch execution with checkpoints",
+      "zh-Hans": "**2. 内联执行** - 在此会话中使用 executing-plans 执行任务，批量执行并设置检查点"
+    },
+    {
+      "en-US": "**Which approach?\"**",
+      "zh-Hans": "**选择哪种方式？”**"
+    },
+    {
+      "en-US": "**If Subagent-Driven chosen:**",
+      "zh-Hans": "**如果选择子代理驱动：**"
+    },
+    {
+      "en-US": "- **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development\n- Fresh subagent per task + two-stage review",
+      "zh-Hans": "* **必需子技能：** 使用 superpowers:subagent-driven-development\n* 每个任务使用全新子代理 + 两阶段评审"
+    },
+    {
+      "en-US": "**If Inline Execution chosen:**",
+      "zh-Hans": "**如果选择内联执行：**"
+    },
+    {
+      "en-US": "- **REQUIRED SUB-SKILL:** Use superpowers:executing-plans\n- Batch execution with checkpoints for review",
+      "zh-Hans": "* **必需子技能：** 使用 superpowers:executing-plans\n* 批量执行并设置检查点以供评审"
+    }
+  ]
+}

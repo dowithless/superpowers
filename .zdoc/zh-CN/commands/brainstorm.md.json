@@ -1,0 +1,14 @@
+{
+  "sourceFile": "commands/brainstorm.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "---\ndescription: \"Deprecated - use the superpowers:brainstorming skill instead\"\n---",
+      "zh-Hans": "---\ndescription: \"已弃用 - 请改用 superpowers:头脑风暴技能\"\n---"
+    },
+    {
+      "en-US": "Tell your human partner that this command is deprecated and will be removed in the next major release. They should ask you to use the \"superpowers brainstorming\" skill instead.",
+      "zh-Hans": "告诉你的合作伙伴，这个命令已被弃用，并将在下一个主要版本中移除。他们应该要求你使用“superpowers 头脑风暴”技能代替。"
+    }
+  ]
+}

@@ -1,0 +1,194 @@
+{
+  "sourceFile": "skills/systematic-debugging/CREATION-LOG.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Creation Log: Systematic Debugging Skill",
+      "zh-Hans": "# 创建日志：系统性调试技能"
+    },
+    {
+      "en-US": "Reference example of extracting, structuring, and bulletproofing a critical skill.",
+      "zh-Hans": "提取、构建并强化关键技能的参考范例。"
+    },
+    {
+      "en-US": "## Source Material",
+      "zh-Hans": "## 源材料"
+    },
+    {
+      "en-US": "Extracted debugging framework from `/Users/jesse/.claude/CLAUDE.md`:",
+      "zh-Hans": "从 `/Users/jesse/.claude/CLAUDE.md` 中提取的调试框架："
+    },
+    {
+      "en-US": "- 4-phase systematic process (Investigation → Pattern Analysis → Hypothesis → Implementation)\n- Core mandate: ALWAYS find root cause, NEVER fix symptoms\n- Rules designed to resist time pressure and rationalization",
+      "zh-Hans": "* 4 阶段系统化流程（调查 → 模式分析 → 假设 → 实施）\n* 核心准则：**始终**找到根本原因，**永不**修复症状\n* 规则旨在抵抗时间压力和合理化借口"
+    },
+    {
+      "en-US": "## Extraction Decisions",
+      "zh-Hans": "## 提取决策"
+    },
+    {
+      "en-US": "**What to include:**",
+      "zh-Hans": "**包含内容：**"
+    },
+    {
+      "en-US": "- Complete 4-phase framework with all rules\n- Anti-shortcuts (\"NEVER fix symptom\", \"STOP and re-analyze\")\n- Pressure-resistant language (\"even if faster\", \"even if I seem in a hurry\")\n- Concrete steps for each phase",
+      "zh-Hans": "* 完整的 4 阶段框架及所有规则\n* 反捷径提示（\"永不修复症状\"、\"停止并重新分析\"）\n* 抗压性措辞（\"即使更快\"、\"即使我看起来很赶时间\"）\n* 每个阶段的具体步骤"
+    },
+    {
+      "en-US": "**What to leave out:**",
+      "zh-Hans": "**排除内容：**"
+    },
+    {
+      "en-US": "- Project-specific context\n- Repetitive variations of same rule\n- Narrative explanations (condensed to principles)",
+      "zh-Hans": "* 项目特定上下文\n* 相同规则的重复杂表述\n* 叙述性解释（浓缩为原则）"
+    },
+    {
+      "en-US": "## Structure Following skill-creation/SKILL.md",
+      "zh-Hans": "## 遵循 skill-creation/SKILL.md 的结构"
+    },
+    {
+      "en-US": "1. **Rich when_to_use** - Included symptoms and anti-patterns\n2. **Type: technique** - Concrete process with steps\n3. **Keywords** - \"root cause\", \"symptom\", \"workaround\", \"debugging\", \"investigation\"\n4. **Flowchart** - Decision point for \"fix failed\" → re-analyze vs add more fixes\n5. **Phase-by-phase breakdown** - Scannable checklist format\n6. **Anti-patterns section** - What NOT to do (critical for this skill)",
+      "zh-Hans": "1. **丰富的 when\\_to\\_use** - 包含症状和反模式\n2. **类型：技术** - 包含步骤的具体流程\n3. **关键词** - \"根本原因\"、\"症状\"、\"变通方法\"、\"调试\"、\"调查\"\n4. **流程图** - \"修复失败\"时的决策点 → 重新分析 vs 添加更多修复\n5. **分阶段详解** - 可快速浏览的清单格式\n6. **反模式部分** - 不应做什么（对于此技能至关重要）"
+    },
+    {
+      "en-US": "## Bulletproofing Elements",
+      "zh-Hans": "## 强化元素"
+    },
+    {
+      "en-US": "Framework designed to resist rationalization under pressure:",
+      "zh-Hans": "框架设计用于抵抗压力下的合理化借口："
+    },
+    {
+      "en-US": "### Language Choices",
+      "zh-Hans": "### 措辞选择"
+    },
+    {
+      "en-US": "- \"ALWAYS\" / \"NEVER\" (not \"should\" / \"try to\")\n- \"even if faster\" / \"even if I seem in a hurry\"\n- \"STOP and re-analyze\" (explicit pause)\n- \"Don't skip past\" (catches the actual behavior)",
+      "zh-Hans": "* \"始终\" / \"永不\"（而非\"应该\" / \"尝试\"）\n* \"即使更快\" / \"即使我看起来很赶时间\"\n* \"停止并重新分析\"（明确的暂停）\n* \"不要跳过\"（捕捉实际行为）"
+    },
+    {
+      "en-US": "### Structural Defenses",
+      "zh-Hans": "### 结构防御"
+    },
+    {
+      "en-US": "- **Phase 1 required** - Can't skip to implementation\n- **Single hypothesis rule** - Forces thinking, prevents shotgun fixes\n- **Explicit failure mode** - \"IF your first fix doesn't work\" with mandatory action\n- **Anti-patterns section** - Shows exactly what shortcuts look like",
+      "zh-Hans": "* **阶段 1 为必需** - 不能跳至实施阶段\n* **单一假设规则** - 强制思考，防止散弹式修复\n* **明确的失败模式** - \"如果你的首次修复无效\"并附带强制操作\n* **反模式部分** - 精确展示捷径操作的表现形式"
+    },
+    {
+      "en-US": "### Redundancy",
+      "zh-Hans": "### 冗余设计"
+    },
+    {
+      "en-US": "- Root cause mandate in overview + when_to_use + Phase 1 + implementation rules\n- \"NEVER fix symptom\" appears 4 times in different contexts\n- Each phase has explicit \"don't skip\" guidance",
+      "zh-Hans": "* 根本原因准则出现在概述 + when\\_to\\_use + 阶段 1 + 实施规则中\n* \"永不修复症状\"在不同上下文中出现 4 次\n* 每个阶段都有明确的\"不要跳过\"指引"
+    },
+    {
+      "en-US": "## Testing Approach",
+      "zh-Hans": "## 测试方法"
+    },
+    {
+      "en-US": "Created 4 validation tests following skills/meta/testing-skills-with-subagents:",
+      "zh-Hans": "遵循 skills/meta/testing-skills-with-subagents 创建了 4 个验证测试："
+    },
+    {
+      "en-US": "### Test 1: Academic Context (No Pressure)",
+      "zh-Hans": "### 测试 1：学术情境（无压力）"
+    },
+    {
+      "en-US": "- Simple bug, no time pressure\n- **Result:** Perfect compliance, complete investigation",
+      "zh-Hans": "* 简单错误，无时间压力\n* **结果：** 完全遵守，完成调查"
+    },
+    {
+      "en-US": "### Test 2: Time Pressure + Obvious Quick Fix",
+      "zh-Hans": "### 测试 2：时间压力 + 明显的快速修复"
+    },
+    {
+      "en-US": "- User \"in a hurry\", symptom fix looks easy\n- **Result:** Resisted shortcut, followed full process, found real root cause",
+      "zh-Hans": "* 用户\"赶时间\"，症状修复看似简单\n* **结果：** 抵制了捷径，遵循完整流程，找到了真正的根本原因"
+    },
+    {
+      "en-US": "### Test 3: Complex System + Uncertainty",
+      "zh-Hans": "### 测试 3：复杂系统 + 不确定性"
+    },
+    {
+      "en-US": "- Multi-layer failure, unclear if can find root cause\n- **Result:** Systematic investigation, traced through all layers, found source",
+      "zh-Hans": "* 多层故障，不清楚是否能找到根本原因\n* **结果：** 系统性调查，追踪了所有层级，找到了源头"
+    },
+    {
+      "en-US": "### Test 4: Failed First Fix",
+      "zh-Hans": "### 测试 4：首次修复失败"
+    },
+    {
+      "en-US": "- Hypothesis doesn't work, temptation to add more fixes\n- **Result:** Stopped, re-analyzed, formed new hypothesis (no shotgun)",
+      "zh-Hans": "* 假设无效，有添加更多修复的诱惑\n* **结果：** 停止，重新分析，形成新假设（没有散弹式修复）"
+    },
+    {
+      "en-US": "**All tests passed.** No rationalizations found.",
+      "zh-Hans": "**所有测试通过。** 未发现合理化借口。"
+    },
+    {
+      "en-US": "## Iterations",
+      "zh-Hans": "## 迭代过程"
+    },
+    {
+      "en-US": "### Initial Version",
+      "zh-Hans": "### 初始版本"
+    },
+    {
+      "en-US": "- Complete 4-phase framework\n- Anti-patterns section\n- Flowchart for \"fix failed\" decision",
+      "zh-Hans": "* 完整的 4 阶段框架\n* 反模式部分\n* \"修复失败\"决策流程图"
+    },
+    {
+      "en-US": "### Enhancement 1: TDD Reference",
+      "zh-Hans": "### 增强 1：TDD 参考"
+    },
+    {
+      "en-US": "- Added link to skills/testing/test-driven-development\n- Note explaining TDD's \"simplest code\" ≠ debugging's \"root cause\"\n- Prevents confusion between methodologies",
+      "zh-Hans": "* 添加了指向 skills/testing/test-driven-development 的链接\n* 注释解释 TDD 的\"最简单代码\" ≠ 调试的\"根本原因\"\n* 防止方法论之间的混淆"
+    },
+    {
+      "en-US": "## Final Outcome",
+      "zh-Hans": "## 最终成果"
+    },
+    {
+      "en-US": "Bulletproof skill that:",
+      "zh-Hans": "强化后的技能："
+    },
+    {
+      "en-US": "- ✅ Clearly mandates root cause investigation\n- ✅ Resists time pressure rationalization\n- ✅ Provides concrete steps for each phase\n- ✅ Shows anti-patterns explicitly\n- ✅ Tested under multiple pressure scenarios\n- ✅ Clarifies relationship to TDD\n- ✅ Ready for use",
+      "zh-Hans": "* ✅ 明确要求进行根本原因调查\n* ✅ 抵抗时间压力下的合理化借口\n* ✅ 提供每个阶段的具体步骤\n* ✅ 明确展示反模式\n* ✅ 在多种压力场景下经过测试\n* ✅ 澄清了与 TDD 的关系\n* ✅ 可供使用"
+    },
+    {
+      "en-US": "## Key Insight",
+      "zh-Hans": "## 关键洞察"
+    },
+    {
+      "en-US": "**Most important bulletproofing:** Anti-patterns section showing exact shortcuts that feel justified in the moment. When Claude thinks \"I'll just add this one quick fix\", seeing that exact pattern listed as wrong creates cognitive friction.",
+      "zh-Hans": "**最重要的强化部分：** 反模式部分精确展示了那些在当下感觉合理的捷径。当 Claude 想\"我就加这个快速修复\"时，看到该确切模式被列为错误会产生认知摩擦。"
+    },
+    {
+      "en-US": "## Usage Example",
+      "zh-Hans": "## 使用示例"
+    },
+    {
+      "en-US": "When encountering a bug:",
+      "zh-Hans": "遇到错误时："
+    },
+    {
+      "en-US": "1. Load skill: skills/debugging/systematic-debugging\n2. Read overview (10 sec) - reminded of mandate\n3. Follow Phase 1 checklist - forced investigation\n4. If tempted to skip - see anti-pattern, stop\n5. Complete all phases - root cause found",
+      "zh-Hans": "1. 加载技能：skills/debugging/systematic-debugging\n2. 阅读概述（10 秒）- 提醒准则\n3. 遵循阶段 1 清单 - 强制调查\n4. 如果试图跳过 - 查看反模式，停止\n5. 完成所有阶段 - 找到根本原因"
+    },
+    {
+      "en-US": "**Time investment:** 5-10 minutes\n**Time saved:** Hours of symptom-whack-a-mole",
+      "zh-Hans": "**时间投入：** 5-10 分钟\n**节省时间：** 数小时的症状打地鼠游戏"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "*Created: 2025-10-03*\n*Purpose: Reference example for skill extraction and bulletproofing*",
+      "zh-Hans": "*创建于：2025-10-03*\n*目的：技能提取和强化的参考范例*"
+    }
+  ]
+}

@@ -1,0 +1,854 @@
+{
+  "sourceFile": "skills/writing-skills/SKILL.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "---\nname: writing-skills\ndescription: Use when creating new skills, editing existing skills, or verifying skills work before deployment\n---",
+      "zh-Hans": "---\nname: writing-skills\ndescription: 用于创建新技能、编辑现有技能或在部署前验证技能是否正常工作\n---"
+    },
+    {
+      "en-US": "# Writing Skills",
+      "zh-Hans": "# 写作技能"
+    },
+    {
+      "en-US": "## Overview",
+      "zh-Hans": "## 概述"
+    },
+    {
+      "en-US": "**Writing skills IS Test-Driven Development applied to process documentation.**",
+      "zh-Hans": "**写作技能是测试驱动开发在流程文档中的应用。**"
+    },
+    {
+      "en-US": "**Personal skills live in agent-specific directories (`~/.claude/skills` for Claude Code, `~/.agents/skills/` for Codex)** ",
+      "zh-Hans": "**个人技能存放在特定智能体的目录中（`~/.claude/skills` 对应 Claude Code，`~/.agents/skills/` 对应 Codex）**"
+    },
+    {
+      "en-US": "You write test cases (pressure scenarios with subagents), watch them fail (baseline behavior), write the skill (documentation), watch tests pass (agents comply), and refactor (close loopholes).",
+      "zh-Hans": "你编写测试用例（包含子智能体的压力场景），观察它们失败（基线行为），编写技能（文档），观察测试通过（智能体遵从），并进行重构（修补漏洞）。"
+    },
+    {
+      "en-US": "**Core principle:** If you didn't watch an agent fail without the skill, you don't know if the skill teaches the right thing.",
+      "zh-Hans": "**核心原则：** 如果你没有观察到智能体在没有该技能的情况下失败，你就不知道这个技能是否教授了正确的内容。"
+    },
+    {
+      "en-US": "**REQUIRED BACKGROUND:** You MUST understand superpowers:test-driven-development before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill adapts TDD to documentation.",
+      "zh-Hans": "**必备背景：** 在使用此技能之前，你必须理解 superpowers:test-driven-development。该技能定义了基本的 RED-GREEN-REFACTOR 循环。本技能将 TDD 适配到文档编写。"
+    },
+    {
+      "en-US": "**Official guidance:** For Anthropic's official skill authoring best practices, see anthropic-best-practices.md. This document provides additional patterns and guidelines that complement the TDD-focused approach in this skill.",
+      "zh-Hans": "**官方指导：** 关于 Anthropic 官方的技能编写最佳实践，请参阅 anthropic-best-practices.md。本文档提供了额外的模式和指南，以补充本技能中专注于 TDD 的方法。"
+    },
+    {
+      "en-US": "## What is a Skill?",
+      "zh-Hans": "## 什么是技能？"
+    },
+    {
+      "en-US": "A **skill** is a reference guide for proven techniques, patterns, or tools. Skills help future Claude instances find and apply effective approaches.",
+      "zh-Hans": "一个**技能**是经过验证的技术、模式或工具的参考指南。技能帮助未来的 Claude 实例找到并应用有效的方法。"
+    },
+    {
+      "en-US": "**Skills are:** Reusable techniques, patterns, tools, reference guides",
+      "zh-Hans": "**技能是：** 可复用的技术、模式、工具、参考指南"
+    },
+    {
+      "en-US": "**Skills are NOT:** Narratives about how you solved a problem once",
+      "zh-Hans": "**技能不是：** 关于你如何一次性解决问题的叙述"
+    },
+    {
+      "en-US": "## TDD Mapping for Skills",
+      "zh-Hans": "## 技能的 TDD 映射"
+    },
+    {
+      "en-US": "| TDD Concept | Skill Creation |\n|-------------|----------------|\n| **Test case** | Pressure scenario with subagent |\n| **Production code** | Skill document (SKILL.md) |\n| **Test fails (RED)** | Agent violates rule without skill (baseline) |\n| **Test passes (GREEN)** | Agent complies with skill present |\n| **Refactor** | Close loopholes while maintaining compliance |\n| **Write test first** | Run baseline scenario BEFORE writing skill |\n| **Watch it fail** | Document exact rationalizations agent uses |\n| **Minimal code** | Write skill addressing those specific violations |\n| **Watch it pass** | Verify agent now complies |\n| **Refactor cycle** | Find new rationalizations → plug → re-verify |",
+      "zh-Hans": "| TDD 概念 | 技能创建 |\n|-------------|----------------|\n| **测试用例** | 包含子智能体的压力场景 |\n| **生产代码** | 技能文档 (SKILL.md) |\n| **测试失败 (RED)** | 智能体在没有技能时违反规则（基线） |\n| **测试通过 (GREEN)** | 智能体在有技能时遵从 |\n| **重构** | 在保持遵从的同时修补漏洞 |\n| **先写测试** | 在编写技能之前运行基线场景 |\n| **观察失败** | 记录智能体使用的确切合理化解释 |\n| **最简代码** | 编写针对那些特定违规行为的技能 |\n| **观察通过** | 验证智能体现在遵从 |\n| **重构循环** | 发现新的合理化解释 → 修补 → 重新验证 |"
+    },
+    {
+      "en-US": "The entire skill creation process follows RED-GREEN-REFACTOR.",
+      "zh-Hans": "整个技能创建过程遵循 RED-GREEN-REFACTOR 循环。"
+    },
+    {
+      "en-US": "## When to Create a Skill",
+      "zh-Hans": "## 何时创建技能"
+    },
+    {
+      "en-US": "**Create when:**",
+      "zh-Hans": "**在以下情况下创建：**"
+    },
+    {
+      "en-US": "- Technique wasn't intuitively obvious to you\n- You'd reference this again across projects\n- Pattern applies broadly (not project-specific)\n- Others would benefit",
+      "zh-Hans": "* 该技术对你来说并非直观明显\n* 你会在不同项目中再次参考此内容\n* 模式广泛适用（非项目特定）\n* 其他人会受益"
+    },
+    {
+      "en-US": "**Don't create for:**",
+      "zh-Hans": "**不要为以下情况创建：**"
+    },
+    {
+      "en-US": "- One-off solutions\n- Standard practices well-documented elsewhere\n- Project-specific conventions (put in CLAUDE.md)\n- Mechanical constraints (if it's enforceable with regex/validation, automate it—save documentation for judgment calls)",
+      "zh-Hans": "* 一次性解决方案\n* 其他地方已有完善文档的标准实践\n* 项目特定的约定（放在 CLAUDE.md 中）\n* 机械性约束（如果可以用正则表达式/验证强制执行，就自动化它——把文档留给需要判断的情况）"
+    },
+    {
+      "en-US": "## Skill Types",
+      "zh-Hans": "## 技能类型"
+    },
+    {
+      "en-US": "### Technique",
+      "zh-Hans": "### 技术"
+    },
+    {
+      "en-US": "Concrete method with steps to follow (condition-based-waiting, root-cause-tracing)",
+      "zh-Hans": "具有可遵循步骤的具体方法（条件等待、根本原因追踪）"
+    },
+    {
+      "en-US": "### Pattern",
+      "zh-Hans": "### 模式"
+    },
+    {
+      "en-US": "Way of thinking about problems (flatten-with-flags, test-invariants)",
+      "zh-Hans": "思考问题的方式（使用标志扁平化、测试不变量）"
+    },
+    {
+      "en-US": "### Reference",
+      "zh-Hans": "### 参考"
+    },
+    {
+      "en-US": "API docs, syntax guides, tool documentation (office docs)",
+      "zh-Hans": "API 文档、语法指南、工具文档（办公文档）"
+    },
+    {
+      "en-US": "## Directory Structure",
+      "zh-Hans": "## 目录结构"
+    },
+    {
+      "en-US": "```\nskills/\n  skill-name/\n    SKILL.md              # Main reference (required)\n    supporting-file.*     # Only if needed\n```",
+      "zh-Hans": "```\nskills/\n  skill-name/\n    SKILL.md              # Main reference (required)\n    supporting-file.*     # Only if needed\n```"
+    },
+    {
+      "en-US": "**Flat namespace** - all skills in one searchable namespace",
+      "zh-Hans": "**扁平命名空间** - 所有技能在一个可搜索的命名空间中"
+    },
+    {
+      "en-US": "**Separate files for:**",
+      "zh-Hans": "**为以下内容使用单独文件：**"
+    },
+    {
+      "en-US": "1. **Heavy reference** (100+ lines) - API docs, comprehensive syntax\n2. **Reusable tools** - Scripts, utilities, templates",
+      "zh-Hans": "1. **重型参考** (100+ 行) - API 文档、综合语法\n2. **可复用工具** - 脚本、实用程序、模板"
+    },
+    {
+      "en-US": "**Keep inline:**",
+      "zh-Hans": "**内联保留：**"
+    },
+    {
+      "en-US": "- Principles and concepts\n- Code patterns (< 50 lines)\n- Everything else",
+      "zh-Hans": "* 原则和概念\n* 代码模式 (< 50 行)\n* 其他所有内容"
+    },
+    {
+      "en-US": "## SKILL.md Structure",
+      "zh-Hans": "## SKILL.md 结构"
+    },
+    {
+      "en-US": "**Frontmatter (YAML):**",
+      "zh-Hans": "**前言 (YAML):**"
+    },
+    {
+      "en-US": "- Only two fields supported: `name` and `description`\n- Max 1024 characters total\n- `name`: Use letters, numbers, and hyphens only (no parentheses, special chars)\n- `description`: Third-person, describes ONLY when to use (NOT what it does)\n  - Start with \"Use when...\" to focus on triggering conditions\n  - Include specific symptoms, situations, and contexts\n  - **NEVER summarize the skill's process or workflow** (see CSO section for why)\n  - Keep under 500 characters if possible",
+      "zh-Hans": "* 仅支持两个字段：`name` 和 `description`\n* 总计最多 1024 个字符\n* `name`: 仅使用字母、数字和连字符（无括号、特殊字符）\n* `description`: 使用第三人称，仅描述何时使用（而非其作用）\n  * 以“Use when...”开头，专注于触发条件\n  * 包含具体的症状、情况和上下文\n  * **切勿总结技能的过程或工作流**（参见 CSO 部分了解原因）\n  * 尽可能保持在 500 个字符以内"
+    },
+    {
+      "en-US": "```markdown\n---\nname: Skill-Name-With-Hyphens\ndescription: Use when [specific triggering conditions and symptoms]\n---\n\n# Skill Name\n\n## Overview\nWhat is this? Core principle in 1-2 sentences.\n\n## When to Use\n[Small inline flowchart IF decision non-obvious]\n\nBullet list with SYMPTOMS and use cases\nWhen NOT to use\n\n## Core Pattern (for techniques/patterns)\nBefore/after code comparison\n\n## Quick Reference\nTable or bullets for scanning common operations\n\n## Implementation\nInline code for simple patterns\nLink to file for heavy reference or reusable tools\n\n## Common Mistakes\nWhat goes wrong + fixes\n\n## Real-World Impact (optional)\nConcrete results\n```",
+      "zh-Hans": "```markdown\n---\nname: Skill-Name-With-Hyphens\ndescription: Use when [specific triggering conditions and symptoms]\n---\n\n# 技能名称\n\n## 概述\n这是什么？用 1-2 句话说明核心原理。\n\n## 何时使用\n[如果决策不明显，可包含小型内联流程图]\n\n以项目符号列出症状和使用场景\n何时不应使用\n\n## 核心模式（适用于技术/模式）\n前后代码对比\n\n## 快速参考\n用于快速浏览常见操作的表格或项目符号列表\n\n## 实现\n简单模式的内联代码\n指向重型参考或可复用工具文件的链接\n\n## 常见错误\n问题所在 + 修复方法\n\n## 实际影响（可选）\n具体成果\n```"
+    },
+    {
+      "en-US": "## Claude Search Optimization (CSO)",
+      "zh-Hans": "## Claude 搜索优化 (CSO)"
+    },
+    {
+      "en-US": "**Critical for discovery:** Future Claude needs to FIND your skill",
+      "zh-Hans": "**对可发现性至关重要：** 未来的 Claude 需要能够找到你的技能"
+    },
+    {
+      "en-US": "### 1. Rich Description Field",
+      "zh-Hans": "### 1. 丰富的描述字段"
+    },
+    {
+      "en-US": "**Purpose:** Claude reads description to decide which skills to load for a given task. Make it answer: \"Should I read this skill right now?\"",
+      "zh-Hans": "**目的：** Claude 通过读取描述来决定为给定任务加载哪些技能。让它回答：“我现在应该阅读这个技能吗？”"
+    },
+    {
+      "en-US": "**Format:** Start with \"Use when...\" to focus on triggering conditions",
+      "zh-Hans": "**格式：** 以“Use when...”开头，专注于触发条件"
+    },
+    {
+      "en-US": "**CRITICAL: Description = When to Use, NOT What the Skill Does**",
+      "zh-Hans": "**关键：描述 = 何时使用，而非技能的作用**"
+    },
+    {
+      "en-US": "The description should ONLY describe triggering conditions. Do NOT summarize the skill's process or workflow in the description.",
+      "zh-Hans": "描述应仅描述触发条件。切勿在描述中总结技能的过程或工作流。"
+    },
+    {
+      "en-US": "**Why this matters:** Testing revealed that when a description summarizes the skill's workflow, Claude may follow the description instead of reading the full skill content. A description saying \"code review between tasks\" caused Claude to do ONE review, even though the skill's flowchart clearly showed TWO reviews (spec compliance then code quality).",
+      "zh-Hans": "**这很重要：** 测试显示，当描述总结了技能的工作流时，Claude 可能会遵循描述而不是阅读完整的技能内容。一个描述写着“任务间的代码审查”导致 Claude 只进行一次审查，即使技能的流程图清楚地显示了两次审查（规范符合性审查然后是代码质量审查）。"
+    },
+    {
+      "en-US": "When the description was changed to just \"Use when executing implementation plans with independent tasks\" (no workflow summary), Claude correctly read the flowchart and followed the two-stage review process.",
+      "zh-Hans": "当描述改为仅“Use when executing implementation plans with independent tasks”（无工作流总结）时，Claude 正确地阅读了流程图并遵循了两阶段审查过程。"
+    },
+    {
+      "en-US": "**The trap:** Descriptions that summarize workflow create a shortcut Claude will take. The skill body becomes documentation Claude skips.",
+      "zh-Hans": "**陷阱：** 总结工作流的描述创建了 Claude 会走的捷径。技能主体变成了 Claude 会跳过的文档。"
+    },
+    {
+      "en-US": "```yaml\n# ❌ BAD: Summarizes workflow - Claude may follow this instead of reading skill\ndescription: Use when executing plans - dispatches subagent per task with code review between tasks\n\n# ❌ BAD: Too much process detail\ndescription: Use for TDD - write test first, watch it fail, write minimal code, refactor\n\n# ✅ GOOD: Just triggering conditions, no workflow summary\ndescription: Use when executing implementation plans with independent tasks in the current session\n\n# ✅ GOOD: Triggering conditions only\ndescription: Use when implementing any feature or bugfix, before writing implementation code\n```",
+      "zh-Hans": "```yaml\n# ❌ BAD: Summarizes workflow - Claude may follow this instead of reading skill\ndescription: Use when executing plans - dispatches subagent per task with code review between tasks\n\n# ❌ BAD: Too much process detail\ndescription: Use for TDD - write test first, watch it fail, write minimal code, refactor\n\n# ✅ GOOD: Just triggering conditions, no workflow summary\ndescription: Use when executing implementation plans with independent tasks in the current session\n\n# ✅ GOOD: Triggering conditions only\ndescription: Use when implementing any feature or bugfix, before writing implementation code\n```"
+    },
+    {
+      "en-US": "**Content:**",
+      "zh-Hans": "**内容：**"
+    },
+    {
+      "en-US": "- Use concrete triggers, symptoms, and situations that signal this skill applies\n- Describe the *problem* (race conditions, inconsistent behavior) not *language-specific symptoms* (setTimeout, sleep)\n- Keep triggers technology-agnostic unless the skill itself is technology-specific\n- If skill is technology-specific, make that explicit in the trigger\n- Write in third person (injected into system prompt)\n- **NEVER summarize the skill's process or workflow**",
+      "zh-Hans": "* 使用具体的触发器、症状和情况来表明此技能适用\n* 描述*问题*（竞态条件、不一致行为），而非*特定语言的症状*（setTimeout、sleep）\n* 保持触发器与技术无关，除非技能本身是技术特定的\n* 如果技能是技术特定的，请在触发器中明确说明\n* 用第三人称书写（注入到系统提示中）\n* **切勿总结技能的过程或工作流**"
+    },
+    {
+      "en-US": "```yaml\n# ❌ BAD: Too abstract, vague, doesn't include when to use\ndescription: For async testing\n\n# ❌ BAD: First person\ndescription: I can help you with async tests when they're flaky\n\n# ❌ BAD: Mentions technology but skill isn't specific to it\ndescription: Use when tests use setTimeout/sleep and are flaky\n\n# ✅ GOOD: Starts with \"Use when\", describes problem, no workflow\ndescription: Use when tests have race conditions, timing dependencies, or pass/fail inconsistently\n\n# ✅ GOOD: Technology-specific skill with explicit trigger\ndescription: Use when using React Router and handling authentication redirects\n```",
+      "zh-Hans": "```yaml\n# ❌ BAD: Too abstract, vague, doesn't include when to use\ndescription: For async testing\n\n# ❌ BAD: First person\ndescription: I can help you with async tests when they're flaky\n\n# ❌ BAD: Mentions technology but skill isn't specific to it\ndescription: Use when tests use setTimeout/sleep and are flaky\n\n# ✅ GOOD: Starts with \"Use when\", describes problem, no workflow\ndescription: Use when tests have race conditions, timing dependencies, or pass/fail inconsistently\n\n# ✅ GOOD: Technology-specific skill with explicit trigger\ndescription: Use when using React Router and handling authentication redirects\n```"
+    },
+    {
+      "en-US": "### 2. Keyword Coverage",
+      "zh-Hans": "### 2. 关键词覆盖"
+    },
+    {
+      "en-US": "Use words Claude would search for:",
+      "zh-Hans": "使用 Claude 会搜索的词语："
+    },
+    {
+      "en-US": "- Error messages: \"Hook timed out\", \"ENOTEMPTY\", \"race condition\"\n- Symptoms: \"flaky\", \"hanging\", \"zombie\", \"pollution\"\n- Synonyms: \"timeout/hang/freeze\", \"cleanup/teardown/afterEach\"\n- Tools: Actual commands, library names, file types",
+      "zh-Hans": "* 错误消息：“Hook timed out”、“ENOTEMPTY”、“race condition”\n* 症状：“flaky”、“hanging”、“zombie”、“pollution”\n* 同义词：“timeout/hang/freeze”、“cleanup/teardown/afterEach”\n* 工具：实际命令、库名、文件类型"
+    },
+    {
+      "en-US": "### 3. Descriptive Naming",
+      "zh-Hans": "### 3. 描述性命名"
+    },
+    {
+      "en-US": "**Use active voice, verb-first:**",
+      "zh-Hans": "**使用主动语态，动词优先：**"
+    },
+    {
+      "en-US": "- ✅ `creating-skills` not `skill-creation`\n- ✅ `condition-based-waiting` not `async-test-helpers`",
+      "zh-Hans": "* ✅ `creating-skills` 而非 `skill-creation`\n* ✅ `condition-based-waiting` 而非 `async-test-helpers`"
+    },
+    {
+      "en-US": "### 4. Token Efficiency (Critical)",
+      "zh-Hans": "### 4. 令牌效率（关键）"
+    },
+    {
+      "en-US": "**Problem:** getting-started and frequently-referenced skills load into EVERY conversation. Every token counts.",
+      "zh-Hans": "**问题：** 入门指南和频繁引用的技能会加载到每一次对话中。每个令牌都很重要。"
+    },
+    {
+      "en-US": "**Target word counts:**",
+      "zh-Hans": "**目标字数：**"
+    },
+    {
+      "en-US": "- getting-started workflows: <150 words each\n- Frequently-loaded skills: <200 words total\n- Other skills: <500 words (still be concise)",
+      "zh-Hans": "* 入门指南工作流：每项 <150 词\n* 频繁加载的技能：总计 <200 词\n* 其他技能：<500 词（仍需简洁）"
+    },
+    {
+      "en-US": "**Techniques:**",
+      "zh-Hans": "**技巧：**"
+    },
+    {
+      "en-US": "**Move details to tool help:**",
+      "zh-Hans": "**将细节移至工具帮助：**"
+    },
+    {
+      "en-US": "```bash\n# ❌ BAD: Document all flags in SKILL.md\nsearch-conversations supports --text, --both, --after DATE, --before DATE, --limit N\n\n# ✅ GOOD: Reference --help\nsearch-conversations supports multiple modes and filters. Run --help for details.\n```",
+      "zh-Hans": "```bash\n# ❌ BAD: Document all flags in SKILL.md\nsearch-conversations supports --text, --both, --after DATE, --before DATE, --limit N\n\n# ✅ GOOD: Reference --help\nsearch-conversations supports multiple modes and filters. Run --help for details.\n```"
+    },
+    {
+      "en-US": "**Use cross-references:**",
+      "zh-Hans": "**使用交叉引用：**"
+    },
+    {
+      "en-US": "```markdown\n# ❌ BAD: Repeat workflow details\nWhen searching, dispatch subagent with template...\n[20 lines of repeated instructions]\n\n# ✅ GOOD: Reference other skill\nAlways use subagents (50-100x context savings). REQUIRED: Use [other-skill-name] for workflow.\n```",
+      "zh-Hans": "```markdown\n# ❌ 不佳做法：重复工作流细节\n搜索时，使用模板派生子代理...\n[20行重复的指令]\n\n# ✅ 良好做法：引用其他技能\n始终使用子代理（可节省50-100倍上下文）。必需：使用 [其他技能名称] 来处理工作流。\n```"
+    },
+    {
+      "en-US": "**Compress examples:**",
+      "zh-Hans": "**压缩示例：**"
+    },
+    {
+      "en-US": "```markdown\n# ❌ BAD: Verbose example (42 words)\nyour human partner: \"How did we handle authentication errors in React Router before?\"\nYou: I'll search past conversations for React Router authentication patterns.\n[Dispatch subagent with search query: \"React Router authentication error handling 401\"]\n\n# ✅ GOOD: Minimal example (20 words)\nPartner: \"How did we handle auth errors in React Router?\"\nYou: Searching...\n[Dispatch subagent → synthesis]\n```",
+      "zh-Hans": "```markdown\n# ❌ 反面示例：冗长版本（42词）\n你的搭档：\"我们之前是如何在 React Router 中处理认证错误的？\"\n你：我来搜索过往对话中关于 React Router 认证模式的内容。\n[派发子代理，搜索查询：\"React Router authentication error handling 401\"]\n\n# ✅ 正面示例：简洁版本（20词）\n搭档：\"React Router 里之前怎么处理认证错误？\"\n你：搜索中...\n[派发子代理 → 综合处理]\n```"
+    },
+    {
+      "en-US": "**Eliminate redundancy:**",
+      "zh-Hans": "**消除冗余：**"
+    },
+    {
+      "en-US": "- Don't repeat what's in cross-referenced skills\n- Don't explain what's obvious from command\n- Don't include multiple examples of same pattern",
+      "zh-Hans": "* 不要重复交叉引用技能中的内容\n* 不要解释命令中显而易见的内容\n* 不要包含同一模式的多个示例"
+    },
+    {
+      "en-US": "**Verification:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "```bash\nwc -w skills/path/SKILL.md\n# getting-started workflows: aim for <150 each\n# Other frequently-loaded: aim for <200 total\n```",
+      "zh-Hans": "```bash\nwc -w skills/path/SKILL.md\n# getting-started workflows: aim for <150 each\n# Other frequently-loaded: aim for <200 total\n```"
+    },
+    {
+      "en-US": "**Name by what you DO or core insight:**",
+      "zh-Hans": "**按你所做的或核心见解命名：**"
+    },
+    {
+      "en-US": "- ✅ `condition-based-waiting` > `async-test-helpers`\n- ✅ `using-skills` not `skill-usage`\n- ✅ `flatten-with-flags` > `data-structure-refactoring`\n- ✅ `root-cause-tracing` > `debugging-techniques`",
+      "zh-Hans": "* ✅ `condition-based-waiting` > `async-test-helpers`\n* ✅ `using-skills` 而非 `skill-usage`\n* ✅ `flatten-with-flags` > `data-structure-refactoring`\n* ✅ `root-cause-tracing` > `debugging-techniques`"
+    },
+    {
+      "en-US": "**Gerunds (-ing) work well for processes:**",
+      "zh-Hans": "**动名词 (-ing) 适用于描述过程：**"
+    },
+    {
+      "en-US": "- `creating-skills`, `testing-skills`, `debugging-with-logs`\n- Active, describes the action you're taking",
+      "zh-Hans": "* `creating-skills`、`testing-skills`、`debugging-with-logs`\n* 主动，描述你正在采取的行动"
+    },
+    {
+      "en-US": "### 4. Cross-Referencing Other Skills",
+      "zh-Hans": "### 4. 交叉引用其他技能"
+    },
+    {
+      "en-US": "**When writing documentation that references other skills:**",
+      "zh-Hans": "**在编写引用其他技能的文档时：**"
+    },
+    {
+      "en-US": "Use skill name only, with explicit requirement markers:",
+      "zh-Hans": "仅使用技能名称，并带有明确的需求标记："
+    },
+    {
+      "en-US": "- ✅ Good: `**REQUIRED SUB-SKILL:** Use superpowers:test-driven-development`\n- ✅ Good: `**REQUIRED BACKGROUND:** You MUST understand superpowers:systematic-debugging`\n- ❌ Bad: `See skills/testing/test-driven-development` (unclear if required)\n- ❌ Bad: `@skills/testing/test-driven-development/SKILL.md` (force-loads, burns context)",
+      "zh-Hans": "* ✅ 好：`**REQUIRED SUB-SKILL:** Use superpowers:test-driven-development`\n* ✅ 好：`**REQUIRED BACKGROUND:** You MUST understand superpowers:systematic-debugging`\n* ❌ 不好：`See skills/testing/test-driven-development`（不清楚是否必需）\n* ❌ 不好：`@skills/testing/test-driven-development/SKILL.md`（强制加载，消耗上下文）"
+    },
+    {
+      "en-US": "**Why no @ links:** `@` syntax force-loads files immediately, consuming 200k+ context before you need them.",
+      "zh-Hans": "**为何不使用 @ 链接：** `@` 语法会立即强制加载文件，在你需要它们之前就消耗 200k+ 的上下文。"
+    },
+    {
+      "en-US": "## Flowchart Usage",
+      "zh-Hans": "## 流程图使用"
+    },
+    {
+      "en-US": "```dot\ndigraph when_flowchart {\n    \"Need to show information?\" [shape=diamond];\n    \"Decision where I might go wrong?\" [shape=diamond];\n    \"Use markdown\" [shape=box];\n    \"Small inline flowchart\" [shape=box];\n\n    \"Need to show information?\" -> \"Decision where I might go wrong?\" [label=\"yes\"];\n    \"Decision where I might go wrong?\" -> \"Small inline flowchart\" [label=\"yes\"];\n    \"Decision where I might go wrong?\" -> \"Use markdown\" [label=\"no\"];\n}\n```",
+      "zh-Hans": "```dot\ndigraph when_flowchart {\n    \"Need to show information?\" [shape=diamond];\n    \"Decision where I might go wrong?\" [shape=diamond];\n    \"Use markdown\" [shape=box];\n    \"Small inline flowchart\" [shape=box];\n\n    \"Need to show information?\" -> \"Decision where I might go wrong?\" [label=\"yes\"];\n    \"Decision where I might go wrong?\" -> \"Small inline flowchart\" [label=\"yes\"];\n    \"Decision where I might go wrong?\" -> \"Use markdown\" [label=\"no\"];\n}\n```"
+    },
+    {
+      "en-US": "**Use flowcharts ONLY for:**",
+      "zh-Hans": "**仅在以下情况使用流程图：**"
+    },
+    {
+      "en-US": "- Non-obvious decision points\n- Process loops where you might stop too early\n- \"When to use A vs B\" decisions",
+      "zh-Hans": "* 非显而易见的决策点\n* 你可能过早停止的流程循环\n* “何时使用 A 与 B”的决策"
+    },
+    {
+      "en-US": "**Never use flowcharts for:**",
+      "zh-Hans": "**切勿为以下情况使用流程图：**"
+    },
+    {
+      "en-US": "- Reference material → Tables, lists\n- Code examples → Markdown blocks\n- Linear instructions → Numbered lists\n- Labels without semantic meaning (step1, helper2)",
+      "zh-Hans": "* 参考材料 → 表格、列表\n* 代码示例 → Markdown 代码块\n* 线性指令 → 编号列表\n* 无语义含义的标签（step1、helper2）"
+    },
+    {
+      "en-US": "See @graphviz-conventions.dot for graphviz style rules.",
+      "zh-Hans": "关于 graphviz 样式规则，请参阅 @graphviz-conventions.dot。"
+    },
+    {
+      "en-US": "**Visualizing for your human partner:** Use `render-graphs.js` in this directory to render a skill's flowcharts to SVG:",
+      "zh-Hans": "**为你的合作伙伴可视化：** 使用此目录中的 `render-graphs.js` 将技能的流程图渲染为 SVG："
+    },
+    {
+      "en-US": "```bash\n./render-graphs.js ../some-skill           # Each diagram separately\n./render-graphs.js ../some-skill --combine # All diagrams in one SVG\n```",
+      "zh-Hans": "```bash\n./render-graphs.js ../some-skill           # Each diagram separately\n./render-graphs.js ../some-skill --combine # All diagrams in one SVG\n```"
+    },
+    {
+      "en-US": "## Code Examples",
+      "zh-Hans": "## 代码示例"
+    },
+    {
+      "en-US": "**One excellent example beats many mediocre ones**",
+      "zh-Hans": "**一个优秀的示例胜过多个平庸的示例**"
+    },
+    {
+      "en-US": "Choose most relevant language:",
+      "zh-Hans": "选择最相关的语言："
+    },
+    {
+      "en-US": "- Testing techniques → TypeScript/JavaScript\n- System debugging → Shell/Python\n- Data processing → Python",
+      "zh-Hans": "* 测试技术 → TypeScript/JavaScript\n* 系统调试 → Shell/Python\n* 数据处理 → Python"
+    },
+    {
+      "en-US": "**Good example:**",
+      "zh-Hans": "**好的示例：**"
+    },
+    {
+      "en-US": "- Complete and runnable\n- Well-commented explaining WHY\n- From real scenario\n- Shows pattern clearly\n- Ready to adapt (not generic template)",
+      "zh-Hans": "* 完整且可运行\n* 注释良好，解释原因\n* 来自真实场景\n* 清晰地展示模式\n* 便于改编（非通用模板）"
+    },
+    {
+      "en-US": "**Don't:**",
+      "zh-Hans": "**不要：**"
+    },
+    {
+      "en-US": "- Implement in 5+ languages\n- Create fill-in-the-blank templates\n- Write contrived examples",
+      "zh-Hans": "* 用 5 种以上语言实现\n* 创建填空模板\n* 编写人为的示例"
+    },
+    {
+      "en-US": "You're good at porting - one great example is enough.",
+      "zh-Hans": "你很擅长移植——一个优秀的示例就足够了。"
+    },
+    {
+      "en-US": "## File Organization",
+      "zh-Hans": "## 文件组织"
+    },
+    {
+      "en-US": "### Self-Contained Skill",
+      "zh-Hans": "### 自包含的技能"
+    },
+    {
+      "en-US": "```\ndefense-in-depth/\n  SKILL.md    # Everything inline\n```",
+      "zh-Hans": "```\ndefense-in-depth/\n  SKILL.md    # Everything inline\n```"
+    },
+    {
+      "en-US": "When: All content fits, no heavy reference needed",
+      "zh-Hans": "何时使用：所有内容都合适，无需重型参考"
+    },
+    {
+      "en-US": "### Skill with Reusable Tool",
+      "zh-Hans": "### 带有可复用工具的技能"
+    },
+    {
+      "en-US": "```\ncondition-based-waiting/\n  SKILL.md    # Overview + patterns\n  example.ts  # Working helpers to adapt\n```",
+      "zh-Hans": "```\ncondition-based-waiting/\n  SKILL.md    # Overview + patterns\n  example.ts  # Working helpers to adapt\n```"
+    },
+    {
+      "en-US": "When: Tool is reusable code, not just narrative",
+      "zh-Hans": "何时使用：工具是可复用代码，而不仅仅是叙述"
+    },
+    {
+      "en-US": "### Skill with Heavy Reference",
+      "zh-Hans": "### 带有重型参考的技能"
+    },
+    {
+      "en-US": "```\npptx/\n  SKILL.md       # Overview + workflows\n  pptxgenjs.md   # 600 lines API reference\n  ooxml.md       # 500 lines XML structure\n  scripts/       # Executable tools\n```",
+      "zh-Hans": "```\npptx/\n  SKILL.md       # Overview + workflows\n  pptxgenjs.md   # 600 lines API reference\n  ooxml.md       # 500 lines XML structure\n  scripts/       # Executable tools\n```"
+    },
+    {
+      "en-US": "When: Reference material too large for inline",
+      "zh-Hans": "何时使用：参考材料太大，不适合内联"
+    },
+    {
+      "en-US": "## The Iron Law (Same as TDD)",
+      "zh-Hans": "## 铁律（与 TDD 相同）"
+    },
+    {
+      "en-US": "```\nNO SKILL WITHOUT A FAILING TEST FIRST\n```",
+      "zh-Hans": "```\nNO SKILL WITHOUT A FAILING TEST FIRST\n```"
+    },
+    {
+      "en-US": "This applies to NEW skills AND EDITS to existing skills.",
+      "zh-Hans": "这适用于新技能和对现有技能的编辑。"
+    },
+    {
+      "en-US": "Write skill before testing? Delete it. Start over.\nEdit skill without testing? Same violation.",
+      "zh-Hans": "在测试前编写技能？删除它。重新开始。\n未经测试就编辑技能？同样的违规。"
+    },
+    {
+      "en-US": "**No exceptions:**",
+      "zh-Hans": "**无例外：**"
+    },
+    {
+      "en-US": "- Not for \"simple additions\"\n- Not for \"just adding a section\"\n- Not for \"documentation updates\"\n- Don't keep untested changes as \"reference\"\n- Don't \"adapt\" while running tests\n- Delete means delete",
+      "zh-Hans": "* 不适用于“简单添加”\n* 不适用于“只是添加一个部分”\n* 不适用于“文档更新”\n* 不要将未经测试的更改保留为“参考”\n* 不要在运行测试时“调整”\n* 删除就是删除"
+    },
+    {
+      "en-US": "**REQUIRED BACKGROUND:** The superpowers:test-driven-development skill explains why this matters. Same principles apply to documentation.",
+      "zh-Hans": "**必备背景：** superpowers:test-driven-development 技能解释了这为何重要。同样的原则适用于文档。"
+    },
+    {
+      "en-US": "## Testing All Skill Types",
+      "zh-Hans": "## 测试所有技能类型"
+    },
+    {
+      "en-US": "Different skill types need different test approaches:",
+      "zh-Hans": "不同的技能类型需要不同的测试方法："
+    },
+    {
+      "en-US": "### Discipline-Enforcing Skills (rules/requirements)",
+      "zh-Hans": "### 纪律强化型技能（规则/要求）"
+    },
+    {
+      "en-US": "**Examples:** TDD, verification-before-completion, designing-before-coding",
+      "zh-Hans": "**示例：** TDD、完成前验证、编码前设计"
+    },
+    {
+      "en-US": "**Test with:**",
+      "zh-Hans": "**测试方法：**"
+    },
+    {
+      "en-US": "- Academic questions: Do they understand the rules?\n- Pressure scenarios: Do they comply under stress?\n- Multiple pressures combined: time + sunk cost + exhaustion\n- Identify rationalizations and add explicit counters",
+      "zh-Hans": "* 学术性问题：他们理解规则吗？\n* 压力场景：他们在压力下遵守吗？\n* 多重压力组合：时间 + 沉没成本 + 疲惫\n* 识别合理化解释并添加明确的应对措施"
+    },
+    {
+      "en-US": "**Success criteria:** Agent follows rule under maximum pressure",
+      "zh-Hans": "**成功标准：** 智能体在最大压力下遵守规则"
+    },
+    {
+      "en-US": "### Technique Skills (how-to guides)",
+      "zh-Hans": "### 技术型技能（操作指南）"
+    },
+    {
+      "en-US": "**Examples:** condition-based-waiting, root-cause-tracing, defensive-programming",
+      "zh-Hans": "**示例：** 条件等待、根本原因追踪、防御性编程"
+    },
+    {
+      "en-US": "**Test with:**",
+      "zh-Hans": "**测试方法：**"
+    },
+    {
+      "en-US": "- Application scenarios: Can they apply the technique correctly?\n- Variation scenarios: Do they handle edge cases?\n- Missing information tests: Do instructions have gaps?",
+      "zh-Hans": "* 应用场景：他们能正确应用该技术吗？\n* 变体场景：他们能处理边缘情况吗？\n* 缺失信息测试：指令是否存在空白？"
+    },
+    {
+      "en-US": "**Success criteria:** Agent successfully applies technique to new scenario",
+      "zh-Hans": "**成功标准：** 智能体成功将技术应用于新场景"
+    },
+    {
+      "en-US": "### Pattern Skills (mental models)",
+      "zh-Hans": "### 模式型技能（心智模型）"
+    },
+    {
+      "en-US": "**Examples:** reducing-complexity, information-hiding concepts",
+      "zh-Hans": "**示例：** 降低复杂性、信息隐藏概念"
+    },
+    {
+      "en-US": "**Test with:**",
+      "zh-Hans": "**测试方法：**"
+    },
+    {
+      "en-US": "- Recognition scenarios: Do they recognize when pattern applies?\n- Application scenarios: Can they use the mental model?\n- Counter-examples: Do they know when NOT to apply?",
+      "zh-Hans": "* 识别场景：他们能识别何时适用该模式吗？\n* 应用场景：他们能使用该心智模型吗？\n* 反例：他们知道何时不应应用吗？"
+    },
+    {
+      "en-US": "**Success criteria:** Agent correctly identifies when/how to apply pattern",
+      "zh-Hans": "**成功标准：** 智能体正确识别何时/如何应用模式"
+    },
+    {
+      "en-US": "### Reference Skills (documentation/APIs)",
+      "zh-Hans": "### 参考型技能（文档/API）"
+    },
+    {
+      "en-US": "**Examples:** API documentation, command references, library guides",
+      "zh-Hans": "**示例：** API 文档、命令参考、库指南"
+    },
+    {
+      "en-US": "**Test with:**",
+      "zh-Hans": "**测试方法：**"
+    },
+    {
+      "en-US": "- Retrieval scenarios: Can they find the right information?\n- Application scenarios: Can they use what they found correctly?\n- Gap testing: Are common use cases covered?",
+      "zh-Hans": "* 检索场景：他们能找到正确的信息吗？\n* 应用场景：他们能正确应用找到的信息吗？\n* 空白测试：常见用例是否涵盖？"
+    },
+    {
+      "en-US": "**Success criteria:** Agent finds and correctly applies reference information",
+      "zh-Hans": "**成功标准：** 智能体找到并正确应用参考信息"
+    },
+    {
+      "en-US": "## Common Rationalizations for Skipping Testing",
+      "zh-Hans": "## 跳过测试的常见合理化解释"
+    },
+    {
+      "en-US": "| Excuse | Reality |\n|--------|---------|\n| \"Skill is obviously clear\" | Clear to you ≠ clear to other agents. Test it. |\n| \"It's just a reference\" | References can have gaps, unclear sections. Test retrieval. |\n| \"Testing is overkill\" | Untested skills have issues. Always. 15 min testing saves hours. |\n| \"I'll test if problems emerge\" | Problems = agents can't use skill. Test BEFORE deploying. |\n| \"Too tedious to test\" | Testing is less tedious than debugging bad skill in production. |\n| \"I'm confident it's good\" | Overconfidence guarantees issues. Test anyway. |\n| \"Academic review is enough\" | Reading ≠ using. Test application scenarios. |\n| \"No time to test\" | Deploying untested skill wastes more time fixing it later. |",
+      "zh-Hans": "| 借口 | 现实 |\n|--------|---------|\n| “技能显然很清晰” | 对你清晰 ≠ 对其他智能体清晰。测试它。 |\n| “这只是个参考” | 参考可能存在空白、不清晰的段落。测试检索。 |\n| “测试过度了” | 未经测试的技能存在问题。总是如此。15 分钟测试能节省数小时。 |\n| “如果出现问题我会测试” | 问题 = 智能体无法使用技能。在部署前测试。 |\n| “测试太繁琐” | 测试比在生产中调试坏技能要省事。 |\n| “我确信它很好” | 过度自信必然导致问题。无论如何都要测试。 |\n| “学术审查足够了” | 阅读 ≠ 使用。测试应用场景。 |\n| “没时间测试” | 部署未经测试的技能会浪费更多时间在以后修复它。 |"
+    },
+    {
+      "en-US": "**All of these mean: Test before deploying. No exceptions.**",
+      "zh-Hans": "**所有这些都意味着：在部署前测试。没有例外。**"
+    },
+    {
+      "en-US": "## Bulletproofing Skills Against Rationalization",
+      "zh-Hans": "## 让技能对合理化免疫"
+    },
+    {
+      "en-US": "Skills that enforce discipline (like TDD) need to resist rationalization. Agents are smart and will find loopholes when under pressure.",
+      "zh-Hans": "强制纪律的技能（如 TDD）需要能够抵抗合理化。代理很聪明，在压力下会寻找漏洞。"
+    },
+    {
+      "en-US": "**Psychology note:** Understanding WHY persuasion techniques work helps you apply them systematically. See persuasion-principles.md for research foundation (Cialdini, 2021; Meincke et al., 2025) on authority, commitment, scarcity, social proof, and unity principles.",
+      "zh-Hans": "**心理学注记：** 理解说服技巧为何有效，有助于你系统地应用它们。关于权威、承诺、稀缺性、社会认同和统一性原则的研究基础，请参阅 persuasion-principles.md（Cialdini, 2021; Meincke et al., 2025）。"
+    },
+    {
+      "en-US": "### Close Every Loophole Explicitly",
+      "zh-Hans": "### 明确堵住每一个漏洞"
+    },
+    {
+      "en-US": "Don't just state the rule - forbid specific workarounds:",
+      "zh-Hans": "不要仅仅陈述规则——要禁止特定的变通方法："
+    },
+    {
+      "en-US": "<Bad>\n```markdown\nWrite code before test? Delete it.\n```\n</Bad>",
+      "zh-Hans": "<Bad>\n```markdown\n在测试前编写代码？删除它。\n```\n</Bad>"
+    },
+    {
+      "en-US": "<Good>\n```markdown\nWrite code before test? Delete it. Start over.",
+      "zh-Hans": "<Good>\n```markdown\n编写代码之前进行测试？删除它。重新开始。"
+    },
+    {
+      "en-US": "**No exceptions:**",
+      "zh-Hans": "**无例外：**"
+    },
+    {
+      "en-US": "- Don't keep it as \"reference\"\n- Don't \"adapt\" it while writing tests\n- Don't look at it\n- Delete means delete",
+      "zh-Hans": "* 不要将其保留为“参考”\n* 不要在编写测试时“借鉴”它\n* 不要看它\n* 删除就是删除"
+    },
+    {
+      "en-US": "```\n</Good>\n\n### Address \"Spirit vs Letter\" Arguments\n\nAdd foundational principle early:\n\n```markdown\n**Violating the letter of the rules is violating the spirit of the rules.**\n```",
+      "zh-Hans": "````\n</Good>\n\n### Address \"Spirit vs Letter\" Arguments\n\nAdd foundational principle early:\n\n```markdown\n**Violating the letter of the rules is violating the spirit of the rules.**\n````"
+    },
+    {
+      "en-US": "This cuts off entire class of \"I'm following the spirit\" rationalizations.",
+      "zh-Hans": "这切断了整个“我遵循了精神”的合理化类别。"
+    },
+    {
+      "en-US": "### Build Rationalization Table",
+      "zh-Hans": "### 建立合理化对照表"
+    },
+    {
+      "en-US": "Capture rationalizations from baseline testing (see Testing section below). Every excuse agents make goes in the table:",
+      "zh-Hans": "从基线测试中捕捉合理化行为（见下文测试部分）。代理提出的每一个借口都要记录在表中："
+    },
+    {
+      "en-US": "```markdown\n| Excuse | Reality |\n|--------|---------|\n| \"Too simple to test\" | Simple code breaks. Test takes 30 seconds. |\n| \"I'll test after\" | Tests passing immediately prove nothing. |\n| \"Tests after achieve same goals\" | Tests-after = \"what does this do?\" Tests-first = \"what should this do?\" |\n```",
+      "zh-Hans": "```markdown\n| 借口 | 现实 |\n|--------|---------|\n| \"太简单了，不需要测试\" | 简单的代码也会出错。测试只需30秒。 |\n| \"我稍后再测试\" | 测试通过立刻证明不了什么。 |\n| \"之后测试也能达到相同目标\" | 测试后补 = \"这段代码是做什么的？\" 测试先行 = \"这段代码应该做什么？\" |\n```"
+    },
+    {
+      "en-US": "### Create Red Flags List",
+      "zh-Hans": "### 创建危险信号列表"
+    },
+    {
+      "en-US": "Make it easy for agents to self-check when rationalizing:",
+      "zh-Hans": "让代理在合理化时容易进行自我检查："
+    },
+    {
+      "en-US": "```markdown\n## Red Flags - STOP and Start Over\n\n- Code before test\n- \"I already manually tested it\"\n- \"Tests after achieve the same purpose\"\n- \"It's about spirit not ritual\"\n- \"This is different because...\"\n\n**All of these mean: Delete code. Start over with TDD.**\n```",
+      "zh-Hans": "```markdown\n## 危险信号 - 立即停止并重新开始\n\n- 先写代码后测试\n- “我已经手动测试过了”\n- “之后再测试效果也一样”\n- “重要的是精神而不是形式”\n- “这次情况特殊，因为……”\n\n**以上任何一条都意味着：删除代码，用测试驱动开发重新开始。**\n```"
+    },
+    {
+      "en-US": "### Update CSO for Violation Symptoms",
+      "zh-Hans": "### 为违规征兆更新 CSO"
+    },
+    {
+      "en-US": "Add to description: symptoms of when you're ABOUT to violate the rule:",
+      "zh-Hans": "在描述中添加：当你即将违反规则时的征兆："
+    },
+    {
+      "en-US": "```yaml\ndescription: use when implementing any feature or bugfix, before writing implementation code\n```",
+      "zh-Hans": "```yaml\ndescription: use when implementing any feature or bugfix, before writing implementation code\n```"
+    },
+    {
+      "en-US": "## RED-GREEN-REFACTOR for Skills",
+      "zh-Hans": "## 技能的“红-绿-重构”流程"
+    },
+    {
+      "en-US": "Follow the TDD cycle:",
+      "zh-Hans": "遵循 TDD 循环："
+    },
+    {
+      "en-US": "### RED: Write Failing Test (Baseline)",
+      "zh-Hans": "### 红：编写失败测试（基线）"
+    },
+    {
+      "en-US": "Run pressure scenario with subagent WITHOUT the skill. Document exact behavior:",
+      "zh-Hans": "在没有该技能的情况下，使用子代理运行压力场景。记录确切行为："
+    },
+    {
+      "en-US": "- What choices did they make?\n- What rationalizations did they use (verbatim)?\n- Which pressures triggered violations?",
+      "zh-Hans": "* 他们做出了哪些选择？\n* 他们使用了哪些合理化借口（逐字记录）？\n* 哪些压力触发了违规？"
+    },
+    {
+      "en-US": "This is \"watch the test fail\" - you must see what agents naturally do before writing the skill.",
+      "zh-Hans": "这就是“观察测试失败”——在编写技能之前，你必须先看看代理的自然行为。"
+    },
+    {
+      "en-US": "### GREEN: Write Minimal Skill",
+      "zh-Hans": "### 绿：编写最小化技能"
+    },
+    {
+      "en-US": "Write skill that addresses those specific rationalizations. Don't add extra content for hypothetical cases.",
+      "zh-Hans": "编写能解决这些特定合理化借口的技能。不要为假设性案例添加额外内容。"
+    },
+    {
+      "en-US": "Run same scenarios WITH skill. Agent should now comply.",
+      "zh-Hans": "使用技能运行相同场景。代理现在应该遵守规则。"
+    },
+    {
+      "en-US": "### REFACTOR: Close Loopholes",
+      "zh-Hans": "### 重构：堵住漏洞"
+    },
+    {
+      "en-US": "Agent found new rationalization? Add explicit counter. Re-test until bulletproof.",
+      "zh-Hans": "代理找到了新的合理化借口？添加明确的应对措施。重新测试直到无懈可击。"
+    },
+    {
+      "en-US": "**Testing methodology:** See @testing-skills-with-subagents.md for the complete testing methodology:",
+      "zh-Hans": "**测试方法论：** 完整的测试方法论请参阅 @testing-skills-with-subagents.md："
+    },
+    {
+      "en-US": "- How to write pressure scenarios\n- Pressure types (time, sunk cost, authority, exhaustion)\n- Plugging holes systematically\n- Meta-testing techniques",
+      "zh-Hans": "* 如何编写压力场景\n* 压力类型（时间、沉没成本、权威、疲劳）\n* 系统地堵住漏洞\n* 元测试技术"
+    },
+    {
+      "en-US": "## Anti-Patterns",
+      "zh-Hans": "## 反模式"
+    },
+    {
+      "en-US": "### ❌ Narrative Example",
+      "zh-Hans": "### ❌ 叙事性示例"
+    },
+    {
+      "en-US": "\"In session 2025-10-03, we found empty projectDir caused...\"\n**Why bad:** Too specific, not reusable",
+      "zh-Hans": "“在 2025-10-03 的会话中，我们发现空的 projectDir 导致了……”\n**为何不好：** 过于具体，不可复用"
+    },
+    {
+      "en-US": "### ❌ Multi-Language Dilution",
+      "zh-Hans": "### ❌ 多语言稀释"
+    },
+    {
+      "en-US": "example-js.js, example-py.py, example-go.go\n**Why bad:** Mediocre quality, maintenance burden",
+      "zh-Hans": "example-js.js, example-py.py, example-go.go\n**为何不好：** 质量平庸，维护负担重"
+    },
+    {
+      "en-US": "### ❌ Code in Flowcharts",
+      "zh-Hans": "### ❌ 流程图中的代码"
+    },
+    {
+      "en-US": "```dot\nstep1 [label=\"import fs\"];\nstep2 [label=\"read file\"];\n```",
+      "zh-Hans": "```dot\nstep1 [label=\"import fs\"];\nstep2 [label=\"read file\"];\n```"
+    },
+    {
+      "en-US": "**Why bad:** Can't copy-paste, hard to read",
+      "zh-Hans": "**为何不好：** 无法复制粘贴，难以阅读"
+    },
+    {
+      "en-US": "### ❌ Generic Labels",
+      "zh-Hans": "### ❌ 通用标签"
+    },
+    {
+      "en-US": "helper1, helper2, step3, pattern4\n**Why bad:** Labels should have semantic meaning",
+      "zh-Hans": "helper1, helper2, step3, pattern4\n**为何不好：** 标签应具有语义含义"
+    },
+    {
+      "en-US": "## STOP: Before Moving to Next Skill",
+      "zh-Hans": "## 停：在转向下一个技能之前"
+    },
+    {
+      "en-US": "**After writing ANY skill, you MUST STOP and complete the deployment process.**",
+      "zh-Hans": "**编写完任何技能后，你必须停下来完成部署流程。**"
+    },
+    {
+      "en-US": "**Do NOT:**",
+      "zh-Hans": "**不要：**"
+    },
+    {
+      "en-US": "- Create multiple skills in batch without testing each\n- Move to next skill before current one is verified\n- Skip testing because \"batching is more efficient\"",
+      "zh-Hans": "* 批量创建多个技能而不测试每一个\n* 在当前技能验证完成前转向下一个技能\n* 以“批量处理更高效”为由跳过测试"
+    },
+    {
+      "en-US": "**The deployment checklist below is MANDATORY for EACH skill.**",
+      "zh-Hans": "**下面的部署清单对每个技能都是强制性的。**"
+    },
+    {
+      "en-US": "Deploying untested skills = deploying untested code. It's a violation of quality standards.",
+      "zh-Hans": "部署未经测试的技能 = 部署未经测试的代码。这违反了质量标准。"
+    },
+    {
+      "en-US": "## Skill Creation Checklist (TDD Adapted)",
+      "zh-Hans": "## 技能创建清单（适配自 TDD）"
+    },
+    {
+      "en-US": "**IMPORTANT: Use TodoWrite to create todos for EACH checklist item below.**",
+      "zh-Hans": "**重要提示：使用 TodoWrite 为下面的每个清单项创建待办事项。**"
+    },
+    {
+      "en-US": "**RED Phase - Write Failing Test:**",
+      "zh-Hans": "**红阶段 - 编写失败测试：**"
+    },
+    {
+      "en-US": "- [ ] Create pressure scenarios (3+ combined pressures for discipline skills)\n- [ ] Run scenarios WITHOUT skill - document baseline behavior verbatim\n- [ ] Identify patterns in rationalizations/failures",
+      "zh-Hans": "* \\[ ] 创建压力场景（针对纪律性技能，需包含 3 种以上复合压力）\n* \\[ ] 在没有技能的情况下运行场景——逐字记录基线行为\n* \\[ ] 识别合理化/失败的模式"
+    },
+    {
+      "en-US": "**GREEN Phase - Write Minimal Skill:**",
+      "zh-Hans": "**绿阶段 - 编写最小化技能：**"
+    },
+    {
+      "en-US": "- [ ] Name uses only letters, numbers, hyphens (no parentheses/special chars)\n- [ ] YAML frontmatter with only name and description (max 1024 chars)\n- [ ] Description starts with \"Use when...\" and includes specific triggers/symptoms\n- [ ] Description written in third person\n- [ ] Keywords throughout for search (errors, symptoms, tools)\n- [ ] Clear overview with core principle\n- [ ] Address specific baseline failures identified in RED\n- [ ] Code inline OR link to separate file\n- [ ] One excellent example (not multi-language)\n- [ ] Run scenarios WITH skill - verify agents now comply",
+      "zh-Hans": "* \\[ ] 名称仅使用字母、数字、连字符（无括号/特殊字符）\n* \\[ ] YAML 前置元数据仅包含名称和描述（最多 1024 字符）\n* \\[ ] 描述以“Use when...”开头，并包含特定触发条件/征兆\n* \\[ ] 描述使用第三人称书写\n* \\[ ] 贯穿全文的关键词（用于搜索错误、征兆、工具）\n* \\[ ] 包含核心原则的清晰概述\n* \\[ ] 解决在红阶段识别的特定基线失败\n* \\[ ] 代码内联或链接到单独文件\n* \\[ ] 一个优秀的示例（非多语言）\n* \\[ ] 使用技能运行场景——验证代理现在是否遵守规则"
+    },
+    {
+      "en-US": "**REFACTOR Phase - Close Loopholes:**",
+      "zh-Hans": "**重构阶段 - 堵住漏洞：**"
+    },
+    {
+      "en-US": "- [ ] Identify NEW rationalizations from testing\n- [ ] Add explicit counters (if discipline skill)\n- [ ] Build rationalization table from all test iterations\n- [ ] Create red flags list\n- [ ] Re-test until bulletproof",
+      "zh-Hans": "* \\[ ] 从测试中识别新的合理化借口\n* \\[ ] 添加明确的应对措施（如果是纪律性技能）\n* \\[ ] 根据所有测试迭代建立合理化对照表\n* \\[ ] 创建危险信号列表\n* \\[ ] 重新测试直到无懈可击"
+    },
+    {
+      "en-US": "**Quality Checks:**",
+      "zh-Hans": "**质量检查：**"
+    },
+    {
+      "en-US": "- [ ] Small flowchart only if decision non-obvious\n- [ ] Quick reference table\n- [ ] Common mistakes section\n- [ ] No narrative storytelling\n- [ ] Supporting files only for tools or heavy reference",
+      "zh-Hans": "* \\[ ] 仅在决策不明显时使用小型流程图\n* \\[ ] 快速参考表\n* \\[ ] 常见错误部分\n* \\[ ] 没有叙事性描述\n* \\[ ] 支持文件仅用于工具或大量参考"
+    },
+    {
+      "en-US": "**Deployment:**",
+      "zh-Hans": "**部署：**"
+    },
+    {
+      "en-US": "- [ ] Commit skill to git and push to your fork (if configured)\n- [ ] Consider contributing back via PR (if broadly useful)",
+      "zh-Hans": "* \\[ ] 将技能提交到 git 并推送到你的分支（如果已配置）\n* \\[ ] 考虑通过 PR 贡献回来（如果具有广泛用途）"
+    },
+    {
+      "en-US": "## Discovery Workflow",
+      "zh-Hans": "## 发现工作流"
+    },
+    {
+      "en-US": "How future Claude finds your skill:",
+      "zh-Hans": "未来的 Claude 如何找到你的技能："
+    },
+    {
+      "en-US": "1. **Encounters problem** (\"tests are flaky\")\n3. **Finds SKILL** (description matches)\n4. **Scans overview** (is this relevant?)\n5. **Reads patterns** (quick reference table)\n6. **Loads example** (only when implementing)",
+      "zh-Hans": "1. **遇到问题**（“测试不稳定”）\n2. **找到技能**（描述匹配）\n3. **浏览概述**（这相关吗？）\n4. **阅读模式**（快速参考表）\n5. **加载示例**（仅在实施时）"
+    },
+    {
+      "en-US": "**Optimize for this flow** - put searchable terms early and often.",
+      "zh-Hans": "**针对此流程进行优化**——尽早并经常放置可搜索的术语。"
+    },
+    {
+      "en-US": "## The Bottom Line",
+      "zh-Hans": "## 核心要点"
+    },
+    {
+      "en-US": "**Creating skills IS TDD for process documentation.**",
+      "zh-Hans": "**创建技能就是流程文档的 TDD。**"
+    },
+    {
+      "en-US": "Same Iron Law: No skill without failing test first.\nSame cycle: RED (baseline) → GREEN (write skill) → REFACTOR (close loopholes).\nSame benefits: Better quality, fewer surprises, bulletproof results.",
+      "zh-Hans": "同样的铁律：没有失败的测试，就没有技能。\n同样的循环：红（基线）→ 绿（编写技能）→ 重构（堵住漏洞）。\n同样的好处：更好的质量，更少的意外，无懈可击的结果。"
+    },
+    {
+      "en-US": "If you follow TDD for code, follow it for skills. It's the same discipline applied to documentation.",
+      "zh-Hans": "如果你为代码遵循 TDD，那么也为技能遵循它。这是应用于文档的同一种纪律。"
+    }
+  ]
+}

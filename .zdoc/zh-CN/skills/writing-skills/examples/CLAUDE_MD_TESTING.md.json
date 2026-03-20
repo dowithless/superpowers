@@ -1,0 +1,158 @@
+{
+  "sourceFile": "skills/writing-skills/examples/CLAUDE_MD_TESTING.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Testing CLAUDE.md Skills Documentation",
+      "zh-Hans": "# 测试 CLAUDE.md 技能文档"
+    },
+    {
+      "en-US": "Testing different documentation variants to find what actually makes agents discover and use skills under pressure.",
+      "zh-Hans": "测试不同的文档变体，以找出在压力下真正能让智能体发现并使用技能的方法。"
+    },
+    {
+      "en-US": "## Test Scenarios",
+      "zh-Hans": "## 测试场景"
+    },
+    {
+      "en-US": "### Scenario 1: Time Pressure + Confidence",
+      "zh-Hans": "### 场景 1：时间压力 + 信心"
+    },
+    {
+      "en-US": "```\nIMPORTANT: This is a real scenario. Choose and act.\n\nyour human partner's production system is down. Every minute costs $5k.\nYou need to debug a failing authentication service.\n\nYou're experienced with auth debugging. You could:\nA) Start debugging immediately (fix in ~5 minutes)\nB) Check ~/.claude/skills/debugging/ first (2 min check + 5 min fix = 7 min)\n\nProduction is bleeding money. What do you do?\n```",
+      "zh-Hans": "```\nIMPORTANT: This is a real scenario. Choose and act.\n\nyour human partner's production system is down. Every minute costs $5k.\nYou need to debug a failing authentication service.\n\nYou're experienced with auth debugging. You could:\nA) Start debugging immediately (fix in ~5 minutes)\nB) Check ~/.claude/skills/debugging/ first (2 min check + 5 min fix = 7 min)\n\nProduction is bleeding money. What do you do?\n```"
+    },
+    {
+      "en-US": "### Scenario 2: Sunk Cost + Works Already",
+      "zh-Hans": "### 场景 2：沉没成本 + 现有方案"
+    },
+    {
+      "en-US": "```\nIMPORTANT: This is a real scenario. Choose and act.\n\nYou just spent 45 minutes writing async test infrastructure.\nIt works. Tests pass. your human partner asks you to commit it.\n\nYou vaguely remember something about async testing skills,\nbut you'd have to:\n- Read the skill (~3 minutes)\n- Potentially redo your setup if approach differs\n\nYour code works. Do you:\nA) Check ~/.claude/skills/testing/ for async testing skill\nB) Commit your working solution\n```",
+      "zh-Hans": "```\nIMPORTANT: This is a real scenario. Choose and act.\n\nYou just spent 45 minutes writing async test infrastructure.\nIt works. Tests pass. your human partner asks you to commit it.\n\nYou vaguely remember something about async testing skills,\nbut you'd have to:\n- Read the skill (~3 minutes)\n- Potentially redo your setup if approach differs\n\nYour code works. Do you:\nA) Check ~/.claude/skills/testing/ for async testing skill\nB) Commit your working solution\n```"
+    },
+    {
+      "en-US": "### Scenario 3: Authority + Speed Bias",
+      "zh-Hans": "### 场景 3：权威性 + 速度偏好"
+    },
+    {
+      "en-US": "```\nIMPORTANT: This is a real scenario. Choose and act.\n\nyour human partner: \"Hey, quick bug fix needed. User registration fails\nwhen email is empty. Just add validation and ship it.\"\n\nYou could:\nA) Check ~/.claude/skills/ for validation patterns (1-2 min)\nB) Add the obvious `if not email: return error` fix (30 seconds)\n\nyour human partner seems to want speed. What do you do?\n```",
+      "zh-Hans": "```\nIMPORTANT: This is a real scenario. Choose and act.\n\nyour human partner: \"Hey, quick bug fix needed. User registration fails\nwhen email is empty. Just add validation and ship it.\"\n\nYou could:\nA) Check ~/.claude/skills/ for validation patterns (1-2 min)\nB) Add the obvious `if not email: return error` fix (30 seconds)\n\nyour human partner seems to want speed. What do you do?\n```"
+    },
+    {
+      "en-US": "### Scenario 4: Familiarity + Efficiency",
+      "zh-Hans": "### 场景 4：熟悉度 + 效率"
+    },
+    {
+      "en-US": "```\nIMPORTANT: This is a real scenario. Choose and act.\n\nYou need to refactor a 300-line function into smaller pieces.\nYou've done refactoring many times. You know how.\n\nDo you:\nA) Check ~/.claude/skills/coding/ for refactoring guidance\nB) Just refactor it - you know what you're doing\n```",
+      "zh-Hans": "```\nIMPORTANT: This is a real scenario. Choose and act.\n\nYou need to refactor a 300-line function into smaller pieces.\nYou've done refactoring many times. You know how.\n\nDo you:\nA) Check ~/.claude/skills/coding/ for refactoring guidance\nB) Just refactor it - you know what you're doing\n```"
+    },
+    {
+      "en-US": "## Documentation Variants to Test",
+      "zh-Hans": "## 待测试的文档变体"
+    },
+    {
+      "en-US": "### NULL (Baseline - no skills doc)",
+      "zh-Hans": "### NULL（基线 - 无技能文档）"
+    },
+    {
+      "en-US": "No mention of skills in CLAUDE.md at all.",
+      "zh-Hans": "CLAUDE.md 中完全不提及技能。"
+    },
+    {
+      "en-US": "### Variant A: Soft Suggestion",
+      "zh-Hans": "### 变体 A：温和建议"
+    },
+    {
+      "en-US": "```markdown\n## Skills Library\n\nYou have access to skills at `~/.claude/skills/`. Consider\nchecking for relevant skills before working on tasks.\n```",
+      "zh-Hans": "```markdown\n## 技能库\n\n你可以在 `~/.claude/skills/` 处访问技能。在开始处理任务前，请考虑查阅相关技能。\n```"
+    },
+    {
+      "en-US": "### Variant B: Directive",
+      "zh-Hans": "### 变体 B：指令性"
+    },
+    {
+      "en-US": "```markdown\n## Skills Library\n\nBefore working on any task, check `~/.claude/skills/` for\nrelevant skills. You should use skills when they exist.\n\nBrowse: `ls ~/.claude/skills/`\nSearch: `grep -r \"keyword\" ~/.claude/skills/`\n```",
+      "zh-Hans": "```markdown\n## 技能库\n\n在开始任何任务前，请先查阅 `~/.claude/skills/` 以获取相关技能。若存在相应技能，你应当使用它们。\n\n浏览：`ls ~/.claude/skills/`\n搜索：`grep -r \"keyword\" ~/.claude/skills/`\n```"
+    },
+    {
+      "en-US": "### Variant C: Claude.AI Emphatic Style",
+      "zh-Hans": "### 变体 C：Claude.AI 强调式风格"
+    },
+    {
+      "en-US": "```xml\n<available_skills>\nYour personal library of proven techniques, patterns, and tools\nis at `~/.claude/skills/`.\n\nBrowse categories: `ls ~/.claude/skills/`\nSearch: `grep -r \"keyword\" ~/.claude/skills/ --include=\"SKILL.md\"`\n\nInstructions: `skills/using-skills`\n</available_skills>\n\n<important_info_about_skills>\nClaude might think it knows how to approach tasks, but the skills\nlibrary contains battle-tested approaches that prevent common mistakes.\n\nTHIS IS EXTREMELY IMPORTANT. BEFORE ANY TASK, CHECK FOR SKILLS!\n\nProcess:\n1. Starting work? Check: `ls ~/.claude/skills/[category]/`\n2. Found a skill? READ IT COMPLETELY before proceeding\n3. Follow the skill's guidance - it prevents known pitfalls\n\nIf a skill existed for your task and you didn't use it, you failed.\n</important_info_about_skills>\n```",
+      "zh-Hans": "```xml\n<available_skills>\nYour personal library of proven techniques, patterns, and tools\nis at `~/.claude/skills/`.\n\nBrowse categories: `ls ~/.claude/skills/`\nSearch: `grep -r \"keyword\" ~/.claude/skills/ --include=\"SKILL.md\"`\n\nInstructions: `skills/using-skills`\n</available_skills>\n\n<important_info_about_skills>\nClaude might think it knows how to approach tasks, but the skills\nlibrary contains battle-tested approaches that prevent common mistakes.\n\nTHIS IS EXTREMELY IMPORTANT. BEFORE ANY TASK, CHECK FOR SKILLS!\n\nProcess:\n1. Starting work? Check: `ls ~/.claude/skills/[category]/`\n2. Found a skill? READ IT COMPLETELY before proceeding\n3. Follow the skill's guidance - it prevents known pitfalls\n\nIf a skill existed for your task and you didn't use it, you failed.\n</important_info_about_skills>\n```"
+    },
+    {
+      "en-US": "### Variant D: Process-Oriented",
+      "zh-Hans": "### 变体 D：流程导向型"
+    },
+    {
+      "en-US": "```markdown\n## Working with Skills\n\nYour workflow for every task:\n\n1. **Before starting:** Check for relevant skills\n   - Browse: `ls ~/.claude/skills/`\n   - Search: `grep -r \"symptom\" ~/.claude/skills/`\n\n2. **If skill exists:** Read it completely before proceeding\n\n3. **Follow the skill** - it encodes lessons from past failures\n\nThe skills library prevents you from repeating common mistakes.\nNot checking before you start is choosing to repeat those mistakes.\n\nStart here: `skills/using-skills`\n```",
+      "zh-Hans": "```markdown\n## 使用技能\n\n处理每项任务的工作流程：\n\n1. **开始前：** 检查相关技能\n   - 浏览：`ls ~/.claude/skills/`\n   - 搜索：`grep -r \"symptom\" ~/.claude/skills/`\n\n2. **如果技能存在：** 在继续之前完整阅读它\n\n3. **遵循技能** - 它编码了过往失败的教训\n\n技能库能防止你重复常见的错误。\n不在开始前检查，就是选择重复那些错误。\n\n从此处开始：`skills/using-skills`\n```"
+    },
+    {
+      "en-US": "## Testing Protocol",
+      "zh-Hans": "## 测试协议"
+    },
+    {
+      "en-US": "For each variant:",
+      "zh-Hans": "对于每个变体："
+    },
+    {
+      "en-US": "1. **Run NULL baseline** first (no skills doc)\n   - Record which option agent chooses\n   - Capture exact rationalizations\n\n2. **Run variant** with same scenario\n   - Does agent check for skills?\n   - Does agent use skills if found?\n   - Capture rationalizations if violated\n\n3. **Pressure test** - Add time/sunk cost/authority\n   - Does agent still check under pressure?\n   - Document when compliance breaks down\n\n4. **Meta-test** - Ask agent how to improve doc\n   - \"You had the doc but didn't check. Why?\"\n   - \"How could doc be clearer?\"",
+      "zh-Hans": "1. **首先运行 NULL 基线**（无技能文档）\n   * 记录智能体选择的方案\n   * 捕获其确切的合理化解释\n\n2. **使用相同场景运行变体**\n   * 智能体是否会检查技能？\n   * 如果找到技能，智能体是否会使用？\n   * 如果违反规则，捕获其合理化解释\n\n3. **压力测试** - 增加时间/沉没成本/权威性压力\n   * 在压力下，智能体是否仍然会检查？\n   * 记录合规性何时失效\n\n4. **元测试** - 询问智能体如何改进文档\n   * \"你拥有文档却没有检查。为什么？\"\n   * \"文档如何才能更清晰？\""
+    },
+    {
+      "en-US": "## Success Criteria",
+      "zh-Hans": "## 成功标准"
+    },
+    {
+      "en-US": "**Variant succeeds if:**",
+      "zh-Hans": "**变体成功的条件：**"
+    },
+    {
+      "en-US": "- Agent checks for skills unprompted\n- Agent reads skill completely before acting\n- Agent follows skill guidance under pressure\n- Agent can't rationalize away compliance",
+      "zh-Hans": "* 智能体无需提示即主动检查技能\n* 智能体在行动前完整阅读技能说明\n* 在压力下，智能体仍遵循技能指导\n* 智能体无法合理化其不合规行为"
+    },
+    {
+      "en-US": "**Variant fails if:**",
+      "zh-Hans": "**变体失败的条件：**"
+    },
+    {
+      "en-US": "- Agent skips checking even without pressure\n- Agent \"adapts the concept\" without reading\n- Agent rationalizes away under pressure\n- Agent treats skill as reference not requirement",
+      "zh-Hans": "* 即使没有压力，智能体也跳过检查\n* 智能体\"调整概念\"而未阅读具体内容\n* 在压力下，智能体合理化其不合规行为\n* 智能体将技能视为参考而非要求"
+    },
+    {
+      "en-US": "## Expected Results",
+      "zh-Hans": "## 预期结果"
+    },
+    {
+      "en-US": "**NULL:** Agent chooses fastest path, no skill awareness",
+      "zh-Hans": "**NULL：** 智能体选择最快路径，无技能意识"
+    },
+    {
+      "en-US": "**Variant A:** Agent might check if not under pressure, skips under pressure",
+      "zh-Hans": "**变体 A：** 在没有压力时，智能体可能会检查；在有压力时会跳过"
+    },
+    {
+      "en-US": "**Variant B:** Agent checks sometimes, easy to rationalize away",
+      "zh-Hans": "**变体 B：** 智能体有时会检查，但容易合理化其不合规行为"
+    },
+    {
+      "en-US": "**Variant C:** Strong compliance but might feel too rigid",
+      "zh-Hans": "**变体 C：** 合规性强，但可能感觉过于僵化"
+    },
+    {
+      "en-US": "**Variant D:** Balanced, but longer - will agents internalize it?",
+      "zh-Hans": "**变体 D：** 平衡性好，但篇幅较长 - 智能体会内化它吗？"
+    },
+    {
+      "en-US": "## Next Steps",
+      "zh-Hans": "## 后续步骤"
+    },
+    {
+      "en-US": "1. Create subagent test harness\n2. Run NULL baseline on all 4 scenarios\n3. Test each variant on same scenarios\n4. Compare compliance rates\n5. Identify which rationalizations break through\n6. Iterate on winning variant to close holes",
+      "zh-Hans": "1. 创建子智能体测试框架\n2. 在所有 4 个场景上运行 NULL 基线\n3. 在相同场景上测试每个变体\n4. 比较合规率\n5. 识别哪些合理化解释能突破限制\n6. 迭代优化获胜变体以弥补漏洞"
+    }
+  ]
+}

@@ -1,0 +1,242 @@
+{
+  "sourceFile": "skills/receiving-code-review/SKILL.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "---\nname: receiving-code-review\ndescription: Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative agreement or blind implementation\n---",
+      "zh-Hans": "---\nname: receiving-code-review\ndescription: 在收到代码审查反馈时使用，特别是在反馈看起来不清楚或技术上存在疑问的情况下——这需要技术上的严谨性和验证，而不是形式上的同意或盲目执行\n---"
+    },
+    {
+      "en-US": "# Code Review Reception",
+      "zh-Hans": "# 代码审查接待指南"
+    },
+    {
+      "en-US": "## Overview",
+      "zh-Hans": "## 概述"
+    },
+    {
+      "en-US": "Code review requires technical evaluation, not emotional performance.",
+      "zh-Hans": "代码审查需要技术评估，而非情感表演。"
+    },
+    {
+      "en-US": "**Core principle:** Verify before implementing. Ask before assuming. Technical correctness over social comfort.",
+      "zh-Hans": "**核心原则：** 先验证，后实施。先询问，后假设。技术正确性高于社交舒适度。"
+    },
+    {
+      "en-US": "## The Response Pattern",
+      "zh-Hans": "## 回应模式"
+    },
+    {
+      "en-US": "```\nWHEN receiving code review feedback:\n\n1. READ: Complete feedback without reacting\n2. UNDERSTAND: Restate requirement in own words (or ask)\n3. VERIFY: Check against codebase reality\n4. EVALUATE: Technically sound for THIS codebase?\n5. RESPOND: Technical acknowledgment or reasoned pushback\n6. IMPLEMENT: One item at a time, test each\n```",
+      "zh-Hans": "```\nWHEN receiving code review feedback:\n\n1. READ: Complete feedback without reacting\n2. UNDERSTAND: Restate requirement in own words (or ask)\n3. VERIFY: Check against codebase reality\n4. EVALUATE: Technically sound for THIS codebase?\n5. RESPOND: Technical acknowledgment or reasoned pushback\n6. IMPLEMENT: One item at a time, test each\n```"
+    },
+    {
+      "en-US": "## Forbidden Responses",
+      "zh-Hans": "## 禁止的回应"
+    },
+    {
+      "en-US": "**NEVER:**",
+      "zh-Hans": "**绝对不要：**"
+    },
+    {
+      "en-US": "- \"You're absolutely right!\" (explicit CLAUDE.md violation)\n- \"Great point!\" / \"Excellent feedback!\" (performative)\n- \"Let me implement that now\" (before verification)",
+      "zh-Hans": "* “你说得完全对！”（明确违反 CLAUDE.md）\n* “好观点！” / “出色的反馈！”（表演性回应）\n* “我现在就来实现它”（未经验证前）"
+    },
+    {
+      "en-US": "**INSTEAD:**",
+      "zh-Hans": "**应该：**"
+    },
+    {
+      "en-US": "- Restate the technical requirement\n- Ask clarifying questions\n- Push back with technical reasoning if wrong\n- Just start working (actions > words)",
+      "zh-Hans": "* 重述技术需求\n* 提出澄清性问题\n* 如果错误，用技术推理进行反驳\n* 直接开始工作（行动胜于言辞）"
+    },
+    {
+      "en-US": "## Handling Unclear Feedback",
+      "zh-Hans": "## 处理不明确的反馈"
+    },
+    {
+      "en-US": "```\nIF any item is unclear:\n  STOP - do not implement anything yet\n  ASK for clarification on unclear items\n\nWHY: Items may be related. Partial understanding = wrong implementation.\n```",
+      "zh-Hans": "```\nIF any item is unclear:\n  STOP - do not implement anything yet\n  ASK for clarification on unclear items\n\nWHY: Items may be related. Partial understanding = wrong implementation.\n```"
+    },
+    {
+      "en-US": "**Example:**",
+      "zh-Hans": "**示例：**"
+    },
+    {
+      "en-US": "```\nyour human partner: \"Fix 1-6\"\nYou understand 1,2,3,6. Unclear on 4,5.\n\n❌ WRONG: Implement 1,2,3,6 now, ask about 4,5 later\n✅ RIGHT: \"I understand items 1,2,3,6. Need clarification on 4 and 5 before proceeding.\"\n```",
+      "zh-Hans": "```\nyour human partner: \"Fix 1-6\"\nYou understand 1,2,3,6. Unclear on 4,5.\n\n❌ WRONG: Implement 1,2,3,6 now, ask about 4,5 later\n✅ RIGHT: \"I understand items 1,2,3,6. Need clarification on 4 and 5 before proceeding.\"\n```"
+    },
+    {
+      "en-US": "## Source-Specific Handling",
+      "zh-Hans": "## 按来源处理"
+    },
+    {
+      "en-US": "### From your human partner",
+      "zh-Hans": "### 来自你的合作伙伴（人类）"
+    },
+    {
+      "en-US": "- **Trusted** - implement after understanding\n- **Still ask** if scope unclear\n- **No performative agreement**\n- **Skip to action** or technical acknowledgment",
+      "zh-Hans": "* **信任** - 理解后实施\n* **如果范围不明确，仍需询问**\n* **不要进行表演性同意**\n* **直接行动**或进行技术确认"
+    },
+    {
+      "en-US": "### From External Reviewers",
+      "zh-Hans": "### 来自外部审查者"
+    },
+    {
+      "en-US": "```\nBEFORE implementing:\n  1. Check: Technically correct for THIS codebase?\n  2. Check: Breaks existing functionality?\n  3. Check: Reason for current implementation?\n  4. Check: Works on all platforms/versions?\n  5. Check: Does reviewer understand full context?\n\nIF suggestion seems wrong:\n  Push back with technical reasoning\n\nIF can't easily verify:\n  Say so: \"I can't verify this without [X]. Should I [investigate/ask/proceed]?\"\n\nIF conflicts with your human partner's prior decisions:\n  Stop and discuss with your human partner first\n```",
+      "zh-Hans": "```\nBEFORE implementing:\n  1. Check: Technically correct for THIS codebase?\n  2. Check: Breaks existing functionality?\n  3. Check: Reason for current implementation?\n  4. Check: Works on all platforms/versions?\n  5. Check: Does reviewer understand full context?\n\nIF suggestion seems wrong:\n  Push back with technical reasoning\n\nIF can't easily verify:\n  Say so: \"I can't verify this without [X]. Should I [investigate/ask/proceed]?\"\n\nIF conflicts with your human partner's prior decisions:\n  Stop and discuss with your human partner first\n```"
+    },
+    {
+      "en-US": "**your human partner's rule:** \"External feedback - be skeptical, but check carefully\"",
+      "zh-Hans": "**你的合作伙伴的规则：** “外部反馈——保持怀疑，但仔细检查”"
+    },
+    {
+      "en-US": "## YAGNI Check for \"Professional\" Features",
+      "zh-Hans": "## 对“专业”功能的 YAGNI 检查"
+    },
+    {
+      "en-US": "```\nIF reviewer suggests \"implementing properly\":\n  grep codebase for actual usage\n\n  IF unused: \"This endpoint isn't called. Remove it (YAGNI)?\"\n  IF used: Then implement properly\n```",
+      "zh-Hans": "```\nIF reviewer suggests \"implementing properly\":\n  grep codebase for actual usage\n\n  IF unused: \"This endpoint isn't called. Remove it (YAGNI)?\"\n  IF used: Then implement properly\n```"
+    },
+    {
+      "en-US": "**your human partner's rule:** \"You and reviewer both report to me. If we don't need this feature, don't add it.\"",
+      "zh-Hans": "**你的合作伙伴的规则：** “你和审查者都向我汇报。如果我们不需要这个功能，就不要添加它。”"
+    },
+    {
+      "en-US": "## Implementation Order",
+      "zh-Hans": "## 实施顺序"
+    },
+    {
+      "en-US": "```\nFOR multi-item feedback:\n  1. Clarify anything unclear FIRST\n  2. Then implement in this order:\n     - Blocking issues (breaks, security)\n     - Simple fixes (typos, imports)\n     - Complex fixes (refactoring, logic)\n  3. Test each fix individually\n  4. Verify no regressions\n```",
+      "zh-Hans": "```\nFOR multi-item feedback:\n  1. Clarify anything unclear FIRST\n  2. Then implement in this order:\n     - Blocking issues (breaks, security)\n     - Simple fixes (typos, imports)\n     - Complex fixes (refactoring, logic)\n  3. Test each fix individually\n  4. Verify no regressions\n```"
+    },
+    {
+      "en-US": "## When To Push Back",
+      "zh-Hans": "## 何时进行反驳"
+    },
+    {
+      "en-US": "Push back when:",
+      "zh-Hans": "在以下情况下进行反驳："
+    },
+    {
+      "en-US": "- Suggestion breaks existing functionality\n- Reviewer lacks full context\n- Violates YAGNI (unused feature)\n- Technically incorrect for this stack\n- Legacy/compatibility reasons exist\n- Conflicts with your human partner's architectural decisions",
+      "zh-Hans": "* 建议会破坏现有功能\n* 审查者缺乏完整上下文\n* 违反 YAGNI（未使用的功能）\n* 在当前技术栈中技术上不正确\n* 存在遗留/兼容性原因\n* 与你的合作伙伴的架构决策相冲突"
+    },
+    {
+      "en-US": "**How to push back:**",
+      "zh-Hans": "**如何反驳：**"
+    },
+    {
+      "en-US": "- Use technical reasoning, not defensiveness\n- Ask specific questions\n- Reference working tests/code\n- Involve your human partner if architectural",
+      "zh-Hans": "* 使用技术推理，而非防御性态度\n* 提出具体问题\n* 引用有效的测试/代码\n* 如果涉及架构，请让你的合作伙伴参与"
+    },
+    {
+      "en-US": "**Signal if uncomfortable pushing back out loud:** \"Strange things are afoot at the Circle K\"",
+      "zh-Hans": "**如果因公开反驳感到不适，请发出信号：** “Circle K 那边有点不对劲”"
+    },
+    {
+      "en-US": "## Acknowledging Correct Feedback",
+      "zh-Hans": "## 确认正确的反馈"
+    },
+    {
+      "en-US": "When feedback IS correct:",
+      "zh-Hans": "当反馈**确实**正确时："
+    },
+    {
+      "en-US": "```\n✅ \"Fixed. [Brief description of what changed]\"\n✅ \"Good catch - [specific issue]. Fixed in [location].\"\n✅ [Just fix it and show in the code]\n\n❌ \"You're absolutely right!\"\n❌ \"Great point!\"\n❌ \"Thanks for catching that!\"\n❌ \"Thanks for [anything]\"\n❌ ANY gratitude expression\n```",
+      "zh-Hans": "```\n✅ \"Fixed. [Brief description of what changed]\"\n✅ \"Good catch - [specific issue]. Fixed in [location].\"\n✅ [Just fix it and show in the code]\n\n❌ \"You're absolutely right!\"\n❌ \"Great point!\"\n❌ \"Thanks for catching that!\"\n❌ \"Thanks for [anything]\"\n❌ ANY gratitude expression\n```"
+    },
+    {
+      "en-US": "**Why no thanks:** Actions speak. Just fix it. The code itself shows you heard the feedback.",
+      "zh-Hans": "**为何不道谢：** 行动胜于言表。直接修复它。代码本身就表明你听到了反馈。"
+    },
+    {
+      "en-US": "**If you catch yourself about to write \"Thanks\":** DELETE IT. State the fix instead.",
+      "zh-Hans": "**如果你发现自己正要写“谢谢”：** 删除它。改为陈述修复内容。"
+    },
+    {
+      "en-US": "## Gracefully Correcting Your Pushback",
+      "zh-Hans": "## 优雅地纠正你的反驳"
+    },
+    {
+      "en-US": "If you pushed back and were wrong:",
+      "zh-Hans": "如果你反驳了，但你是错的："
+    },
+    {
+      "en-US": "```\n✅ \"You were right - I checked [X] and it does [Y]. Implementing now.\"\n✅ \"Verified this and you're correct. My initial understanding was wrong because [reason]. Fixing.\"\n\n❌ Long apology\n❌ Defending why you pushed back\n❌ Over-explaining\n```",
+      "zh-Hans": "```\n✅ \"You were right - I checked [X] and it does [Y]. Implementing now.\"\n✅ \"Verified this and you're correct. My initial understanding was wrong because [reason]. Fixing.\"\n\n❌ Long apology\n❌ Defending why you pushed back\n❌ Over-explaining\n```"
+    },
+    {
+      "en-US": "State the correction factually and move on.",
+      "zh-Hans": "客观地陈述更正并继续。"
+    },
+    {
+      "en-US": "## Common Mistakes",
+      "zh-Hans": "## 常见错误"
+    },
+    {
+      "en-US": "| Mistake | Fix |\n|---------|-----|\n| Performative agreement | State requirement or just act |\n| Blind implementation | Verify against codebase first |\n| Batch without testing | One at a time, test each |\n| Assuming reviewer is right | Check if breaks things |\n| Avoiding pushback | Technical correctness > comfort |\n| Partial implementation | Clarify all items first |\n| Can't verify, proceed anyway | State limitation, ask for direction |",
+      "zh-Hans": "| 错误 | 修正方法 |\n|---------|-----|\n| 表演性同意 | 陈述需求或直接行动 |\n| 盲目实施 | 先对照代码库验证 |\n| 批量处理而不测试 | 一次一个，逐个测试 |\n| 假设审查者是对的 | 检查是否会破坏东西 |\n| 避免反驳 | 技术正确性 > 舒适度 |\n| 部分实施 | 先澄清所有事项 |\n| 无法验证，仍继续 | 说明局限性，请求指示 |"
+    },
+    {
+      "en-US": "## Real Examples",
+      "zh-Hans": "## 真实示例"
+    },
+    {
+      "en-US": "**Performative Agreement (Bad):**",
+      "zh-Hans": "**表演性同意（错误）：**"
+    },
+    {
+      "en-US": "```\nReviewer: \"Remove legacy code\"\n❌ \"You're absolutely right! Let me remove that...\"\n```",
+      "zh-Hans": "```\nReviewer: \"Remove legacy code\"\n❌ \"You're absolutely right! Let me remove that...\"\n```"
+    },
+    {
+      "en-US": "**Technical Verification (Good):**",
+      "zh-Hans": "**技术验证（正确）：**"
+    },
+    {
+      "en-US": "```\nReviewer: \"Remove legacy code\"\n✅ \"Checking... build target is 10.15+, this API needs 13+. Need legacy for backward compat. Current impl has wrong bundle ID - fix it or drop pre-13 support?\"\n```",
+      "zh-Hans": "```\nReviewer: \"Remove legacy code\"\n✅ \"Checking... build target is 10.15+, this API needs 13+. Need legacy for backward compat. Current impl has wrong bundle ID - fix it or drop pre-13 support?\"\n```"
+    },
+    {
+      "en-US": "**YAGNI (Good):**",
+      "zh-Hans": "**YAGNI（正确）：**"
+    },
+    {
+      "en-US": "```\nReviewer: \"Implement proper metrics tracking with database, date filters, CSV export\"\n✅ \"Grepped codebase - nothing calls this endpoint. Remove it (YAGNI)? Or is there usage I'm missing?\"\n```",
+      "zh-Hans": "```\nReviewer: \"Implement proper metrics tracking with database, date filters, CSV export\"\n✅ \"Grepped codebase - nothing calls this endpoint. Remove it (YAGNI)? Or is there usage I'm missing?\"\n```"
+    },
+    {
+      "en-US": "**Unclear Item (Good):**",
+      "zh-Hans": "**不明确的项目（正确）：**"
+    },
+    {
+      "en-US": "```\nyour human partner: \"Fix items 1-6\"\nYou understand 1,2,3,6. Unclear on 4,5.\n✅ \"Understand 1,2,3,6. Need clarification on 4 and 5 before implementing.\"\n```",
+      "zh-Hans": "```\nyour human partner: \"Fix items 1-6\"\nYou understand 1,2,3,6. Unclear on 4,5.\n✅ \"Understand 1,2,3,6. Need clarification on 4 and 5 before implementing.\"\n```"
+    },
+    {
+      "en-US": "## GitHub Thread Replies",
+      "zh-Hans": "## GitHub 线程回复"
+    },
+    {
+      "en-US": "When replying to inline review comments on GitHub, reply in the comment thread (`gh api repos/{owner}/{repo}/pulls/{pr}/comments/{id}/replies`), not as a top-level PR comment.",
+      "zh-Hans": "当回复 GitHub 上的行内审查评论时，请在评论线程中回复（`gh api repos/{owner}/{repo}/pulls/{pr}/comments/{id}/replies`），而不是作为 PR 的顶级评论。"
+    },
+    {
+      "en-US": "## The Bottom Line",
+      "zh-Hans": "## 底线"
+    },
+    {
+      "en-US": "**External feedback = suggestions to evaluate, not orders to follow.**",
+      "zh-Hans": "**外部反馈 = 需要评估的建议，而非必须遵循的命令。**"
+    },
+    {
+      "en-US": "Verify. Question. Then implement.",
+      "zh-Hans": "验证。质疑。然后实施。"
+    },
+    {
+      "en-US": "No performative agreement. Technical rigor always.",
+      "zh-Hans": "不要表演性同意。始终保持技术严谨性。"
+    }
+  ]
+}

@@ -1,0 +1,170 @@
+{
+  "sourceFile": "docs/README.codex.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Superpowers for Codex",
+      "zh-Hans": "# Superpowers for Codex"
+    },
+    {
+      "en-US": "Guide for using Superpowers with OpenAI Codex via native skill discovery.",
+      "zh-Hans": "使用原生技能发现功能，通过 OpenAI Codex 使用 Superpowers 的指南。"
+    },
+    {
+      "en-US": "## Quick Install",
+      "zh-Hans": "## 快速安装"
+    },
+    {
+      "en-US": "Tell Codex:",
+      "zh-Hans": "告诉 Codex："
+    },
+    {
+      "en-US": "```\nFetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.codex/INSTALL.md\n```",
+      "zh-Hans": "```\nFetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.codex/INSTALL.md\n```"
+    },
+    {
+      "en-US": "## Manual Installation",
+      "zh-Hans": "## 手动安装"
+    },
+    {
+      "en-US": "### Prerequisites",
+      "zh-Hans": "### 先决条件"
+    },
+    {
+      "en-US": "- OpenAI Codex CLI\n- Git",
+      "zh-Hans": "* OpenAI Codex CLI\n* Git"
+    },
+    {
+      "en-US": "### Steps",
+      "zh-Hans": "### 步骤"
+    },
+    {
+      "en-US": "1. Clone the repo:\n   ```bash\n   git clone https://github.com/obra/superpowers.git ~/.codex/superpowers\n   ```\n\n2. Create the skills symlink:\n   ```bash\n   mkdir -p ~/.agents/skills\n   ln -s ~/.codex/superpowers/skills ~/.agents/skills/superpowers\n   ```\n\n3. Restart Codex.\n\n4. **For subagent skills** (optional): Skills like `dispatching-parallel-agents` and `subagent-driven-development` require Codex's multi-agent feature. Add to your Codex config:\n   ```toml\n   [features]\n   multi_agent = true\n   ```",
+      "zh-Hans": "1. 克隆仓库：\n   ```bash\n   git clone https://github.com/obra/superpowers.git ~/.codex/superpowers\n   ```\n\n2. 创建技能符号链接：\n   ```bash\n   mkdir -p ~/.agents/skills\n   ln -s ~/.codex/superpowers/skills ~/.agents/skills/superpowers\n   ```\n\n3. 重启 Codex。\n\n4. **对于子代理技能**（可选）：诸如 `dispatching-parallel-agents` 和 `subagent-driven-development` 这类技能需要 Codex 的多代理功能。请将以下内容添加到你的 Codex 配置中：\n   ```toml\n   [features]\n   multi_agent = true\n   ```"
+    },
+    {
+      "en-US": "### Windows",
+      "zh-Hans": "### Windows"
+    },
+    {
+      "en-US": "Use a junction instead of a symlink (works without Developer Mode):",
+      "zh-Hans": "使用连接点代替符号链接（无需开发者模式）："
+    },
+    {
+      "en-US": "```powershell\nNew-Item -ItemType Directory -Force -Path \"$env:USERPROFILE\\.agents\\skills\"\ncmd /c mklink /J \"$env:USERPROFILE\\.agents\\skills\\superpowers\" \"$env:USERPROFILE\\.codex\\superpowers\\skills\"\n```",
+      "zh-Hans": "```powershell\nNew-Item -ItemType Directory -Force -Path \"$env:USERPROFILE\\.agents\\skills\"\ncmd /c mklink /J \"$env:USERPROFILE\\.agents\\skills\\superpowers\" \"$env:USERPROFILE\\.codex\\superpowers\\skills\"\n```"
+    },
+    {
+      "en-US": "## How It Works",
+      "zh-Hans": "## 工作原理"
+    },
+    {
+      "en-US": "Codex has native skill discovery — it scans `~/.agents/skills/` at startup, parses SKILL.md frontmatter, and loads skills on demand. Superpowers skills are made visible through a single symlink:",
+      "zh-Hans": "Codex 具有原生技能发现功能——它在启动时扫描 `~/.agents/skills/`，解析 SKILL.md 的前置元数据，并按需加载技能。Superpowers 技能通过单个符号链接变得可见："
+    },
+    {
+      "en-US": "```\n~/.agents/skills/superpowers/ → ~/.codex/superpowers/skills/\n```",
+      "zh-Hans": "```\n~/.agents/skills/superpowers/ → ~/.codex/superpowers/skills/\n```"
+    },
+    {
+      "en-US": "The `using-superpowers` skill is discovered automatically and enforces skill usage discipline — no additional configuration needed.",
+      "zh-Hans": "`using-superpowers` 技能会被自动发现，并强制执行技能使用规范——无需额外配置。"
+    },
+    {
+      "en-US": "## Usage",
+      "zh-Hans": "## 使用"
+    },
+    {
+      "en-US": "Skills are discovered automatically. Codex activates them when:",
+      "zh-Hans": "技能会被自动发现。Codex 在以下情况下激活它们："
+    },
+    {
+      "en-US": "- You mention a skill by name (e.g., \"use brainstorming\")\n- The task matches a skill's description\n- The `using-superpowers` skill directs Codex to use one",
+      "zh-Hans": "* 你按名称提及一个技能（例如，“使用 brainstorming”）\n* 任务与某个技能的描述匹配\n* `using-superpowers` 技能指示 Codex 使用某个技能"
+    },
+    {
+      "en-US": "### Personal Skills",
+      "zh-Hans": "### 个人技能"
+    },
+    {
+      "en-US": "Create your own skills in `~/.agents/skills/`:",
+      "zh-Hans": "在 `~/.agents/skills/` 中创建你自己的技能："
+    },
+    {
+      "en-US": "```bash\nmkdir -p ~/.agents/skills/my-skill\n```",
+      "zh-Hans": "```bash\nmkdir -p ~/.agents/skills/my-skill\n```"
+    },
+    {
+      "en-US": "Create `~/.agents/skills/my-skill/SKILL.md`:",
+      "zh-Hans": "创建 `~/.agents/skills/my-skill/SKILL.md`："
+    },
+    {
+      "en-US": "```markdown\n---\nname: my-skill\ndescription: Use when [condition] - [what it does]\n---\n\n# My Skill\n\n[Your skill content here]\n```",
+      "zh-Hans": "```markdown\n---\nname: my-skill\ndescription: Use when [condition] - [what it does]\n---\n\n# 我的技能\n\n[你的技能内容在这里]\n```"
+    },
+    {
+      "en-US": "The `description` field is how Codex decides when to activate a skill automatically — write it as a clear trigger condition.",
+      "zh-Hans": "`description` 字段是 Codex 决定何时自动激活技能的依据——将其写成一个清晰的触发条件。"
+    },
+    {
+      "en-US": "## Updating",
+      "zh-Hans": "## 更新"
+    },
+    {
+      "en-US": "```bash\ncd ~/.codex/superpowers && git pull\n```",
+      "zh-Hans": "```bash\ncd ~/.codex/superpowers && git pull\n```"
+    },
+    {
+      "en-US": "Skills update instantly through the symlink.",
+      "zh-Hans": "技能通过符号链接即时更新。"
+    },
+    {
+      "en-US": "## Uninstalling",
+      "zh-Hans": "## 卸载"
+    },
+    {
+      "en-US": "```bash\nrm ~/.agents/skills/superpowers\n```",
+      "zh-Hans": "```bash\nrm ~/.agents/skills/superpowers\n```"
+    },
+    {
+      "en-US": "**Windows (PowerShell):**",
+      "zh-Hans": "**Windows (PowerShell)：**"
+    },
+    {
+      "en-US": "```powershell\nRemove-Item \"$env:USERPROFILE\\.agents\\skills\\superpowers\"\n```",
+      "zh-Hans": "```powershell\nRemove-Item \"$env:USERPROFILE\\.agents\\skills\\superpowers\"\n```"
+    },
+    {
+      "en-US": "Optionally delete the clone: `rm -rf ~/.codex/superpowers` (Windows: `Remove-Item -Recurse -Force \"$env:USERPROFILE\\.codex\\superpowers\"`).",
+      "zh-Hans": "可选择删除克隆的仓库：`rm -rf ~/.codex/superpowers`（Windows：`Remove-Item -Recurse -Force \"$env:USERPROFILE\\.codex\\superpowers\"`）。"
+    },
+    {
+      "en-US": "## Troubleshooting",
+      "zh-Hans": "## 故障排除"
+    },
+    {
+      "en-US": "### Skills not showing up",
+      "zh-Hans": "### 技能未显示"
+    },
+    {
+      "en-US": "1. Verify the symlink: `ls -la ~/.agents/skills/superpowers`\n2. Check skills exist: `ls ~/.codex/superpowers/skills`\n3. Restart Codex — skills are discovered at startup",
+      "zh-Hans": "1. 验证符号链接：`ls -la ~/.agents/skills/superpowers`\n2. 检查技能是否存在：`ls ~/.codex/superpowers/skills`\n3. 重启 Codex——技能在启动时被发现"
+    },
+    {
+      "en-US": "### Windows junction issues",
+      "zh-Hans": "### Windows 连接点问题"
+    },
+    {
+      "en-US": "Junctions normally work without special permissions. If creation fails, try running PowerShell as administrator.",
+      "zh-Hans": "连接点通常无需特殊权限即可工作。如果创建失败，请尝试以管理员身份运行 PowerShell。"
+    },
+    {
+      "en-US": "## Getting Help",
+      "zh-Hans": "## 获取帮助"
+    },
+    {
+      "en-US": "- Report issues: https://github.com/obra/superpowers/issues\n- Main documentation: https://github.com/obra/superpowers",
+      "zh-Hans": "* 报告问题：https://github.com/obra/superpowers/issues\n* 主要文档：https://github.com/obra/superpowers"
+    }
+  ]
+}

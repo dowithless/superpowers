@@ -1,0 +1,1626 @@
+{
+  "sourceFile": "RELEASE-NOTES.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Superpowers Release Notes",
+      "zh-Hans": "# Superpowers 发布说明"
+    },
+    {
+      "en-US": "## v5.0.5 (2026-03-17)",
+      "zh-Hans": "## v5.0.5 (2026-03-17)"
+    },
+    {
+      "en-US": "### Bug Fixes",
+      "zh-Hans": "### 错误修复"
+    },
+    {
+      "en-US": "- **Brainstorm server ESM fix** — renamed `server.js` → `server.cjs` so the brainstorming server starts correctly on Node.js 22+ where the root `package.json` `\"type\": \"module\"` caused `require()` to fail. (PR #784 by @sarbojitrana, fixes #774, #780, #783)\n- **Brainstorm owner-PID on Windows** — skip PID lifecycle monitoring on Windows/MSYS2 where the PID namespace is invisible to Node.js, preventing the server from self-terminating after 60 seconds. (#770, docs from PR #768 by @lucasyhzlu-debug)\n- **stop-server.sh reliability** — verify the server process actually died before reporting success. SIGTERM + 2s wait + SIGKILL fallback. (#723)",
+      "zh-Hans": "* **Brainstorm 服务器 ESM 修复** — 将 `server.js` 重命名为 `server.cjs`，使得 Brainstorming 服务器能在 Node.js 22+ 上正确启动，在这些版本中，根目录的 `package.json` `\"type\": \"module\"` 会导致 `require()` 失败。(PR #784 by @sarbojitrana，修复 #774, #780, #783)\n* **Brainstorm 在 Windows 上的所有者 PID** — 在 Windows/MSYS2 上跳过 PID 生命周期监控，因为 Node.js 无法看到其 PID 命名空间，从而防止服务器在 60 秒后自行终止。(#770，文档来自 PR #768 by @lucasyhzlu-debug)\n* **stop-server.sh 可靠性提升** — 在报告成功之前，验证服务器进程确实已终止。采用 SIGTERM + 等待 2 秒 + SIGKILL 备选方案。(#723)"
+    },
+    {
+      "en-US": "### Changed",
+      "zh-Hans": "### 已更改"
+    },
+    {
+      "en-US": "- **Execution handoff** — restore user choice between subagent-driven and inline execution after plan writing. Subagent-driven is recommended but no longer mandatory.",
+      "zh-Hans": "* **执行移交** — 在计划编写后，恢复用户在子代理驱动执行和内联执行之间的选择。推荐使用子代理驱动，但不再是强制性的。"
+    },
+    {
+      "en-US": "## v5.0.4 (2026-03-16)",
+      "zh-Hans": "## v5.0.4 (2026-03-16)"
+    },
+    {
+      "en-US": "### Review Loop Refinements",
+      "zh-Hans": "### 审查循环优化"
+    },
+    {
+      "en-US": "Dramatically reduces token usage and speeds up spec and plan reviews by eliminating unnecessary review passes and tightening reviewer focus.",
+      "zh-Hans": "通过消除不必要的审查轮次和收紧审查者关注点，显著减少了令牌使用量，并加速了规范和计划的审查。"
+    },
+    {
+      "en-US": "- **Single whole-plan review** — plan reviewer now reviews the complete plan in one pass instead of chunk-by-chunk. Removed all chunk-related concepts (`## Chunk N:` headings, 1000-line chunk limits, per-chunk dispatch).\n- **Raised the bar for blocking issues** — both spec and plan reviewer prompts now include a \"Calibration\" section: only flag issues that would cause real problems during implementation. Minor wording, stylistic preferences, and formatting quibbles should not block approval.\n- **Reduced max review iterations** — from 5 to 3 for both spec and plan review loops. If the reviewer is calibrated correctly, 3 rounds is plenty.\n- **Streamlined reviewer checklists** — spec reviewer trimmed from 7 categories to 5; plan reviewer from 7 to 4. Removed formatting-focused checks (task syntax, chunk size) in favor of substance (buildability, spec alignment).",
+      "zh-Hans": "* **单次完整计划审查** — 计划审查者现在一次性审查完整计划，而不是分块审查。移除了所有与分块相关的概念（`## Chunk N:` 标题、1000 行分块限制、每块调度）。\n* **提高了阻塞问题的门槛** — 规范和计划审查者的提示现在都包含一个“校准”部分：仅标记那些会在实施过程中导致实际问题的项目。轻微的措辞、风格偏好和格式上的吹毛求疵不应阻止批准。\n* **减少了最大审查迭代次数** — 规范和计划审查循环都从 5 次减少到 3 次。如果审查者校准正确，3 轮就足够了。\n* **精简了审查者清单** — 规范审查者从 7 个类别精简到 5 个；计划审查者从 7 个精简到 4 个。移除了以格式为重点的检查（任务语法、分块大小），转而关注实质内容（可构建性、规范一致性）。"
+    },
+    {
+      "en-US": "### OpenCode",
+      "zh-Hans": "### OpenCode"
+    },
+    {
+      "en-US": "- **One-line plugin install** — OpenCode plugin now auto-registers the skills directory via a `config` hook. No symlinks or `skills.paths` config needed. Install is just adding one line to `opencode.json`. (PR #753)\n- **Added `package.json`** so OpenCode can install superpowers as an npm package from git.",
+      "zh-Hans": "* **单行插件安装** — OpenCode 插件现在通过一个 `config` 钩子自动注册技能目录。不再需要符号链接或 `skills.paths` 配置。安装只需在 `opencode.json` 中添加一行。(PR #753)\n* **添加了 `package.json`**，以便 OpenCode 可以从 git 安装 superpowers 作为 npm 包。"
+    },
+    {
+      "en-US": "### Bug Fixes",
+      "zh-Hans": "### 错误修复"
+    },
+    {
+      "en-US": "- **Verify server actually stopped** — `stop-server.sh` now confirms the process is dead before reporting success. SIGTERM + 2s wait + SIGKILL fallback. Reports failure if the process survives. (PR #751)\n- **Generic agent language** — brainstorm companion waiting page now says \"the agent\" instead of \"Claude\".",
+      "zh-Hans": "* **验证服务器确实已停止** — `stop-server.sh` 现在会在报告成功之前确认进程已终止。采用 SIGTERM + 等待 2 秒 + SIGKILL 备选方案。如果进程存活，则报告失败。(PR #751)\n* **通用代理语言** — brainstorm 伴侣等待页面现在说“代理”而不是“Claude”。"
+    },
+    {
+      "en-US": "## v5.0.3 (2026-03-15)",
+      "zh-Hans": "## v5.0.3 (2026-03-15)"
+    },
+    {
+      "en-US": "### Cursor Support",
+      "zh-Hans": "### Cursor 支持"
+    },
+    {
+      "en-US": "- **Cursor hooks** — added `hooks/hooks-cursor.json` with Cursor's camelCase format (`sessionStart`, `version: 1`) and updated `.cursor-plugin/plugin.json` to reference it. Fixed platform detection in `session-start` to check `CURSOR_PLUGIN_ROOT` first (Cursor may also set `CLAUDE_PLUGIN_ROOT`). (Based on PR #709)",
+      "zh-Hans": "* **Cursor 钩子** — 添加了 `hooks/hooks-cursor.json`，采用 Cursor 的驼峰命名格式（`sessionStart`，`version: 1`），并更新了 `.cursor-plugin/plugin.json` 以引用它。修复了 `session-start` 中的平台检测，优先检查 `CURSOR_PLUGIN_ROOT`（Cursor 也可能设置 `CLAUDE_PLUGIN_ROOT`）。(基于 PR #709)"
+    },
+    {
+      "en-US": "### Bug Fixes",
+      "zh-Hans": "### 错误修复"
+    },
+    {
+      "en-US": "- **Stop firing SessionStart hook on `--resume`** — the startup hook was re-injecting context on resumed sessions, which already have the context in their conversation history. The hook now fires only on `startup`, `clear`, and `compact`.\n- **Bash 5.3+ hook hang** — replaced heredoc (`cat <<EOF`) with `printf` in `hooks/session-start`. Fixes indefinite hang on macOS with Homebrew bash 5.3+ caused by a bash regression with large variable expansion in heredocs. (#572, #571)\n- **POSIX-safe hook script** — replaced `${BASH_SOURCE[0]:-$0}` with `$0` in `hooks/session-start`. Fixes \"Bad substitution\" error on Ubuntu/Debian where `/bin/sh` is dash. (#553)\n- **Portable shebangs** — replaced `#!/bin/bash` with `#!/usr/bin/env bash` in all shell scripts. Fixes execution on NixOS, FreeBSD, and macOS with Homebrew bash where `/bin/bash` is outdated or missing. (#700)\n- **Brainstorm server on Windows** — auto-detect Windows/Git Bash (`OSTYPE=msys*`, `MSYSTEM`) and switch to foreground mode, fixing silent server failure caused by `nohup`/`disown` process reaping. (#737)\n- **Codex docs fix** — replaced deprecated `collab` flag with `multi_agent` in Codex documentation. (PR #749)",
+      "zh-Hans": "* **停止在 `--resume` 时触发 SessionStart 钩子** — 启动钩子会在恢复的会话中重新注入上下文，而这些会话的对话历史中已经包含了上下文。该钩子现在仅在 `startup`、`clear` 和 `compact` 时触发。\n* **Bash 5.3+ 钩子挂起** — 在 `hooks/session-start` 中用 `printf` 替换了 heredoc（`cat <<EOF`）。修复了在 macOS 上使用 Homebrew bash 5.3+ 时，由于 bash 在处理 heredoc 中大变量扩展时的回归问题导致的无限期挂起。(#572, #571)\n* **POSIX 安全的钩子脚本** — 在 `hooks/session-start` 中用 `$0` 替换了 `${BASH_SOURCE[0]:-$0}`。修复了在 Ubuntu/Debian 上（其中 `/bin/sh` 是 dash）出现的“Bad substitution”错误。(#553)\n* **可移植的 shebang** — 在所有 shell 脚本中用 `#!/usr/bin/env bash` 替换了 `#!/bin/bash`。修复了在 NixOS、FreeBSD 和 macOS（使用 Homebrew bash）上，因 `/bin/bash` 过时或缺失而导致的执行问题。(#700)\n* **Brainstorm 服务器在 Windows 上** — 自动检测 Windows/Git Bash（`OSTYPE=msys*`，`MSYSTEM`）并切换到前台模式，修复了因 `nohup`/`disown` 进程回收导致的服务器静默失败问题。(#737)\n* **Codex 文档修复** — 在 Codex 文档中用 `multi_agent` 替换了已弃用的 `collab` 标志。(PR #749)"
+    },
+    {
+      "en-US": "## v5.0.2 (2026-03-11)",
+      "zh-Hans": "## v5.0.2 (2026-03-11)"
+    },
+    {
+      "en-US": "### Zero-Dependency Brainstorm Server",
+      "zh-Hans": "### 零依赖头脑风暴服务器"
+    },
+    {
+      "en-US": "**Removed all vendored node_modules — server.js is now fully self-contained**",
+      "zh-Hans": "**移除所有打包的 node\\_modules — server.js 现已完全自包含**"
+    },
+    {
+      "en-US": "- Replaced Express/Chokidar/WebSocket dependencies with zero-dependency Node.js server using built-in `http`, `fs`, and `crypto` modules\n- Removed ~1,200 lines of vendored `node_modules/`, `package.json`, and `package-lock.json`\n- Custom WebSocket protocol implementation (RFC 6455 framing, ping/pong, proper close handshake)\n- Native `fs.watch()` file watching replaces Chokidar\n- Full test suite: HTTP serving, WebSocket protocol, file watching, and integration tests",
+      "zh-Hans": "* 用零依赖的 Node.js 服务器替换了 Express/Chokidar/WebSocket 依赖项，使用内置的 `http`、`fs` 和 `crypto` 模块\n* 移除了约 1,200 行打包的 `node_modules/`、`package.json` 和 `package-lock.json`\n* 自定义 WebSocket 协议实现（RFC 6455 帧处理、ping/pong、正确的关闭握手）\n* 原生的 `fs.watch()` 文件监视替换了 Chokidar\n* 完整的测试套件：HTTP 服务、WebSocket 协议、文件监视和集成测试"
+    },
+    {
+      "en-US": "### Brainstorm Server Reliability",
+      "zh-Hans": "### 头脑风暴服务器可靠性"
+    },
+    {
+      "en-US": "- **Auto-exit after 30 minutes idle** — server shuts down when no clients are connected, preventing orphaned processes\n- **Owner process tracking** — server monitors the parent harness PID and exits when the owning session dies\n- **Liveness check** — skill verifies server is responsive before reusing an existing instance\n- **Encoding fix** — proper `<meta charset=\"utf-8\">` on served HTML pages",
+      "zh-Hans": "* **空闲 30 分钟后自动退出** — 当没有客户端连接时，服务器关闭，防止产生孤儿进程\n* **所有者进程追踪** — 服务器监控父进程的 PID，当所属会话终止时退出\n* **活跃性检查** — 技能在重用现有实例前验证服务器是否响应\n* **编码修复** — 在提供的 HTML 页面上使用正确的 `<meta charset=\"utf-8\">`"
+    },
+    {
+      "en-US": "### Subagent Context Isolation",
+      "zh-Hans": "### 子代理上下文隔离"
+    },
+    {
+      "en-US": "- All delegation skills (brainstorming, dispatching-parallel-agents, requesting-code-review, subagent-driven-development, writing-plans) now include context isolation principle\n- Subagents receive only the context they need, preventing context window pollution",
+      "zh-Hans": "* 所有委派技能（头脑风暴、并行代理调度、请求代码审查、子代理驱动开发、编写计划）现在都包含上下文隔离原则\n* 子代理仅接收它们所需的上下文，防止上下文窗口污染"
+    },
+    {
+      "en-US": "## v5.0.1 (2026-03-10)",
+      "zh-Hans": "## v5.0.1 (2026-03-10)"
+    },
+    {
+      "en-US": "### Agentskills Compliance",
+      "zh-Hans": "### Agentskills 合规性"
+    },
+    {
+      "en-US": "**Brainstorm-server moved into skill directory**",
+      "zh-Hans": "**Brainstorm-server 移至技能目录**"
+    },
+    {
+      "en-US": "- Moved `lib/brainstorm-server/` → `skills/brainstorming/scripts/` per the [agentskills.io](https://agentskills.io) specification\n- All `${CLAUDE_PLUGIN_ROOT}/lib/brainstorm-server/` references replaced with relative `scripts/` paths\n- Skills are now fully portable across platforms — no platform-specific env vars needed to locate scripts\n- `lib/` directory removed (was the last remaining content)",
+      "zh-Hans": "* 根据 [agentskills.io](https://agentskills.io) 规范，将 `lib/brainstorm-server/` 移至 `skills/brainstorming/scripts/`\n* 所有 `${CLAUDE_PLUGIN_ROOT}/lib/brainstorm-server/` 引用替换为相对的 `scripts/` 路径\n* 技能现在完全跨平台可移植 — 无需平台特定的环境变量来定位脚本\n* 删除了 `lib/` 目录（这是最后剩余的内容）"
+    },
+    {
+      "en-US": "### New Features",
+      "zh-Hans": "### 新功能"
+    },
+    {
+      "en-US": "**Gemini CLI extension**",
+      "zh-Hans": "**Gemini CLI 扩展**"
+    },
+    {
+      "en-US": "- Native Gemini CLI extension support via `gemini-extension.json` and `GEMINI.md` at repo root\n- `GEMINI.md` @imports `using-superpowers` skill and tool mapping table at session start\n- Gemini CLI tool mapping reference (`skills/using-superpowers/references/gemini-tools.md`) — translates Claude Code tool names (Read, Write, Edit, Bash, etc.) to Gemini CLI equivalents (read_file, write_file, replace, etc.)\n- Documents Gemini CLI limitations: no subagent support, skills fall back to `executing-plans`\n- Extension root at repo root for cross-platform compatibility (avoids Windows symlink issues)\n- Install instructions added to README",
+      "zh-Hans": "* 通过仓库根目录的 `gemini-extension.json` 和 `GEMINI.md` 实现原生的 Gemini CLI 扩展支持\n* `GEMINI.md` 在会话开始时 @imports `using-superpowers` 技能和工具映射表\n* Gemini CLI 工具映射参考（`skills/using-superpowers/references/gemini-tools.md`）— 将 Claude Code 工具名称（Read、Write、Edit、Bash 等）翻译为 Gemini CLI 等效项（read\\_file、write\\_file、replace 等）\n* 记录了 Gemini CLI 的限制：无子代理支持，技能回退到 `executing-plans`\n* 扩展根目录位于仓库根目录以实现跨平台兼容性（避免 Windows 符号链接问题）\n* 安装说明已添加到 README"
+    },
+    {
+      "en-US": "### Improvements",
+      "zh-Hans": "### 改进"
+    },
+    {
+      "en-US": "**Multi-platform brainstorm server launch**",
+      "zh-Hans": "**多平台头脑风暴服务器启动**"
+    },
+    {
+      "en-US": "- Per-platform launch instructions in visual-companion.md: Claude Code (default mode), Codex (auto-foreground via `CODEX_CI`), Gemini CLI (`--foreground` with `is_background`), and fallback for other environments\n- Server now writes startup JSON to `$SCREEN_DIR/.server-info` so agents can find the URL and port even when stdout is hidden by background execution",
+      "zh-Hans": "* visual-companion.md 中的每平台启动说明：Claude Code（默认模式）、Codex（通过 `CODEX_CI` 自动前台运行）、Gemini CLI（带有 `--foreground` 的 `is_background`）以及其他环境的回退方案\n* 服务器现在将启动 JSON 写入 `$SCREEN_DIR/.server-info`，以便代理即使在后台执行隐藏了 stdout 时也能找到 URL 和端口"
+    },
+    {
+      "en-US": "**Brainstorm server dependencies bundled**",
+      "zh-Hans": "**头脑风暴服务器依赖项打包**"
+    },
+    {
+      "en-US": "- `node_modules` vendored into the repo so the brainstorm server works immediately on fresh plugin installs without requiring `npm` at runtime\n- Removed `fsevents` from bundled deps (macOS-only native binary; chokidar falls back gracefully without it)\n- Fallback auto-install via `npm install` if `node_modules` is missing",
+      "zh-Hans": "* `node_modules` 已打包到仓库中，这样头脑风暴服务器在全新插件安装后无需运行时执行 `npm` 即可立即工作\n* 从打包的依赖项中移除了 `fsevents`（仅限 macOS 的原生二进制文件；chokidar 在缺少它时会优雅地回退）\n* 如果缺少 `node_modules`，则通过 `npm install` 进行回退自动安装"
+    },
+    {
+      "en-US": "**OpenCode tool mapping fix**",
+      "zh-Hans": "**OpenCode 工具映射修复**"
+    },
+    {
+      "en-US": "- `TodoWrite` → `todowrite` (was incorrectly mapped to `update_plan`); verified against OpenCode source",
+      "zh-Hans": "* `TodoWrite` → `todowrite`（之前错误地映射到 `update_plan`）；已根据 OpenCode 源代码验证"
+    },
+    {
+      "en-US": "### Bug Fixes",
+      "zh-Hans": "### 错误修复"
+    },
+    {
+      "en-US": "**Windows/Linux: single quotes break SessionStart hook** (#577, #529, #644, PR #585)",
+      "zh-Hans": "**Windows/Linux：单引号破坏 SessionStart 钩子** (#577, #529, #644, PR #585)"
+    },
+    {
+      "en-US": "- Single quotes around `${CLAUDE_PLUGIN_ROOT}` in hooks.json fail on Windows (cmd.exe doesn't recognize single quotes as path delimiters) and on Linux (single quotes prevent variable expansion)\n- Fix: replaced single quotes with escaped double quotes — works across macOS bash, Windows cmd.exe, Windows Git Bash, and Linux, with and without spaces in paths\n- Verified on Windows 11 (NT 10.0.26200.0) with Claude Code 2.1.72 and Git for Windows",
+      "zh-Hans": "* hooks.json 中 `${CLAUDE_PLUGIN_ROOT}` 周围的单引号在 Windows 上失败（cmd.exe 不将单引号识别为路径分隔符）以及在 Linux 上失败（单引号阻止变量扩展）\n* 修复：将单引号替换为转义的双引号 — 在 macOS bash、Windows cmd.exe、Windows Git Bash 和 Linux 上均可工作，无论路径中是否包含空格\n* 已在 Windows 11（NT 10.0.26200.0）上使用 Claude Code 2.1.72 和 Git for Windows 验证"
+    },
+    {
+      "en-US": "**Brainstorming spec review loop skipped** (#677)",
+      "zh-Hans": "**头脑风暴规范审查循环被跳过** (#677)"
+    },
+    {
+      "en-US": "- The spec review loop (dispatch spec-document-reviewer subagent, iterate until approved) existed in the prose \"After the Design\" section but was missing from the checklist and process flow diagram\n- Since agents follow the diagram and checklist more reliably than prose, the spec review step was being skipped entirely\n- Added step 7 (spec review loop) to the checklist and corresponding nodes to the dot graph\n- Tested with `claude --plugin-dir` and `claude-session-driver`: worker now correctly dispatches the reviewer",
+      "zh-Hans": "* 规范审查循环（调度 spec-document-reviewer 子代理，迭代直到批准）存在于散文“设计之后”部分，但在检查清单和流程图中缺失\n* 由于代理遵循图表和检查清单比散文更可靠，规范审查步骤被完全跳过\n* 已将步骤 7（规范审查循环）添加到检查清单，并将相应的节点添加到点图\n* 使用 `claude --plugin-dir` 和 `claude-session-driver` 测试：worker 现在能正确调度审查者"
+    },
+    {
+      "en-US": "**Cursor install command** (PR #676)",
+      "zh-Hans": "**Cursor 安装命令** (PR #676)"
+    },
+    {
+      "en-US": "- Fixed Cursor install command in README: `/plugin-add` → `/add-plugin` (confirmed via Cursor 2.5 release announcement)",
+      "zh-Hans": "* 修复了 README 中的 Cursor 安装命令：`/plugin-add` → `/add-plugin`（通过 Cursor 2.5 发布公告确认）"
+    },
+    {
+      "en-US": "**User review gate in brainstorming** (#565)",
+      "zh-Hans": "**头脑风暴中的用户审查关口** (#565)"
+    },
+    {
+      "en-US": "- Added explicit user review step between spec completion and writing-plans handoff\n- User must approve the spec before implementation planning begins\n- Checklist, process flow, and prose updated with the new gate",
+      "zh-Hans": "* 在规范完成和编写计划交接之间添加了明确的用户审查步骤\n* 用户必须在实施计划开始前批准规范\n* 检查清单、流程图和散文已更新，包含新的关口"
+    },
+    {
+      "en-US": "**Session-start hook emits context only once per platform**",
+      "zh-Hans": "**会话启动钩子每个平台仅发出一次上下文**"
+    },
+    {
+      "en-US": "- Hook now detects whether it's running in Claude Code or another platform\n- Emits `hookSpecificOutput` for Claude Code, `additional_context` for others — prevents double context injection",
+      "zh-Hans": "* 钩子现在检测它是在 Claude Code 还是其他平台中运行\n* 为 Claude Code 发出 `hookSpecificOutput`，为其他平台发出 `additional_context` — 防止双重上下文注入"
+    },
+    {
+      "en-US": "**Linting fix in token analysis script**",
+      "zh-Hans": "**令牌分析脚本中的代码风格修复**"
+    },
+    {
+      "en-US": "- `except:` → `except Exception:` in `tests/claude-code/analyze-token-usage.py`",
+      "zh-Hans": "* `except:` → `except Exception:`，位于 `tests/claude-code/analyze-token-usage.py`"
+    },
+    {
+      "en-US": "### Maintenance",
+      "zh-Hans": "### 维护"
+    },
+    {
+      "en-US": "**Removed dead code**",
+      "zh-Hans": "**移除死代码**"
+    },
+    {
+      "en-US": "- Deleted `lib/skills-core.js` and its test (`tests/opencode/test-skills-core.js`) — unused since February 2026\n- Removed skills-core existence check from `tests/opencode/test-plugin-loading.sh`",
+      "zh-Hans": "* 删除了 `lib/skills-core.js` 及其测试（`tests/opencode/test-skills-core.js`）— 自 2026 年 2 月起未使用\n* 从 `tests/opencode/test-plugin-loading.sh` 中移除了 skills-core 存在性检查"
+    },
+    {
+      "en-US": "### Community",
+      "zh-Hans": "### 社区"
+    },
+    {
+      "en-US": "- @karuturi — Claude Code official marketplace install instructions (PR #610)\n- @mvanhorn — session-start hook dual-emit fix, OpenCode tool mapping fix\n- @daniel-graham — linting fix for bare except\n- PR #585 author — Windows/Linux hooks quoting fix",
+      "zh-Hans": "* @karuturi — Claude Code 官方市场安装说明（PR #610）\n* @mvanhorn — 会话启动钩子双重发出修复，OpenCode 工具映射修复\n* @daniel-graham — 裸异常捕获的代码风格修复\n* PR #585 作者 — Windows/Linux 钩子引号修复"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## v5.0.0 (2026-03-09)",
+      "zh-Hans": "## v5.0.0 (2026-03-09)"
+    },
+    {
+      "en-US": "### Breaking Changes",
+      "zh-Hans": "### 破坏性变更"
+    },
+    {
+      "en-US": "**Specs and plans directory restructured**",
+      "zh-Hans": "**规范和计划目录结构调整**"
+    },
+    {
+      "en-US": "- Specs (brainstorming output) now save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`\n- Plans (writing-plans output) now save to `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`\n- User preferences for spec/plan locations override these defaults\n- All internal skill references, test files, and example paths updated to match\n- Migration: move existing files from `docs/plans/` to new locations if desired",
+      "zh-Hans": "* 规范（头脑风暴输出）现在保存到 `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`\n* 计划（编写计划输出）现在保存到 `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`\n* 用户对规范/计划位置的偏好会覆盖这些默认值\n* 所有内部技能引用、测试文件和示例路径都已更新以匹配新结构\n* 迁移：如果需要，将现有文件从 `docs/plans/` 移动到新位置"
+    },
+    {
+      "en-US": "**Subagent-driven development mandatory on capable harnesses**",
+      "zh-Hans": "**在支持的子代理平台上强制使用子代理驱动开发**"
+    },
+    {
+      "en-US": "Writing-plans no longer offers a choice between subagent-driven and executing-plans. On harnesses with subagent support (Claude Code, Codex), subagent-driven-development is required. Executing-plans is reserved for harnesses without subagent capability, and now tells the user that Superpowers works better on a subagent-capable platform.",
+      "zh-Hans": "编写计划不再提供在子代理驱动和执行计划之间的选择。在具有子代理支持的平台（Claude Code、Codex）上，子代理驱动开发是必需的。执行计划保留给没有子代理能力的平台，并且现在会告知用户 Superpowers 在支持子代理的平台上效果更好。"
+    },
+    {
+      "en-US": "**Executing-plans no longer batches**",
+      "zh-Hans": "**执行计划不再分批执行**"
+    },
+    {
+      "en-US": "Removed the \"execute 3 tasks then stop for review\" pattern. Plans now execute continuously, stopping only for blockers.",
+      "zh-Hans": "移除了“执行 3 个任务后停止审查”的模式。计划现在连续执行，仅在遇到阻塞时停止。"
+    },
+    {
+      "en-US": "**Slash commands deprecated**",
+      "zh-Hans": "**斜杠命令已弃用**"
+    },
+    {
+      "en-US": "`/brainstorm`, `/write-plan`, and `/execute-plan` now show deprecation notices pointing users to the corresponding skills. Commands will be removed in the next major release.",
+      "zh-Hans": "`/brainstorm`、`/write-plan` 和 `/execute-plan` 现在显示弃用通知，引导用户使用相应的技能。命令将在下一个主要版本中移除。"
+    },
+    {
+      "en-US": "### New Features",
+      "zh-Hans": "### 新功能"
+    },
+    {
+      "en-US": "**Visual brainstorming companion**",
+      "zh-Hans": "**可视化头脑风暴伴侣**"
+    },
+    {
+      "en-US": "Optional browser-based companion for brainstorming sessions. When a topic would benefit from visuals, the brainstorming skill offers to show mockups, diagrams, comparisons, and other content in a browser window alongside terminal conversation.",
+      "zh-Hans": "头脑风暴会话的可选浏览器伴侣。当主题受益于可视化时，头脑风暴技能会提供在浏览器窗口中显示与终端对话并行的线框图、图表、比较和其他内容。"
+    },
+    {
+      "en-US": "- `lib/brainstorm-server/` — WebSocket server with browser helper library, session management scripts, and dark/light themed frame template (\"Superpowers Brainstorming\" with GitHub link)\n- `skills/brainstorming/visual-companion.md` — Progressive disclosure guide for server workflow, screen authoring, and feedback collection\n- Brainstorming skill adds a visual companion decision point to its process flow: after exploring project context, the skill evaluates whether upcoming questions involve visual content and offers the companion in its own message\n- Per-question decision: even after accepting, each question is evaluated for whether browser or terminal is more appropriate\n- Integration tests in `tests/brainstorm-server/`",
+      "zh-Hans": "* `lib/brainstorm-server/` — 包含浏览器助手库、会话管理脚本和深色/浅色主题框架模板（“Superpowers Brainstorming” 带 GitHub 链接）的 WebSocket 服务器\n* `skills/brainstorming/visual-companion.md` — 服务器工作流程、屏幕创作和反馈收集的渐进式指南\n* 头脑风暴技能在其流程中添加了一个可视化伴侣决策点：在探索项目上下文后，技能评估即将到来的问题是否涉及可视化内容，并在其自己的消息中提供伴侣\n* 按问题决策：即使在接受后，每个问题都会评估浏览器还是终端更合适\n* `tests/brainstorm-server/` 中的集成测试"
+    },
+    {
+      "en-US": "**Document review system**",
+      "zh-Hans": "**文档审查系统**"
+    },
+    {
+      "en-US": "Automated review loops for spec and plan documents using subagent dispatch:",
+      "zh-Hans": "使用子代理调度的规范和计划文档的自动化审查循环："
+    },
+    {
+      "en-US": "- `skills/brainstorming/spec-document-reviewer-prompt.md` — Reviewer checks completeness, consistency, architecture, and YAGNI\n- `skills/writing-plans/plan-document-reviewer-prompt.md` — Reviewer checks spec alignment, task decomposition, file structure, and file size\n- Brainstorming dispatches spec reviewer after writing the design doc\n- Writing-plans includes chunk-based plan review loop after each section\n- Review loops repeat until approved or escalate after 5 iterations\n- End-to-end tests in `tests/claude-code/test-document-review-system.sh`\n- Design spec and implementation plan in `docs/superpowers/`",
+      "zh-Hans": "* `skills/brainstorming/spec-document-reviewer-prompt.md` — 审查者检查完整性、一致性、架构和 YAGNI\n* `skills/writing-plans/plan-document-reviewer-prompt.md` — 审查者检查规范对齐、任务分解、文件结构和文件大小\n* 头脑风暴在编写设计文档后调度规范审查者\n* 编写计划在每个部分后包含基于块的计划审查循环\n* 审查循环重复直到批准或在 5 次迭代后升级\n* `tests/claude-code/test-document-review-system.sh` 中的端到端测试\n* `docs/superpowers/` 中的设计规范和实施计划"
+    },
+    {
+      "en-US": "**Architecture guidance across the skill pipeline**",
+      "zh-Hans": "**贯穿技能管道的架构指导**"
+    },
+    {
+      "en-US": "Design-for-isolation and file-size-awareness guidance added to brainstorming, writing-plans, and subagent-driven-development:",
+      "zh-Hans": "设计隔离和文件大小感知指导已添加到头脑风暴、编写计划和子代理驱动开发中："
+    },
+    {
+      "en-US": "- **Brainstorming** — New sections: \"Design for isolation and clarity\" (clear boundaries, well-defined interfaces, independently testable units) and \"Working in existing codebases\" (follow existing patterns, targeted improvements only)\n- **Writing-plans** — New \"File Structure\" section: map out files and responsibilities before defining tasks. New \"Scope Check\" backstop: catch multi-subsystem specs that should have been decomposed during brainstorming\n- **SDD implementer** — New \"Code Organization\" section (follow plan's file structure, report concerns about growing files) and \"When You're in Over Your Head\" escalation guidance\n- **SDD code quality reviewer** — Now checks architecture, unit decomposition, plan conformance, and file growth\n- **Spec/plan reviewers** — Architecture and file size added to review criteria\n- **Scope assessment** — Brainstorming now assesses whether a project is too large for a single spec. Multi-subsystem requests are flagged early and decomposed into sub-projects, each with its own spec → plan → implementation cycle",
+      "zh-Hans": "* **头脑风暴** — 新章节：“为隔离和清晰度而设计”（清晰的边界、定义良好的接口、独立可测试的单元）和“在现有代码库中工作”（遵循现有模式，仅进行有针对性的改进）\n* **编写计划** — 新的“文件结构”部分：在定义任务前规划文件和职责。新的“范围检查”后备机制：捕获应在头脑风暴期间分解的多子系统规范\n* **SDD 实施者** — 新的“代码组织”部分（遵循计划的文件结构，报告对文件增长的担忧）和“当您力不从心时”的升级指导\n* **SDD 代码质量审查者** — 现在检查架构、单元分解、计划符合性和文件增长\n* **规范/计划审查者** — 架构和文件大小已添加到审查标准中\n* **范围评估** — 头脑风暴现在评估项目是否对单个规范来说太大。多子系统请求会及早标记，并分解为子项目，每个子项目都有自己的规范 → 计划 → 实施周期"
+    },
+    {
+      "en-US": "**Subagent-driven development improvements**",
+      "zh-Hans": "**子代理驱动开发的改进**"
+    },
+    {
+      "en-US": "- **Model selection** — Guidance for choosing model capability by task type: cheap models for mechanical implementation, standard for integration, capable for architecture and review\n- **Implementer status protocol** — Subagents now report DONE, DONE_WITH_CONCERNS, BLOCKED, or NEEDS_CONTEXT. Controller handles each status appropriately: re-dispatching with more context, upgrading model capability, breaking tasks apart, or escalating to human",
+      "zh-Hans": "* **模型选择** — 按任务类型选择模型能力的指导：廉价模型用于机械实施，标准模型用于集成，能力强模型用于架构和审查\n* **实施者状态协议** — 子代理现在报告 DONE、DONE\\_WITH\\_CONCERNS、BLOCKED 或 NEEDS\\_CONTEXT。控制器适当地处理每个状态：用更多上下文重新调度、升级模型能力、分解任务或升级给人类"
+    },
+    {
+      "en-US": "### Improvements",
+      "zh-Hans": "### 改进"
+    },
+    {
+      "en-US": "**Instruction priority hierarchy**",
+      "zh-Hans": "**指令优先级层次结构**"
+    },
+    {
+      "en-US": "Added explicit priority ordering to using-superpowers:",
+      "zh-Hans": "向 using-superpowers 添加了明确的优先级排序："
+    },
+    {
+      "en-US": "1. User's explicit instructions (CLAUDE.md, AGENTS.md, direct requests) — highest priority\n2. Superpowers skills — override default system behavior\n3. Default system prompt — lowest priority",
+      "zh-Hans": "1. 用户的明确指令（CLAUDE.md、AGENTS.md、直接请求）— 最高优先级\n2. Superpowers 技能 — 覆盖默认系统行为\n3. 默认系统提示 — 最低优先级"
+    },
+    {
+      "en-US": "If CLAUDE.md or AGENTS.md says \"don't use TDD\" and a skill says \"always use TDD,\" the user's instructions win.",
+      "zh-Hans": "如果 CLAUDE.md 或 AGENTS.md 说“不要使用 TDD”而一个技能说“始终使用 TDD”，那么用户的指令胜出。"
+    },
+    {
+      "en-US": "**SUBAGENT-STOP gate**",
+      "zh-Hans": "**SUBAGENT-STOP 关口**"
+    },
+    {
+      "en-US": "Added `<SUBAGENT-STOP>` block to using-superpowers. Subagents dispatched for specific tasks now skip the skill instead of activating the 1% rule and invoking full skill workflows.",
+      "zh-Hans": "向 using-superpowers 添加了 `<SUBAGENT-STOP>` 块。为特定任务调度的子代理现在跳过该技能，而不是激活 1% 规则并调用完整的技能工作流。"
+    },
+    {
+      "en-US": "**Multi-platform improvements**",
+      "zh-Hans": "**多平台改进**"
+    },
+    {
+      "en-US": "- Codex tool mapping moved to progressive disclosure reference file (`references/codex-tools.md`)\n- Platform Adaptation pointer added so non-Claude-Code platforms can find tool equivalents\n- Plan headers now address \"agentic workers\" instead of \"Claude\" specifically\n- Collab feature requirement documented in `docs/README.codex.md`",
+      "zh-Hans": "* Codex 工具映射移至渐进式参考文件（`references/codex-tools.md`）\n* 添加了平台适配指针，以便非 Claude-Code 平台可以找到工具等效项\n* 计划头部现在针对“代理工作者”而不是特定的“Claude”\n* 协作功能要求在 `docs/README.codex.md` 中记录"
+    },
+    {
+      "en-US": "**Writing-plans template updates**",
+      "zh-Hans": "**编写计划模板更新**"
+    },
+    {
+      "en-US": "- Plan steps now use checkbox syntax (`- [ ] **Step N:**`) for progress tracking\n- Plan header references both subagent-driven-development and executing-plans with platform-aware routing",
+      "zh-Hans": "* 计划步骤现在使用复选框语法（`- [ ] **Step N:**`）进行进度跟踪\n* 计划头部引用子代理驱动开发和执行计划，并具有平台感知的路由"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## v4.3.1 (2026-02-21)",
+      "zh-Hans": "## v4.3.1 (2026-02-21)"
+    },
+    {
+      "en-US": "### Added",
+      "zh-Hans": "### 新增"
+    },
+    {
+      "en-US": "**Cursor support**",
+      "zh-Hans": "**Cursor 支持**"
+    },
+    {
+      "en-US": "Superpowers now works with Cursor's plugin system. Includes a `.cursor-plugin/plugin.json` manifest and Cursor-specific installation instructions in the README. The SessionStart hook output now includes an `additional_context` field alongside the existing `hookSpecificOutput.additionalContext` for Cursor hook compatibility.",
+      "zh-Hans": "Superpowers 现在可与 Cursor 的插件系统协同工作。包含一个 `.cursor-plugin/plugin.json` 清单，以及 README 中的 Cursor 特定安装说明。SessionStart 钩子的输出现在包含一个 `additional_context` 字段，与现有的 `hookSpecificOutput.additionalContext` 并列，以实现 Cursor 钩子的兼容性。"
+    },
+    {
+      "en-US": "### Fixed",
+      "zh-Hans": "### 已修复"
+    },
+    {
+      "en-US": "**Windows: Restored polyglot wrapper for reliable hook execution (#518, #504, #491, #487, #466, #440)**",
+      "zh-Hans": "**Windows：恢复了多语言包装器以确保钩子可靠执行 (#518, #504, #491, #487, #466, #440)**"
+    },
+    {
+      "en-US": "Claude Code's `.sh` auto-detection on Windows was prepending `bash` to the hook command, breaking execution. The fix:",
+      "zh-Hans": "Claude Code 在 Windows 上的 `.sh` 自动检测功能，会在钩子命令前添加 `bash`，从而破坏执行。修复方法如下："
+    },
+    {
+      "en-US": "- Renamed `session-start.sh` to `session-start` (extensionless) so auto-detection doesn't interfere\n- Restored `run-hook.cmd` polyglot wrapper with multi-location bash discovery (standard Git for Windows paths, then PATH fallback)\n- Exits silently if no bash is found rather than erroring\n- On Unix, the wrapper runs the script directly via `exec bash`\n- Uses POSIX-safe `dirname \"$0\"` path resolution (works on dash/sh, not just bash)",
+      "zh-Hans": "* 将 `session-start.sh` 重命名为 `session-start`（无扩展名），这样自动检测就不会干扰\n* 恢复了 `run-hook.cmd` 多语言包装器，包含多位置 bash 发现（标准的 Git for Windows 路径，然后是 PATH 回退）\n* 如果未找到 bash，则静默退出，而不是报错\n* 在 Unix 上，包装器通过 `exec bash` 直接运行脚本\n* 使用符合 POSIX 标准的 `dirname \"$0\"` 路径解析（适用于 dash/sh，不仅仅是 bash）"
+    },
+    {
+      "en-US": "This fixes SessionStart failures on Windows with spaces in paths, missing WSL, `set -euo pipefail` fragility on MSYS, and backslash mangling.",
+      "zh-Hans": "这修复了 Windows 上因路径包含空格、缺少 WSL、MSYS 上 `set -euo pipefail` 的脆弱性以及反斜杠处理错误导致的 SessionStart 失败。"
+    },
+    {
+      "en-US": "## v4.3.0 (2026-02-12)",
+      "zh-Hans": "## v4.3.0 (2026-02-12)"
+    },
+    {
+      "en-US": "This fix should dramatically improve superpowers skills compliance and should reduce the chances of Claude entering its native plan mode unintentionally.",
+      "zh-Hans": "此修复应能显著提高 superpowers 技能合规性，并应降低 Claude 意外进入其原生计划模式的可能性。"
+    },
+    {
+      "en-US": "### Changed",
+      "zh-Hans": "### 已更改"
+    },
+    {
+      "en-US": "**Brainstorming skill now enforces its workflow instead of describing it**",
+      "zh-Hans": "**头脑风暴技能现在强制执行其工作流程，而非仅描述它**"
+    },
+    {
+      "en-US": "Models were skipping the design phase and jumping straight to implementation skills like frontend-design, or collapsing the entire brainstorming process into a single text block. The skill now uses hard gates, a mandatory checklist, and a graphviz process flow to enforce compliance:",
+      "zh-Hans": "模型曾跳过设计阶段，直接跳转到实现技能（如前端设计），或将整个头脑风暴过程压缩到单个文本块中。该技能现在使用硬性关卡、强制检查清单和 graphviz 流程来确保合规："
+    },
+    {
+      "en-US": "- `<HARD-GATE>`: no implementation skills, code, or scaffolding until design is presented and user approves\n- Explicit checklist (6 items) that must be created as tasks and completed in order\n- Graphviz process flow with `writing-plans` as the only valid terminal state\n- Anti-pattern callout for \"this is too simple to need a design\" — the exact rationalization models use to skip the process\n- Design section sizing based on section complexity, not project complexity",
+      "zh-Hans": "* `<HARD-GATE>`：在展示设计并获得用户批准之前，不得使用实现技能、编写代码或进行脚手架搭建\n* 明确的检查清单（6项），必须创建为任务并按顺序完成\n* 包含 `writing-plans` 作为唯一有效终止状态的 Graphviz 流程图\n* 对“这太简单了，不需要设计”这种反模式提出警告——这正是模型用来跳过流程的合理化说辞\n* 设计部分的大小基于部分复杂性，而非项目复杂性"
+    },
+    {
+      "en-US": "**Using-superpowers workflow graph intercepts EnterPlanMode**",
+      "zh-Hans": "**使用-superpowers 工作流图拦截 EnterPlanMode**"
+    },
+    {
+      "en-US": "Added an `EnterPlanMode` intercept to the skill flow graph. When the model is about to enter Claude's native plan mode, it checks whether brainstorming has happened and routes through the brainstorming skill instead. Plan mode is never entered.",
+      "zh-Hans": "在技能流程图中添加了 `EnterPlanMode` 拦截。当模型即将进入 Claude 的原生计划模式时，它会检查是否已进行头脑风暴，并改为路由到头脑风暴技能。计划模式永远不会被进入。"
+    },
+    {
+      "en-US": "### Fixed",
+      "zh-Hans": "### 已修复"
+    },
+    {
+      "en-US": "**SessionStart hook now runs synchronously**",
+      "zh-Hans": "**SessionStart 钩子现在同步运行**"
+    },
+    {
+      "en-US": "Changed `async: true` to `async: false` in hooks.json. When async, the hook could fail to complete before the model's first turn, meaning using-superpowers instructions weren't in context for the first message.",
+      "zh-Hans": "将 hooks.json 中的 `async: true` 更改为 `async: false`。异步运行时，钩子可能在模型的第一个回合之前无法完成，这意味着使用-superpowers 指令在第一条消息时未处于上下文中。"
+    },
+    {
+      "en-US": "## v4.2.0 (2026-02-05)",
+      "zh-Hans": "## v4.2.0 (2026-02-05)"
+    },
+    {
+      "en-US": "### Breaking Changes",
+      "zh-Hans": "### 破坏性变更"
+    },
+    {
+      "en-US": "**Codex: Replaced bootstrap CLI with native skill discovery**",
+      "zh-Hans": "**Codex：用原生技能发现替换了引导 CLI**"
+    },
+    {
+      "en-US": "The `superpowers-codex` bootstrap CLI, Windows `.cmd` wrapper, and related bootstrap content file have been removed. Codex now uses native skill discovery via `~/.agents/skills/superpowers/` symlink, so the old `use_skill`/`find_skills` CLI tools are no longer needed.",
+      "zh-Hans": "移除了 `superpowers-codex` 引导 CLI、Windows `.cmd` 包装器以及相关的引导内容文件。Codex 现在通过 `~/.agents/skills/superpowers/` 符号链接使用原生技能发现，因此不再需要旧的 `use_skill`/`find_skills` CLI 工具。"
+    },
+    {
+      "en-US": "Installation is now just clone + symlink (documented in INSTALL.md). No Node.js dependency required. The old `~/.codex/skills/` path is deprecated.",
+      "zh-Hans": "现在安装只需克隆 + 创建符号链接（在 INSTALL.md 中有记录）。不需要 Node.js 依赖。旧的 `~/.codex/skills/` 路径已被弃用。"
+    },
+    {
+      "en-US": "### Fixes",
+      "zh-Hans": "### 修复"
+    },
+    {
+      "en-US": "**Windows: Fixed Claude Code 2.1.x hook execution (#331)**",
+      "zh-Hans": "**Windows：修复了 Claude Code 2.1.x 的钩子执行 (#331)**"
+    },
+    {
+      "en-US": "Claude Code 2.1.x changed how hooks execute on Windows: it now auto-detects `.sh` files in commands and prepends `bash`. This broke the polyglot wrapper pattern because `bash \"run-hook.cmd\" session-start.sh` tries to execute the `.cmd` file as a bash script.",
+      "zh-Hans": "Claude Code 2.1.x 更改了 Windows 上钩子的执行方式：现在它会自动检测命令中的 `.sh` 文件，并在前面添加 `bash`。这破坏了多语言包装器模式，因为 `bash \"run-hook.cmd\" session-start.sh` 试图将 `.cmd` 文件作为 bash 脚本执行。"
+    },
+    {
+      "en-US": "Fix: hooks.json now calls session-start.sh directly. Claude Code 2.1.x handles the bash invocation automatically. Also added .gitattributes to enforce LF line endings for shell scripts (fixes CRLF issues on Windows checkout).",
+      "zh-Hans": "修复方法：hooks.json 现在直接调用 session-start.sh。Claude Code 2.1.x 会自动处理 bash 调用。同时添加了 .gitattributes 来为 shell 脚本强制执行 LF 行尾（修复了 Windows 检出时的 CRLF 问题）。"
+    },
+    {
+      "en-US": "**Windows: SessionStart hook runs async to prevent terminal freeze (#404, #413, #414, #419)**",
+      "zh-Hans": "**Windows：SessionStart 钩子异步运行以防止终端冻结 (#404, #413, #414, #419)**"
+    },
+    {
+      "en-US": "The synchronous SessionStart hook blocked the TUI from entering raw mode on Windows, freezing all keyboard input. Running the hook async prevents the freeze while still injecting superpowers context.",
+      "zh-Hans": "同步的 SessionStart 钩子在 Windows 上会阻止 TUI 进入原始模式，冻结所有键盘输入。异步运行钩子可以防止冻结，同时仍能注入 superpowers 上下文。"
+    },
+    {
+      "en-US": "**Windows: Fixed O(n^2) `escape_for_json` performance**",
+      "zh-Hans": "**Windows：修复了 O(n^2) 的 `escape_for_json` 性能**"
+    },
+    {
+      "en-US": "The character-by-character loop using `${input:$i:1}` was O(n^2) in bash due to substring copy overhead. On Windows Git Bash this took 60+ seconds. Replaced with bash parameter substitution (`${s//old/new}`) which runs each pattern as a single C-level pass — 7x faster on macOS, dramatically faster on Windows.",
+      "zh-Hans": "使用 `${input:$i:1}` 的逐字符循环，由于子字符串复制开销，在 bash 中是 O(n^2) 复杂度。在 Windows Git Bash 上，这需要 60 多秒。已替换为 bash 参数替换（`${s//old/new}`），它将每个模式作为一次 C 语言级别的遍历运行——在 macOS 上快 7 倍，在 Windows 上显著加快。"
+    },
+    {
+      "en-US": "**Codex: Fixed Windows/PowerShell invocation (#285, #243)**",
+      "zh-Hans": "**Codex：修复了 Windows/PowerShell 调用 (#285, #243)**"
+    },
+    {
+      "en-US": "- Windows doesn't respect shebangs, so directly invoking the extensionless `superpowers-codex` script triggered an \"Open with\" dialog. All invocations now prefixed with `node`.\n- Fixed `~/` path expansion on Windows — PowerShell doesn't expand `~` when passed as an argument to `node`. Changed to `$HOME` which expands correctly in both bash and PowerShell.",
+      "zh-Hans": "* Windows 不遵循 shebang，因此直接调用无扩展名的 `superpowers-codex` 脚本会触发“打开方式”对话框。所有调用现在都加上了 `node` 前缀。\n* 修复了 Windows 上的 `~/` 路径扩展问题——PowerShell 在将 `~` 作为参数传递给 `node` 时不会扩展它。已更改为 `$HOME`，它在 bash 和 PowerShell 中都能正确扩展。"
+    },
+    {
+      "en-US": "**Codex: Fixed path resolution in installer**",
+      "zh-Hans": "**Codex：修复了安装程序中的路径解析**"
+    },
+    {
+      "en-US": "Used `fileURLToPath()` instead of manual URL pathname parsing to correctly handle paths with spaces and special characters on all platforms.",
+      "zh-Hans": "使用 `fileURLToPath()` 替代手动 URL 路径名解析，以在所有平台上正确处理包含空格和特殊字符的路径。"
+    },
+    {
+      "en-US": "**Codex: Fixed stale skills path in writing-skills**",
+      "zh-Hans": "**Codex：修复了 writing-skills 中过时的技能路径**"
+    },
+    {
+      "en-US": "Updated `~/.codex/skills/` reference (deprecated) to `~/.agents/skills/` for native discovery.",
+      "zh-Hans": "将 `~/.codex/skills/` 引用（已弃用）更新为 `~/.agents/skills/`，以支持原生发现。"
+    },
+    {
+      "en-US": "### Improvements",
+      "zh-Hans": "### 改进"
+    },
+    {
+      "en-US": "**Worktree isolation now required before implementation**",
+      "zh-Hans": "**在实现之前现在需要工作树隔离**"
+    },
+    {
+      "en-US": "Added `using-git-worktrees` as a required skill for both `subagent-driven-development` and `executing-plans`. Implementation workflows now explicitly require setting up an isolated worktree before starting work, preventing accidental work directly on main.",
+      "zh-Hans": "为 `subagent-driven-development` 和 `executing-plans` 添加了 `using-git-worktrees` 作为必需技能。实现工作流现在明确要求在开始工作之前设置一个隔离的工作树，防止直接在 main 分支上意外工作。"
+    },
+    {
+      "en-US": "**Main branch protection softened to require explicit consent**",
+      "zh-Hans": "**Main 分支保护放宽为需要明确同意**"
+    },
+    {
+      "en-US": "Instead of prohibiting main branch work entirely, the skills now allow it with explicit user consent. More flexible while still ensuring users are aware of the implications.",
+      "zh-Hans": "技能不再完全禁止在 main 分支上工作，而是允许在获得用户明确同意后进行。这样更灵活，同时仍能确保用户了解其影响。"
+    },
+    {
+      "en-US": "**Simplified installation verification**",
+      "zh-Hans": "**简化了安装验证**"
+    },
+    {
+      "en-US": "Removed `/help` command check and specific slash command list from verification steps. Skills are primarily invoked by describing what you want to do, not by running specific commands.",
+      "zh-Hans": "从验证步骤中移除了 `/help` 命令检查和特定的斜杠命令列表。技能主要通过描述你想要做的事情来调用，而不是通过运行特定命令。"
+    },
+    {
+      "en-US": "**Codex: Clarified subagent tool mapping in bootstrap**",
+      "zh-Hans": "**Codex：在引导程序中澄清了子代理工具映射**"
+    },
+    {
+      "en-US": "Improved documentation of how Codex tools map to Claude Code equivalents for subagent workflows.",
+      "zh-Hans": "改进了关于 Codex 工具如何映射到 Claude Code 等效工具以实现子代理工作流的文档。"
+    },
+    {
+      "en-US": "### Tests",
+      "zh-Hans": "### 测试"
+    },
+    {
+      "en-US": "- Added worktree requirement test for subagent-driven-development\n- Added main branch red flag warning test\n- Fixed case sensitivity in skill recognition test assertions",
+      "zh-Hans": "* 为 subagent-driven-development 添加了工作树要求测试\n* 添加了 main 分支危险警告测试\n* 修复了技能识别测试断言中的大小写敏感性"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## v4.1.1 (2026-01-23)",
+      "zh-Hans": "## v4.1.1 (2026-01-23)"
+    },
+    {
+      "en-US": "### Fixes",
+      "zh-Hans": "### 修复"
+    },
+    {
+      "en-US": "**OpenCode: Standardized on `plugins/` directory per official docs (#343)**",
+      "zh-Hans": "**OpenCode：根据官方文档标准化为 `plugins/` 目录 (#343)**"
+    },
+    {
+      "en-US": "OpenCode's official documentation uses `~/.config/opencode/plugins/` (plural). Our docs previously used `plugin/` (singular). While OpenCode accepts both forms, we've standardized on the official convention to avoid confusion.",
+      "zh-Hans": "OpenCode 的官方文档使用 `~/.config/opencode/plugins/`（复数形式）。我们的文档之前使用 `plugin/`（单数形式）。虽然 OpenCode 接受两种形式，但我们已经标准化为官方约定，以避免混淆。"
+    },
+    {
+      "en-US": "Changes:",
+      "zh-Hans": "更改："
+    },
+    {
+      "en-US": "- Renamed `.opencode/plugin/` to `.opencode/plugins/` in repo structure\n- Updated all installation docs (INSTALL.md, README.opencode.md) across all platforms\n- Updated test scripts to match",
+      "zh-Hans": "* 在仓库结构中，将 `.opencode/plugin/` 重命名为 `.opencode/plugins/`\n* 更新了所有平台上的所有安装文档（INSTALL.md、README.opencode.md）\n* 更新了测试脚本以匹配"
+    },
+    {
+      "en-US": "**OpenCode: Fixed symlink instructions (#339, #342)**",
+      "zh-Hans": "**OpenCode：修复了符号链接说明 (#339, #342)**"
+    },
+    {
+      "en-US": "- Added explicit `rm` before `ln -s` (fixes \"file already exists\" errors on reinstall)\n- Added missing skills symlink step that was absent from INSTALL.md\n- Updated from deprecated `use_skill`/`find_skills` to native `skill` tool references",
+      "zh-Hans": "* 在 `ln -s` 之前添加了明确的 `rm`（修复重新安装时的“文件已存在”错误）\n* 添加了 INSTALL.md 中缺失的技能符号链接步骤\n* 更新了已弃用的 `use_skill`/`find_skills` 引用，改为原生的 `skill` 工具引用"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## v4.1.0 (2026-01-23)",
+      "zh-Hans": "## v4.1.0 (2026-01-23)"
+    },
+    {
+      "en-US": "### Breaking Changes",
+      "zh-Hans": "### 破坏性变更"
+    },
+    {
+      "en-US": "**OpenCode: Switched to native skills system**",
+      "zh-Hans": "**OpenCode：切换到原生技能系统**"
+    },
+    {
+      "en-US": "Superpowers for OpenCode now uses OpenCode's native `skill` tool instead of custom `use_skill`/`find_skills` tools. This is a cleaner integration that works with OpenCode's built-in skill discovery.",
+      "zh-Hans": "用于 OpenCode 的 Superpowers 现在使用 OpenCode 的原生 `skill` 工具，而不是自定义的 `use_skill`/`find_skills` 工具。这是一个更简洁的集成，可与 OpenCode 内置的技能发现协同工作。"
+    },
+    {
+      "en-US": "**Migration required:** Skills must be symlinked to `~/.config/opencode/skills/superpowers/` (see updated installation docs).",
+      "zh-Hans": "**需要迁移：** 技能必须符号链接到 `~/.config/opencode/skills/superpowers/`（请参阅更新的安装文档）。"
+    },
+    {
+      "en-US": "### Fixes",
+      "zh-Hans": "### 修复"
+    },
+    {
+      "en-US": "**OpenCode: Fixed agent reset on session start (#226)**",
+      "zh-Hans": "**OpenCode：修复了会话开始时的代理重置问题 (#226)**"
+    },
+    {
+      "en-US": "The previous bootstrap injection method using `session.prompt({ noReply: true })` caused OpenCode to reset the selected agent to \"build\" on first message. Now uses `experimental.chat.system.transform` hook which modifies the system prompt directly without side effects.",
+      "zh-Hans": "之前使用 `session.prompt({ noReply: true })` 的引导注入方法导致 OpenCode 在第一条消息时将所选代理重置为“build”。现在使用 `experimental.chat.system.transform` 钩子，它直接修改系统提示，没有副作用。"
+    },
+    {
+      "en-US": "**OpenCode: Fixed Windows installation (#232)**",
+      "zh-Hans": "**OpenCode：修复了 Windows 安装问题 (#232)**"
+    },
+    {
+      "en-US": "- Removed dependency on `skills-core.js` (eliminates broken relative imports when file is copied instead of symlinked)\n- Added comprehensive Windows installation docs for cmd.exe, PowerShell, and Git Bash\n- Documented proper symlink vs junction usage for each platform",
+      "zh-Hans": "* 移除了对 `skills-core.js` 的依赖（消除了文件被复制而非符号链接时出现的损坏的相对导入问题）\n* 为 cmd.exe、PowerShell 和 Git Bash 添加了全面的 Windows 安装文档\n* 记录了每个平台正确的符号链接与连接点用法"
+    },
+    {
+      "en-US": "**Claude Code: Fixed Windows hook execution for Claude Code 2.1.x**",
+      "zh-Hans": "**Claude Code：修复了 Claude Code 2.1.x 在 Windows 上的钩子执行问题**"
+    },
+    {
+      "en-US": "Claude Code 2.1.x changed how hooks execute on Windows: it now auto-detects `.sh` files in commands and prepends `bash `. This broke the polyglot wrapper pattern because `bash \"run-hook.cmd\" session-start.sh` tries to execute the .cmd file as a bash script.",
+      "zh-Hans": "Claude Code 2.1.x 更改了 Windows 上钩子的执行方式：现在它会自动检测命令中的 `.sh` 文件，并在前面添加 `bash `。这破坏了多语言包装器模式，因为 `bash \"run-hook.cmd\" session-start.sh` 试图将 .cmd 文件作为 bash 脚本执行。"
+    },
+    {
+      "en-US": "Fix: hooks.json now calls session-start.sh directly. Claude Code 2.1.x handles the bash invocation automatically. Also added .gitattributes to enforce LF line endings for shell scripts (fixes CRLF issues on Windows checkout).",
+      "zh-Hans": "修复方法：hooks.json 现在直接调用 session-start.sh。Claude Code 2.1.x 会自动处理 bash 调用。同时添加了 .gitattributes 来为 shell 脚本强制执行 LF 行尾（修复了 Windows 检出时的 CRLF 问题）。"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## v4.0.3 (2025-12-26)",
+      "zh-Hans": "## v4.0.3 (2025-12-26)"
+    },
+    {
+      "en-US": "### Improvements",
+      "zh-Hans": "### 改进"
+    },
+    {
+      "en-US": "**Strengthened using-superpowers skill for explicit skill requests**",
+      "zh-Hans": "**增强了使用-superpowers 技能以应对明确的技能请求**"
+    },
+    {
+      "en-US": "Addressed a failure mode where Claude would skip invoking a skill even when the user explicitly requested it by name (e.g., \"subagent-driven-development, please\"). Claude would think \"I know what that means\" and start working directly instead of loading the skill.",
+      "zh-Hans": "解决了一个故障模式，即使用户明确按名称请求技能（例如，“请使用 subagent-driven-development”），Claude 也会跳过调用该技能。Claude 会认为“我知道那是什么意思”，然后直接开始工作，而不是加载技能。"
+    },
+    {
+      "en-US": "Changes:",
+      "zh-Hans": "更改："
+    },
+    {
+      "en-US": "- Updated \"The Rule\" to say \"Invoke relevant or requested skills\" instead of \"Check for skills\" - emphasizing active invocation over passive checking\n- Added \"BEFORE any response or action\" - the original wording only mentioned \"response\" but Claude would sometimes take action without responding first\n- Added reassurance that invoking a wrong skill is okay - reduces hesitation\n- Added new red flag: \"I know what that means\" → Knowing the concept ≠ using the skill",
+      "zh-Hans": "* 更新了“规则”，将“检查技能”改为“调用相关或请求的技能”——强调主动调用而非被动检查\n* 添加了“在任何响应或行动之前”——原始措辞只提到了“响应”，但 Claude 有时会在不先响应的情况下采取行动\n* 添加了保证：调用错误的技能也没关系——减少犹豫\n* 添加了新的危险信号：“我知道那是什么意思”→ 知道概念 ≠ 使用技能"
+    },
+    {
+      "en-US": "**Added explicit skill request tests**",
+      "zh-Hans": "**添加了明确的技能请求测试**"
+    },
+    {
+      "en-US": "New test suite in `tests/explicit-skill-requests/` that verifies Claude correctly invokes skills when users request them by name. Includes single-turn and multi-turn test scenarios.",
+      "zh-Hans": "在 `tests/explicit-skill-requests/` 中添加了新的测试套件，用于验证当用户按名称请求技能时，Claude 是否正确调用技能。包括单回合和多回合测试场景。"
+    },
+    {
+      "en-US": "## v4.0.2 (2025-12-23)",
+      "zh-Hans": "## v4.0.2 (2025-12-23)"
+    },
+    {
+      "en-US": "### Fixes",
+      "zh-Hans": "### 修复"
+    },
+    {
+      "en-US": "**Slash commands now user-only**",
+      "zh-Hans": "**斜杠命令现在仅供用户使用**"
+    },
+    {
+      "en-US": "Added `disable-model-invocation: true` to all three slash commands (`/brainstorm`, `/execute-plan`, `/write-plan`). Claude can no longer invoke these commands via the Skill tool—they're restricted to manual user invocation only.",
+      "zh-Hans": "为所有三个斜杠命令（`/brainstorm`、`/execute-plan`、`/write-plan`）添加了 `disable-model-invocation: true`。Claude 不能再通过 Skill 工具调用这些命令——它们仅限于手动用户调用。"
+    },
+    {
+      "en-US": "The underlying skills (`superpowers:brainstorming`, `superpowers:executing-plans`, `superpowers:writing-plans`) remain available for Claude to invoke autonomously. This change prevents confusion when Claude would invoke a command that just redirects to a skill anyway.",
+      "zh-Hans": "底层技能（`superpowers:brainstorming`、`superpowers:executing-plans`、`superpowers:writing-plans`）仍然可供 Claude 自主调用。此更改防止了当 Claude 调用一个只是重定向到技能的指令时产生的混淆。"
+    },
+    {
+      "en-US": "## v4.0.1 (2025-12-23)",
+      "zh-Hans": "## v4.0.1 (2025-12-23)"
+    },
+    {
+      "en-US": "### Fixes",
+      "zh-Hans": "### 修复"
+    },
+    {
+      "en-US": "**Clarified how to access skills in Claude Code**",
+      "zh-Hans": "**阐明了如何在 Claude Code 中访问技能**"
+    },
+    {
+      "en-US": "Fixed a confusing pattern where Claude would invoke a skill via the Skill tool, then try to Read the skill file separately. The `using-superpowers` skill now explicitly states that the Skill tool loads skill content directly—no need to read files.",
+      "zh-Hans": "修复了一个令人困惑的模式：Claude 通过 Skill 工具调用技能后，会尝试单独读取技能文件。`using-superpowers` 技能现在明确指出，Skill 工具会直接加载技能内容——无需读取文件。"
+    },
+    {
+      "en-US": "- Added \"How to Access Skills\" section to `using-superpowers`\n- Changed \"read the skill\" → \"invoke the skill\" in instructions\n- Updated slash commands to use fully qualified skill names (e.g., `superpowers:brainstorming`)",
+      "zh-Hans": "* 向 `using-superpowers` 添加了“如何访问技能”部分\n* 在说明中将“读取技能”改为“调用技能”\n* 更新了斜杠命令以使用完全限定的技能名称（例如，`superpowers:brainstorming`）"
+    },
+    {
+      "en-US": "**Added GitHub thread reply guidance to receiving-code-review** (h/t @ralphbean)",
+      "zh-Hans": "**向 receiving-code-review 添加了 GitHub 线程回复指南**（感谢 @ralphbean）"
+    },
+    {
+      "en-US": "Added a note about replying to inline review comments in the original thread rather than as top-level PR comments.",
+      "zh-Hans": "添加了关于在原始线程中回复内联评论，而不是作为顶级 PR 评论的说明。"
+    },
+    {
+      "en-US": "**Added automation-over-documentation guidance to writing-skills** (h/t @EthanJStark)",
+      "zh-Hans": "**向 writing-skills 添加了自动化优于文档的指南**（感谢 @EthanJStark）"
+    },
+    {
+      "en-US": "Added guidance that mechanical constraints should be automated, not documented—save skills for judgment calls.",
+      "zh-Hans": "添加了指南：机械性约束应自动化，而非文档化——将技能留给判断性决策。"
+    },
+    {
+      "en-US": "## v4.0.0 (2025-12-17)",
+      "zh-Hans": "## v4.0.0 (2025-12-17)"
+    },
+    {
+      "en-US": "### New Features",
+      "zh-Hans": "### 新功能"
+    },
+    {
+      "en-US": "**Two-stage code review in subagent-driven-development**",
+      "zh-Hans": "**subagent-driven-development 中的两阶段代码审查**"
+    },
+    {
+      "en-US": "Subagent workflows now use two separate review stages after each task:",
+      "zh-Hans": "子代理工作流现在在每个任务后使用两个独立的审查阶段："
+    },
+    {
+      "en-US": "1. **Spec compliance review** - Skeptical reviewer verifies implementation matches spec exactly. Catches missing requirements AND over-building. Won't trust implementer's report—reads actual code.\n\n2. **Code quality review** - Only runs after spec compliance passes. Reviews for clean code, test coverage, maintainability.",
+      "zh-Hans": "1. **规范符合性审查** - 持怀疑态度的审查者验证实现是否完全符合规范。捕捉缺失的需求**和**过度构建。不信任实施者的报告——阅读实际代码。\n2. **代码质量审查** - 仅在规范符合性通过后运行。审查代码整洁度、测试覆盖率、可维护性。"
+    },
+    {
+      "en-US": "This catches the common failure mode where code is well-written but doesn't match what was requested. Reviews are loops, not one-shot: if reviewer finds issues, implementer fixes them, then reviewer checks again.",
+      "zh-Hans": "这捕捉了代码编写良好但与请求不符的常见失败模式。评审是循环而非单次操作：若评审者发现问题，实施者修复后，评审者会再次检查。"
+    },
+    {
+      "en-US": "Other subagent workflow improvements:",
+      "zh-Hans": "其他子代理工作流改进："
+    },
+    {
+      "en-US": "- Controller provides full task text to workers (not file references)\n- Workers can ask clarifying questions before AND during work\n- Self-review checklist before reporting completion\n- Plan read once at start, extracted to TodoWrite",
+      "zh-Hans": "* 控制器向工作者提供完整任务文本（而非文件引用）\n* 工作者可在工作开始前及工作中提出澄清问题\n* 报告完成前进行自我评审检查清单\n* 计划仅在开始时读取一次，并提取到TodoWrite"
+    },
+    {
+      "en-US": "New prompt templates in `skills/subagent-driven-development/`:",
+      "zh-Hans": "`skills/subagent-driven-development/`中的新提示模板："
+    },
+    {
+      "en-US": "- `implementer-prompt.md` - Includes self-review checklist, encourages questions\n- `spec-reviewer-prompt.md` - Skeptical verification against requirements\n- `code-quality-reviewer-prompt.md` - Standard code review",
+      "zh-Hans": "* `implementer-prompt.md` - 包含自我评审检查清单，鼓励提问\n* `spec-reviewer-prompt.md` - 针对需求进行怀疑性验证\n* `code-quality-reviewer-prompt.md` - 标准代码评审"
+    },
+    {
+      "en-US": "**Debugging techniques consolidated with tools**",
+      "zh-Hans": "**调试技术与工具整合**"
+    },
+    {
+      "en-US": "`systematic-debugging` now bundles supporting techniques and tools:",
+      "zh-Hans": "`systematic-debugging`现已捆绑支持技术和工具："
+    },
+    {
+      "en-US": "- `root-cause-tracing.md` - Trace bugs backward through call stack\n- `defense-in-depth.md` - Add validation at multiple layers\n- `condition-based-waiting.md` - Replace arbitrary timeouts with condition polling\n- `find-polluter.sh` - Bisection script to find which test creates pollution\n- `condition-based-waiting-example.ts` - Complete implementation from real debugging session",
+      "zh-Hans": "* `root-cause-tracing.md` - 通过调用栈反向追踪错误\n* `defense-in-depth.md` - 在多个层级添加验证\n* `condition-based-waiting.md` - 用条件轮询替代任意超时\n* `find-polluter.sh` - 二分查找脚本定位产生污染的测试\n* `condition-based-waiting-example.ts` - 来自实际调试会话的完整实现"
+    },
+    {
+      "en-US": "**Testing anti-patterns reference**",
+      "zh-Hans": "**测试反模式参考**"
+    },
+    {
+      "en-US": "`test-driven-development` now includes `testing-anti-patterns.md` covering:",
+      "zh-Hans": "`test-driven-development`现包含`testing-anti-patterns.md`，涵盖："
+    },
+    {
+      "en-US": "- Testing mock behavior instead of real behavior\n- Adding test-only methods to production classes\n- Mocking without understanding dependencies\n- Incomplete mocks that hide structural assumptions",
+      "zh-Hans": "* 测试模拟行为而非真实行为\n* 向生产类添加仅用于测试的方法\n* 在不理解依赖关系的情况下进行模拟\n* 隐藏结构假设的不完整模拟"
+    },
+    {
+      "en-US": "**Skill test infrastructure**",
+      "zh-Hans": "**技能测试基础设施**"
+    },
+    {
+      "en-US": "Three new test frameworks for validating skill behavior:",
+      "zh-Hans": "用于验证技能行为的三个新测试框架："
+    },
+    {
+      "en-US": "`tests/skill-triggering/` - Validates skills trigger from naive prompts without explicit naming. Tests 6 skills to ensure descriptions alone are sufficient.",
+      "zh-Hans": "`tests/skill-triggering/` - 验证技能能否通过朴素提示触发而无需显式命名。测试6项技能以确保仅凭描述即可触发。"
+    },
+    {
+      "en-US": "`tests/claude-code/` - Integration tests using `claude -p` for headless testing. Verifies skill usage via session transcript (JSONL) analysis. Includes `analyze-token-usage.py` for cost tracking.",
+      "zh-Hans": "`tests/claude-code/` - 使用`claude -p`进行无头测试的集成测试。通过会话转录（JSONL）分析验证技能使用情况。包含用于成本跟踪的`analyze-token-usage.py`。"
+    },
+    {
+      "en-US": "`tests/subagent-driven-dev/` - End-to-end workflow validation with two complete test projects:",
+      "zh-Hans": "`tests/subagent-driven-dev/` - 包含两个完整测试项目的端到端工作流验证："
+    },
+    {
+      "en-US": "- `go-fractals/` - CLI tool with Sierpinski/Mandelbrot (10 tasks)\n- `svelte-todo/` - CRUD app with localStorage and Playwright (12 tasks)",
+      "zh-Hans": "* `go-fractals/` - 包含Sierpinski/Mandelbrot的CLI工具（10项任务）\n* `svelte-todo/` - 包含localStorage和Playwright的CRUD应用（12项任务）"
+    },
+    {
+      "en-US": "### Major Changes",
+      "zh-Hans": "### 主要变更"
+    },
+    {
+      "en-US": "**DOT flowcharts as executable specifications**",
+      "zh-Hans": "**将DOT流程图作为可执行规范**"
+    },
+    {
+      "en-US": "Rewrote key skills using DOT/GraphViz flowcharts as the authoritative process definition. Prose becomes supporting content.",
+      "zh-Hans": "使用DOT/GraphViz流程图作为权威流程定义重写了关键技能。文本内容变为辅助性材料。"
+    },
+    {
+      "en-US": "**The Description Trap** (documented in `writing-skills`): Discovered that skill descriptions override flowchart content when descriptions contain workflow summaries. Claude follows the short description instead of reading the detailed flowchart. Fix: descriptions must be trigger-only (\"Use when X\") with no process details.",
+      "zh-Hans": "**描述陷阱**（记录于`writing-skills`）：发现当技能描述包含工作流摘要时，技能描述会覆盖流程图内容。Claude会遵循简短描述而非阅读详细的流程图。修复方法：描述必须仅为触发用途（\"在X情况下使用\"），不包含流程细节。"
+    },
+    {
+      "en-US": "**Skill priority in using-superpowers**",
+      "zh-Hans": "**using-superpowers中的技能优先级**"
+    },
+    {
+      "en-US": "When multiple skills apply, process skills (brainstorming, debugging) now explicitly come before implementation skills. \"Build X\" triggers brainstorming first, then domain skills.",
+      "zh-Hans": "当多个技能适用时，流程技能（头脑风暴、调试）现在明确优先于实现技能。\"构建X\"会先触发头脑风暴，然后是领域技能。"
+    },
+    {
+      "en-US": "**brainstorming trigger strengthened**",
+      "zh-Hans": "**头脑风暴触发机制强化**"
+    },
+    {
+      "en-US": "Description changed to imperative: \"You MUST use this before any creative work—creating features, building components, adding functionality, or modifying behavior.\"",
+      "zh-Hans": "描述改为命令式：\"在进行任何创造性工作前——创建功能、构建组件、添加功能或修改行为时，你必须使用此技能。\""
+    },
+    {
+      "en-US": "### Breaking Changes",
+      "zh-Hans": "### 破坏性变更"
+    },
+    {
+      "en-US": "**Skill consolidation** - Six standalone skills merged:",
+      "zh-Hans": "**技能整合** - 六项独立技能已合并："
+    },
+    {
+      "en-US": "- `root-cause-tracing`, `defense-in-depth`, `condition-based-waiting` → bundled in `systematic-debugging/`\n- `testing-skills-with-subagents` → bundled in `writing-skills/`\n- `testing-anti-patterns` → bundled in `test-driven-development/`\n- `sharing-skills` removed (obsolete)",
+      "zh-Hans": "* `root-cause-tracing`、`defense-in-depth`、`condition-based-waiting` → 捆绑于`systematic-debugging/`\n* `testing-skills-with-subagents` → 捆绑于`writing-skills/`\n* `testing-anti-patterns` → 捆绑于`test-driven-development/`\n* `sharing-skills`已移除（已过时）"
+    },
+    {
+      "en-US": "### Other Improvements",
+      "zh-Hans": "### 其他改进"
+    },
+    {
+      "en-US": "- **render-graphs.js** - Tool to extract DOT diagrams from skills and render to SVG\n- **Rationalizations table** in using-superpowers - Scannable format including new entries: \"I need more context first\", \"Let me explore first\", \"This feels productive\"\n- **docs/testing.md** - Guide to testing skills with Claude Code integration tests",
+      "zh-Hans": "* **render-graphs.js** - 从技能中提取DOT图表并渲染为SVG的工具\n* **using-superpowers中的合理化表格** - 可扫描格式，包含新条目：\"我需要更多上下文\"、\"让我先探索\"、\"这感觉很有成效\"\n* **docs/testing.md** - 使用Claude Code集成测试测试技能的指南"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## v3.6.2 (2025-12-03)",
+      "zh-Hans": "## v3.6.2 (2025-12-03)"
+    },
+    {
+      "en-US": "### Fixed",
+      "zh-Hans": "### 已修复"
+    },
+    {
+      "en-US": "- **Linux Compatibility**: Fixed polyglot hook wrapper (`run-hook.cmd`) to use POSIX-compliant syntax\n  - Replaced bash-specific `${BASH_SOURCE[0]:-$0}` with standard `$0` on line 16\n  - Resolves \"Bad substitution\" error on Ubuntu/Debian systems where `/bin/sh` is dash\n  - Fixes #141",
+      "zh-Hans": "* **Linux兼容性**：修复了多语言钩子包装器（`run-hook.cmd`）以使用符合POSIX标准的语法\n  * 第16行将bash特定的`${BASH_SOURCE[0]:-$0}`替换为标准`$0`\n  * 解决了在Ubuntu/Debian系统上（其中`/bin/sh`为dash）出现的\"Bad substitution\"错误\n  * 修复了#141"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## v3.5.1 (2025-11-24)",
+      "zh-Hans": "## v3.5.1 (2025-11-24)"
+    },
+    {
+      "en-US": "### Changed",
+      "zh-Hans": "### 已更改"
+    },
+    {
+      "en-US": "- **OpenCode Bootstrap Refactor**: Switched from `chat.message` hook to `session.created` event for bootstrap injection\n  - Bootstrap now injects at session creation via `session.prompt()` with `noReply: true`\n  - Explicitly tells the model that using-superpowers is already loaded to prevent redundant skill loading\n  - Consolidated bootstrap content generation into shared `getBootstrapContent()` helper\n  - Cleaner single-implementation approach (removed fallback pattern)",
+      "zh-Hans": "* **OpenCode引导程序重构**：从`chat.message`钩子切换到`session.created`事件进行引导程序注入\n  * 引导程序现通过`session.prompt()`在会话创建时注入，使用`noReply: true`\n  * 明确告知模型using-superpowers已加载，防止冗余技能加载\n  * 将引导程序内容生成整合到共享的`getBootstrapContent()`辅助函数中\n  * 更简洁的单实现方法（移除了回退模式）"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## v3.5.0 (2025-11-23)",
+      "zh-Hans": "## v3.5.0 (2025-11-23)"
+    },
+    {
+      "en-US": "### Added",
+      "zh-Hans": "### 新增"
+    },
+    {
+      "en-US": "- **OpenCode Support**: Native JavaScript plugin for OpenCode.ai\n  - Custom tools: `use_skill` and `find_skills`\n  - Message insertion pattern for skill persistence across context compaction\n  - Automatic context injection via chat.message hook\n  - Auto re-injection on session.compacted events\n  - Three-tier skill priority: project > personal > superpowers\n  - Project-local skills support (`.opencode/skills/`)\n  - Shared core module (`lib/skills-core.js`) for code reuse with Codex\n  - Automated test suite with proper isolation (`tests/opencode/`)\n  - Platform-specific documentation (`docs/README.opencode.md`, `docs/README.codex.md`)",
+      "zh-Hans": "* **OpenCode支持**：OpenCode.ai的原生JavaScript插件\n  * 自定义工具：`use_skill`和`find_skills`\n  * 用于在上下文压缩后保持技能持久性的消息插入模式\n  * 通过chat.message钩子自动注入上下文\n  * 在session.compacted事件上自动重新注入\n  * 三层技能优先级：项目 > 个人 > superpowers\n  * 项目本地技能支持（`.opencode/skills/`）\n  * 用于与Codex代码重用的共享核心模块（`lib/skills-core.js`）\n  * 具有适当隔离的自动化测试套件（`tests/opencode/`）\n  * 平台特定文档（`docs/README.opencode.md`、`docs/README.codex.md`）"
+    },
+    {
+      "en-US": "### Changed",
+      "zh-Hans": "### 已更改"
+    },
+    {
+      "en-US": "- **Refactored Codex Implementation**: Now uses shared `lib/skills-core.js` ES module\n  - Eliminates code duplication between Codex and OpenCode\n  - Single source of truth for skill discovery and parsing\n  - Codex successfully loads ES modules via Node.js interop\n\n- **Improved Documentation**: Rewrote README to explain problem/solution clearly\n  - Removed duplicate sections and conflicting information\n  - Added complete workflow description (brainstorm → plan → execute → finish)\n  - Simplified platform installation instructions\n  - Emphasized skill-checking protocol over automatic activation claims",
+      "zh-Hans": "* **重构的Codex实现**：现在使用共享的`lib/skills-core.js` ES模块\n  * 消除了Codex和OpenCode之间的代码重复\n  * 技能发现和解析的单一真实来源\n  * Codex通过Node.js互操作成功加载ES模块\n\n* **改进的文档**：重写README以清晰解释问题/解决方案\n  * 移除了重复部分和冲突信息\n  * 添加了完整的工作流描述（头脑风暴 → 计划 → 执行 → 完成）\n  * 简化了平台安装说明\n  * 强调技能检查协议而非自动激活声明"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## v3.4.1 (2025-10-31)",
+      "zh-Hans": "## v3.4.1 (2025-10-31)"
+    },
+    {
+      "en-US": "### Improvements",
+      "zh-Hans": "### 改进"
+    },
+    {
+      "en-US": "- Optimized superpowers bootstrap to eliminate redundant skill execution. The `using-superpowers` skill content is now provided directly in session context, with clear guidance to use the Skill tool only for other skills. This reduces overhead and prevents the confusing loop where agents would execute `using-superpowers` manually despite already having the content from session start.",
+      "zh-Hans": "* 优化了superpowers引导程序以消除冗余技能执行。`using-superpowers`技能内容现在直接在会话上下文中提供，并附有明确指导，仅将Skill工具用于其他技能。这减少了开销，并防止了代理尽管在会话开始时已获得内容但仍手动执行`using-superpowers`的混乱循环。"
+    },
+    {
+      "en-US": "## v3.4.0 (2025-10-30)",
+      "zh-Hans": "## v3.4.0 (2025-10-30)"
+    },
+    {
+      "en-US": "### Improvements",
+      "zh-Hans": "### 改进"
+    },
+    {
+      "en-US": "- Simplified `brainstorming` skill to return to original conversational vision. Removed heavyweight 6-phase process with formal checklists in favor of natural dialogue: ask questions one at a time, then present design in 200-300 word sections with validation. Keeps documentation and implementation handoff features.",
+      "zh-Hans": "* 简化了`brainstorming`技能，回归到原始的对话式愿景。移除了带有正式检查清单的重型6阶段流程，转而采用自然对话：一次提出一个问题，然后以200-300字的部分呈现设计并进行验证。保留了文档和实现交接功能。"
+    },
+    {
+      "en-US": "## v3.3.1 (2025-10-28)",
+      "zh-Hans": "## v3.3.1 (2025-10-28)"
+    },
+    {
+      "en-US": "### Improvements",
+      "zh-Hans": "### 改进"
+    },
+    {
+      "en-US": "- Updated `brainstorming` skill to require autonomous recon before questioning, encourage recommendation-driven decisions, and prevent agents from delegating prioritization back to humans.\n- Applied writing clarity improvements to `brainstorming` skill following Strunk's \"Elements of Style\" principles (omitted needless words, converted negative to positive form, improved parallel construction).",
+      "zh-Hans": "* 更新了`brainstorming`技能，要求在提问前进行自主侦察，鼓励基于推荐的决策，并防止代理将优先级决定权交还给人类。\n* 应用了写作清晰度改进至`brainstorming`技能，遵循Strunk的\"Elements of Style\"原则（省略不必要的词语，将否定形式转换为肯定形式，改进平行结构）。"
+    },
+    {
+      "en-US": "### Bug Fixes",
+      "zh-Hans": "### 错误修复"
+    },
+    {
+      "en-US": "- Clarified `writing-skills` guidance so it points to the correct agent-specific personal skill directories (`~/.claude/skills` for Claude Code, `~/.codex/skills` for Codex).",
+      "zh-Hans": "* 澄清了`writing-skills`指导，使其指向正确的代理特定个人技能目录（Claude Code的`~/.claude/skills`，Codex的`~/.codex/skills`）。"
+    },
+    {
+      "en-US": "## v3.3.0 (2025-10-28)",
+      "zh-Hans": "## v3.3.0 (2025-10-28)"
+    },
+    {
+      "en-US": "### New Features",
+      "zh-Hans": "### 新功能"
+    },
+    {
+      "en-US": "**Experimental Codex Support**",
+      "zh-Hans": "**实验性Codex支持**"
+    },
+    {
+      "en-US": "- Added unified `superpowers-codex` script with bootstrap/use-skill/find-skills commands\n- Cross-platform Node.js implementation (works on Windows, macOS, Linux)\n- Namespaced skills: `superpowers:skill-name` for superpowers skills, `skill-name` for personal\n- Personal skills override superpowers skills when names match\n- Clean skill display: shows name/description without raw frontmatter\n- Helpful context: shows supporting files directory for each skill\n- Tool mapping for Codex: TodoWrite→update_plan, subagents→manual fallback, etc.\n- Bootstrap integration with minimal AGENTS.md for automatic startup\n- Complete installation guide and bootstrap instructions specific to Codex",
+      "zh-Hans": "* 添加了统一的`superpowers-codex`脚本，包含引导程序/使用技能/查找技能命令\n* 跨平台Node.js实现（适用于Windows、macOS、Linux）\n* 命名空间技能：superpowers技能的`superpowers:skill-name`，个人技能的`skill-name`\n* 名称匹配时，个人技能覆盖superpowers技能\n* 清晰的技能显示：显示名称/描述，不含原始frontmatter\n* 有帮助的上下文：显示每项技能的支持文件目录\n* Codex的工具映射：TodoWrite→update\\_plan、subagents→手动回退等\n* 与最小AGENTS.md集成的引导程序，用于自动启动\n* 特定于Codex的完整安装指南和引导程序说明"
+    },
+    {
+      "en-US": "**Key differences from Claude Code integration:**",
+      "zh-Hans": "**与Claude Code集成的关键区别：**"
+    },
+    {
+      "en-US": "- Single unified script instead of separate tools\n- Tool substitution system for Codex-specific equivalents\n- Simplified subagent handling (manual work instead of delegation)\n- Updated terminology: \"Superpowers skills\" instead of \"Core skills\"",
+      "zh-Hans": "* 单个统一脚本而非独立工具\n* 用于Codex特定等效工具的工具替换系统\n* 简化的子代理处理（手动工作而非委派）\n* 更新的术语：\"Superpowers技能\"替代\"核心技能\""
+    },
+    {
+      "en-US": "### Files Added",
+      "zh-Hans": "### 新增文件"
+    },
+    {
+      "en-US": "- `.codex/INSTALL.md` - Installation guide for Codex users\n- `.codex/superpowers-bootstrap.md` - Bootstrap instructions with Codex adaptations\n- `.codex/superpowers-codex` - Unified Node.js executable with all functionality",
+      "zh-Hans": "* `.codex/INSTALL.md` - Codex用户的安装指南\n* `.codex/superpowers-bootstrap.md` - 包含Codex适配的引导程序说明\n* `.codex/superpowers-codex` - 包含所有功能的统一Node.js可执行文件"
+    },
+    {
+      "en-US": "**Note:** Codex support is experimental. The integration provides core superpowers functionality but may require refinement based on user feedback.",
+      "zh-Hans": "**注意：** Codex支持是实验性的。该集成提供了核心的superpowers功能，但可能需要根据用户反馈进行改进。"
+    },
+    {
+      "en-US": "## v3.2.3 (2025-10-23)",
+      "zh-Hans": "## v3.2.3 (2025-10-23)"
+    },
+    {
+      "en-US": "### Improvements",
+      "zh-Hans": "### 改进"
+    },
+    {
+      "en-US": "**Updated using-superpowers skill to use Skill tool instead of Read tool**",
+      "zh-Hans": "**更新了using-superpowers技能以使用Skill工具而非Read工具**"
+    },
+    {
+      "en-US": "- Changed skill invocation instructions from Read tool to Skill tool\n- Updated description: \"using Read tool\" → \"using Skill tool\"\n- Updated step 3: \"Use the Read tool\" → \"Use the Skill tool to read and run\"\n- Updated rationalization list: \"Read the current version\" → \"Run the current version\"",
+      "zh-Hans": "* 将技能调用说明从Read工具更改为Skill工具\n* 更新描述：\"使用Read工具\" → \"使用Skill工具\"\n* 更新步骤3：\"使用Read工具\" → \"使用Skill工具读取并运行\"\n* 更新合理化列表：\"读取当前版本\" → \"运行当前版本\""
+    },
+    {
+      "en-US": "The Skill tool is the proper mechanism for invoking skills in Claude Code. This update corrects the bootstrap instructions to guide agents toward the correct tool.",
+      "zh-Hans": "Skill工具是Claude Code中调用技能的正确机制。此更新更正了引导程序说明，以指导代理使用正确的工具。"
+    },
+    {
+      "en-US": "### Files Changed",
+      "zh-Hans": "### 变更的文件"
+    },
+    {
+      "en-US": "- Updated: `skills/using-superpowers/SKILL.md` - Changed tool references from Read to Skill",
+      "zh-Hans": "* 更新：`skills/using-superpowers/SKILL.md` - 将工具引用从Read更改为Skill"
+    },
+    {
+      "en-US": "## v3.2.2 (2025-10-21)",
+      "zh-Hans": "## v3.2.2 (2025-10-21)"
+    },
+    {
+      "en-US": "### Improvements",
+      "zh-Hans": "### 改进"
+    },
+    {
+      "en-US": "**Strengthened using-superpowers skill against agent rationalization**",
+      "zh-Hans": "**强化了using-superpowers技能以应对代理合理化行为**"
+    },
+    {
+      "en-US": "- Added EXTREMELY-IMPORTANT block with absolute language about mandatory skill checking\n  - \"If even 1% chance a skill applies, you MUST read it\"\n  - \"You do not have a choice. You cannot rationalize your way out.\"\n- Added MANDATORY FIRST RESPONSE PROTOCOL checklist\n  - 5-step process agents must complete before any response\n  - Explicit \"responding without this = failure\" consequence\n- Added Common Rationalizations section with 8 specific evasion patterns\n  - \"This is just a simple question\" → WRONG\n  - \"I can check files quickly\" → WRONG\n  - \"Let me gather information first\" → WRONG\n  - Plus 5 more common patterns observed in agent behavior",
+      "zh-Hans": "* 添加了包含绝对语言的EXTREMELY-IMPORTANT块，关于强制技能检查\n  * \"即使只有1%的可能性适用技能，你也必须读取它\"\n  * \"你没有选择。你无法合理化地回避。\"\n* 添加了MANDATORY FIRST RESPONSE PROTOCOL检查清单\n  * 代理在做出任何响应前必须完成的5步流程\n  * 明确的\"未完成此步骤即响应 = 失败\"后果\n* 添加了Common Rationalizations部分，包含8种特定的规避模式\n  * \"这只是一个简单问题\" → 错误\n  * \"我可以快速检查文件\" → 错误\n  * \"让我先收集信息\" → 错误\n  * 加上另外5种在代理行为中观察到的常见模式"
+    },
+    {
+      "en-US": "These changes address observed agent behavior where they rationalize around skill usage despite clear instructions. The forceful language and pre-emptive counter-arguments aim to make non-compliance harder.",
+      "zh-Hans": "这些变更解决了观察到的代理行为，即尽管有明确指示，他们仍会合理化地绕过技能使用。强制的语言和先发制人的反驳旨在使不遵守行为更难发生。"
+    },
+    {
+      "en-US": "### Files Changed",
+      "zh-Hans": "### 变更的文件"
+    },
+    {
+      "en-US": "- Updated: `skills/using-superpowers/SKILL.md` - Added three layers of enforcement to prevent skill-skipping rationalization",
+      "zh-Hans": "* 更新：`skills/using-superpowers/SKILL.md` - 添加了三层强制措施以防止技能跳过合理化"
+    },
+    {
+      "en-US": "## v3.2.1 (2025-10-20)",
+      "zh-Hans": "## v3.2.1 (2025-10-20)"
+    },
+    {
+      "en-US": "### New Features",
+      "zh-Hans": "### 新功能"
+    },
+    {
+      "en-US": "**Code reviewer agent now included in plugin**",
+      "zh-Hans": "**代码评审代理现已包含在插件中**"
+    },
+    {
+      "en-US": "- Added `superpowers:code-reviewer` agent to plugin's `agents/` directory\n- Agent provides systematic code review against plans and coding standards\n- Previously required users to have personal agent configuration\n- All skill references updated to use namespaced `superpowers:code-reviewer`\n- Fixes #55",
+      "zh-Hans": "* 将`superpowers:code-reviewer`代理添加到插件的`agents/`目录\n* 该代理提供针对计划和编码标准的系统性代码评审\n* 之前要求用户拥有个人代理配置\n* 所有技能引用已更新为使用命名空间的`superpowers:code-reviewer`\n* 修复了#55"
+    },
+    {
+      "en-US": "### Files Changed",
+      "zh-Hans": "### 变更的文件"
+    },
+    {
+      "en-US": "- New: `agents/code-reviewer.md` - Agent definition with review checklist and output format\n- Updated: `skills/requesting-code-review/SKILL.md` - References to `superpowers:code-reviewer`\n- Updated: `skills/subagent-driven-development/SKILL.md` - References to `superpowers:code-reviewer`",
+      "zh-Hans": "* 新增：`agents/code-reviewer.md` - 包含评审检查清单和输出格式的代理定义\n* 更新：`skills/requesting-code-review/SKILL.md` - 对`superpowers:code-reviewer`的引用\n* 更新：`skills/subagent-driven-development/SKILL.md` - 对`superpowers:code-reviewer`的引用"
+    },
+    {
+      "en-US": "## v3.2.0 (2025-10-18)",
+      "zh-Hans": "## v3.2.0 (2025-10-18)"
+    },
+    {
+      "en-US": "### New Features",
+      "zh-Hans": "### 新功能"
+    },
+    {
+      "en-US": "**Design documentation in brainstorming workflow**",
+      "zh-Hans": "**头脑风暴工作流中的设计文档**"
+    },
+    {
+      "en-US": "- Added Phase 4: Design Documentation to brainstorming skill\n- Design documents now written to `docs/plans/YYYY-MM-DD-<topic>-design.md` before implementation\n- Restores functionality from original brainstorming command that was lost during skill conversion\n- Documents written before worktree setup and implementation planning\n- Tested with subagent to verify compliance under time pressure",
+      "zh-Hans": "* 为头脑风暴技能添加了第4阶段：设计文档\n* 设计文档现在在实施前写入`docs/plans/YYYY-MM-DD-<topic>-design.md`\n* 恢复了原始头脑风暴命令在技能转换过程中丢失的功能\n* 在工作树设置和实施计划之前编写文档\n* 通过子代理在时间压力下测试以验证合规性"
+    },
+    {
+      "en-US": "### Breaking Changes",
+      "zh-Hans": "### 破坏性变更"
+    },
+    {
+      "en-US": "**Skill reference namespace standardization**",
+      "zh-Hans": "**技能引用命名空间标准化**"
+    },
+    {
+      "en-US": "- All internal skill references now use `superpowers:` namespace prefix\n- Updated format: `superpowers:test-driven-development` (previously just `test-driven-development`)\n- Affects all REQUIRED SUB-SKILL, RECOMMENDED SUB-SKILL, and REQUIRED BACKGROUND references\n- Aligns with how skills are invoked using the Skill tool\n- Files updated: brainstorming, executing-plans, subagent-driven-development, systematic-debugging, testing-skills-with-subagents, writing-plans, writing-skills",
+      "zh-Hans": "* 所有内部技能引用现在使用 `superpowers:` 命名空间前缀\n* 更新后的格式：`superpowers:test-driven-development`（之前仅为 `test-driven-development`）\n* 影响所有 REQUIRED SUB-SKILL、RECOMMENDED SUB-SKILL 和 REQUIRED BACKGROUND 引用\n* 与使用 Skill 工具调用技能的方式保持一致\n* 更新的文件：brainstorming、executing-plans、subagent-driven-development、systematic-debugging、testing-skills-with-subagents、writing-plans、writing-skills"
+    },
+    {
+      "en-US": "### Improvements",
+      "zh-Hans": "### 改进"
+    },
+    {
+      "en-US": "**Design vs implementation plan naming**",
+      "zh-Hans": "**设计文档与实现计划命名**"
+    },
+    {
+      "en-US": "- Design documents use `-design.md` suffix to prevent filename collisions\n- Implementation plans continue using existing `YYYY-MM-DD-<feature-name>.md` format\n- Both stored in `docs/plans/` directory with clear naming distinction",
+      "zh-Hans": "* 设计文档使用 `-design.md` 后缀以防止文件名冲突\n* 实现计划继续使用现有的 `YYYY-MM-DD-<feature-name>.md` 格式\n* 两者都存储在 `docs/plans/` 目录中，具有清晰的命名区分"
+    },
+    {
+      "en-US": "## v3.1.1 (2025-10-17)",
+      "zh-Hans": "## v3.1.1 (2025-10-17)"
+    },
+    {
+      "en-US": "### Bug Fixes",
+      "zh-Hans": "### 错误修复"
+    },
+    {
+      "en-US": "- **Fixed command syntax in README** (#44) - Updated all command references to use correct namespaced syntax (`/superpowers:brainstorm` instead of `/brainstorm`). Plugin-provided commands are automatically namespaced by Claude Code to avoid conflicts between plugins.",
+      "zh-Hans": "* **修复了 README 中的命令语法** (#44) - 更新了所有命令引用以使用正确的命名空间语法（`/superpowers:brainstorm` 替代 `/brainstorm`）。插件提供的命令由 Claude Code 自动命名空间化，以避免插件之间的冲突。"
+    },
+    {
+      "en-US": "## v3.1.0 (2025-10-17)",
+      "zh-Hans": "## v3.1.0 (2025-10-17)"
+    },
+    {
+      "en-US": "### Breaking Changes",
+      "zh-Hans": "### 破坏性变更"
+    },
+    {
+      "en-US": "**Skill names standardized to lowercase**",
+      "zh-Hans": "**技能名称标准化为小写**"
+    },
+    {
+      "en-US": "- All skill frontmatter `name:` fields now use lowercase kebab-case matching directory names\n- Examples: `brainstorming`, `test-driven-development`, `using-git-worktrees`\n- All skill announcements and cross-references updated to lowercase format\n- This ensures consistent naming across directory names, frontmatter, and documentation",
+      "zh-Hans": "* 所有技能 frontmatter `name:` 字段现在使用小写 kebab-case，与目录名称匹配\n* 示例：`brainstorming`、`test-driven-development`、`using-git-worktrees`\n* 所有技能公告和交叉引用已更新为小写格式\n* 这确保了目录名称、frontmatter 和文档之间的命名一致性"
+    },
+    {
+      "en-US": "### New Features",
+      "zh-Hans": "### 新功能"
+    },
+    {
+      "en-US": "**Enhanced brainstorming skill**",
+      "zh-Hans": "**增强的 brainstorming 技能**"
+    },
+    {
+      "en-US": "- Added Quick Reference table showing phases, activities, and tool usage\n- Added copyable workflow checklist for tracking progress\n- Added decision flowchart for when to revisit earlier phases\n- Added comprehensive AskUserQuestion tool guidance with concrete examples\n- Added \"Question Patterns\" section explaining when to use structured vs open-ended questions\n- Restructured Key Principles as scannable table",
+      "zh-Hans": "* 添加了显示阶段、活动和工具使用的快速参考表\n* 添加了用于跟踪进度的可复制工作流程清单\n* 添加了用于决定何时重新访问早期阶段的决策流程图\n* 添加了包含具体示例的全面 AskUserQuestion 工具指南\n* 添加了“问题模式”部分，解释何时使用结构化问题与开放式问题\n* 将关键原则重构为可扫描的表格"
+    },
+    {
+      "en-US": "**Anthropic best practices integration**",
+      "zh-Hans": "**Anthropic 最佳实践集成**"
+    },
+    {
+      "en-US": "- Added `skills/writing-skills/anthropic-best-practices.md` - Official Anthropic skill authoring guide\n- Referenced in writing-skills SKILL.md for comprehensive guidance\n- Provides patterns for progressive disclosure, workflows, and evaluation",
+      "zh-Hans": "* 添加了 `skills/writing-skills/anthropic-best-practices.md` - 官方 Anthropic 技能编写指南\n* 在 writing-skills SKILL.md 中引用以获取全面指导\n* 提供了渐进式披露、工作流程和评估的模式"
+    },
+    {
+      "en-US": "### Improvements",
+      "zh-Hans": "### 改进"
+    },
+    {
+      "en-US": "**Skill cross-reference clarity**",
+      "zh-Hans": "**技能交叉引用清晰度**"
+    },
+    {
+      "en-US": "- All skill references now use explicit requirement markers:\n  - `**REQUIRED BACKGROUND:**` - Prerequisites you must understand\n  - `**REQUIRED SUB-SKILL:**` - Skills that must be used in workflow\n  - `**Complementary skills:**` - Optional but helpful related skills\n- Removed old path format (`skills/collaboration/X` → just `X`)\n- Updated Integration sections with categorized relationships (Required vs Complementary)\n- Updated cross-reference documentation with best practices",
+      "zh-Hans": "* 所有技能引用现在使用明确的需求标记：\n  * `**REQUIRED BACKGROUND:**` - 你必须理解的先决条件\n  * `**REQUIRED SUB-SKILL:**` - 必须在工作流程中使用的技能\n  * `**Complementary skills:**` - 可选但有用的相关技能\n* 移除了旧的路径格式（`skills/collaboration/X` → 仅为 `X`）\n* 使用分类关系（必需与补充）更新了集成部分\n* 使用最佳实践更新了交叉引用文档"
+    },
+    {
+      "en-US": "**Alignment with Anthropic best practices**",
+      "zh-Hans": "**与 Anthropic 最佳实践保持一致**"
+    },
+    {
+      "en-US": "- Fixed description grammar and voice (fully third-person)\n- Added Quick Reference tables for scanning\n- Added workflow checklists Claude can copy and track\n- Appropriate use of flowcharts for non-obvious decision points\n- Improved scannable table formats\n- All skills well under 500-line recommendation",
+      "zh-Hans": "* 修复了描述语法和语态（完全第三人称）\n* 添加了用于扫描的快速参考表\n* 添加了 Claude 可以复制和跟踪的工作流程清单\n* 对非明显决策点适当使用流程图\n* 改进了可扫描的表格格式\n* 所有技能均符合 500 行建议"
+    },
+    {
+      "en-US": "### Bug Fixes",
+      "zh-Hans": "### 错误修复"
+    },
+    {
+      "en-US": "- **Re-added missing command redirects** - Restored `commands/brainstorm.md` and `commands/write-plan.md` that were accidentally removed in v3.0 migration\n- Fixed `defense-in-depth` name mismatch (was `Defense-in-Depth-Validation`)\n- Fixed `receiving-code-review` name mismatch (was `Code-Review-Reception`)\n- Fixed `commands/brainstorm.md` reference to correct skill name\n- Removed references to non-existent related skills",
+      "zh-Hans": "* **重新添加了缺失的命令重定向** - 恢复了在 v3.0 迁移中意外删除的 `commands/brainstorm.md` 和 `commands/write-plan.md`\n* 修复了 `defense-in-depth` 名称不匹配问题（原为 `Defense-in-Depth-Validation`）\n* 修复了 `receiving-code-review` 名称不匹配问题（原为 `Code-Review-Reception`）\n* 修复了 `commands/brainstorm.md` 对正确技能名称的引用\n* 移除了对不存在相关技能的引用"
+    },
+    {
+      "en-US": "### Documentation",
+      "zh-Hans": "### 文档"
+    },
+    {
+      "en-US": "**writing-skills improvements**",
+      "zh-Hans": "**writing-skills 改进**"
+    },
+    {
+      "en-US": "- Updated cross-referencing guidance with explicit requirement markers\n- Added reference to Anthropic's official best practices\n- Improved examples showing proper skill reference format",
+      "zh-Hans": "* 使用明确的需求标记更新了交叉引用指南\n* 添加了对 Anthropic 官方最佳实践的引用\n* 改进了显示正确技能引用格式的示例"
+    },
+    {
+      "en-US": "## v3.0.1 (2025-10-16)",
+      "zh-Hans": "## v3.0.1 (2025-10-16)"
+    },
+    {
+      "en-US": "### Changes",
+      "zh-Hans": "### 变更"
+    },
+    {
+      "en-US": "We now use Anthropic's first-party skills system!",
+      "zh-Hans": "我们现在使用 Anthropic 的第一方技能系统！"
+    },
+    {
+      "en-US": "## v2.0.2 (2025-10-12)",
+      "zh-Hans": "## v2.0.2 (2025-10-12)"
+    },
+    {
+      "en-US": "### Bug Fixes",
+      "zh-Hans": "### 错误修复"
+    },
+    {
+      "en-US": "- **Fixed false warning when local skills repo is ahead of upstream** - The initialization script was incorrectly warning \"New skills available from upstream\" when the local repository had commits ahead of upstream. The logic now correctly distinguishes between three git states: local behind (should update), local ahead (no warning), and diverged (should warn).",
+      "zh-Hans": "* **修复了当本地技能仓库领先于上游时的错误警告** - 初始化脚本在本地仓库提交领先于上游时错误地警告“上游有新的技能可用”。逻辑现在正确区分了三种 git 状态：本地落后（应更新）、本地领先（无警告）和分叉（应警告）。"
+    },
+    {
+      "en-US": "## v2.0.1 (2025-10-12)",
+      "zh-Hans": "## v2.0.1 (2025-10-12)"
+    },
+    {
+      "en-US": "### Bug Fixes",
+      "zh-Hans": "### 错误修复"
+    },
+    {
+      "en-US": "- **Fixed session-start hook execution in plugin context** (#8, PR #9) - The hook was failing silently with \"Plugin hook error\" preventing skills context from loading. Fixed by:\n  - Using `${BASH_SOURCE[0]:-$0}` fallback when BASH_SOURCE is unbound in Claude Code's execution context\n  - Adding `|| true` to handle empty grep results gracefully when filtering status flags",
+      "zh-Hans": "* **修复了插件上下文中的 session-start 钩子执行问题** (#8, PR #9) - 该钩子静默失败并显示“插件钩子错误”，阻止了技能上下文的加载。通过以下方式修复：\n  * 在 Claude Code 执行上下文中 BASH\\_SOURCE 未绑定时使用 `${BASH_SOURCE[0]:-$0}` 回退\n  * 添加 `|| true` 以在过滤状态标志时优雅处理空的 grep 结果"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "# Superpowers v2.0.0 Release Notes",
+      "zh-Hans": "# Superpowers v2.0.0 发布说明"
+    },
+    {
+      "en-US": "## Overview",
+      "zh-Hans": "## 概述"
+    },
+    {
+      "en-US": "Superpowers v2.0 makes skills more accessible, maintainable, and community-driven through a major architectural shift.",
+      "zh-Hans": "Superpowers v2.0 通过一次重大的架构转变，使技能更易访问、更易维护且更具社区驱动性。"
+    },
+    {
+      "en-US": "The headline change is **skills repository separation**: all skills, scripts, and documentation have moved from the plugin into a dedicated repository ([obra/superpowers-skills](https://github.com/obra/superpowers-skills)). This transforms superpowers from a monolithic plugin into a lightweight shim that manages a local clone of the skills repository. Skills auto-update on session start. Users fork and contribute improvements via standard git workflows. The skills library versions independently from the plugin.",
+      "zh-Hans": "头条变更是**技能仓库分离**：所有技能、脚本和文档已从插件中移出，转移到一个专用仓库（[obra/superpowers-skills](https://github.com/obra/superpowers-skills)）。这将 superpowers 从一个单体插件转变为一个轻量级垫片，用于管理技能仓库的本地克隆。技能在会话开始时自动更新。用户通过标准的 git 工作流程进行分叉和贡献改进。技能库独立于插件进行版本控制。"
+    },
+    {
+      "en-US": "Beyond infrastructure, this release adds nine new skills focused on problem-solving, research, and architecture. We rewrote the core **using-skills** documentation with imperative tone and clearer structure, making it easier for Claude to understand when and how to use skills. **find-skills** now outputs paths you can paste directly into the Read tool, eliminating friction in the skills discovery workflow.",
+      "zh-Hans": "除了基础设施之外，此版本还添加了九个专注于问题解决、研究和架构的新技能。我们以命令式语调和更清晰的结构重写了核心的 **using-skills** 文档，使 Claude 更容易理解何时以及如何使用技能。**find-skills** 现在输出可以直接粘贴到 Read 工具中的路径，消除了技能发现工作流程中的摩擦。"
+    },
+    {
+      "en-US": "Users experience seamless operation: the plugin handles cloning, forking, and updating automatically. Contributors find the new architecture makes improving and sharing skills trivial. This release lays the foundation for skills to evolve rapidly as a community resource.",
+      "zh-Hans": "用户体验无缝操作：插件自动处理克隆、分叉和更新。贡献者发现新的架构使得改进和共享技能变得微不足道。此版本为技能作为社区资源快速发展奠定了基础。"
+    },
+    {
+      "en-US": "## Breaking Changes",
+      "zh-Hans": "## 重大变更"
+    },
+    {
+      "en-US": "### Skills Repository Separation",
+      "zh-Hans": "### 技能仓库分离"
+    },
+    {
+      "en-US": "**The biggest change:** Skills no longer live in the plugin. They've been moved to a separate repository at [obra/superpowers-skills](https://github.com/obra/superpowers-skills).",
+      "zh-Hans": "**最大的变化：** 技能不再存在于插件中。它们已移至位于 [obra/superpowers-skills](https://github.com/obra/superpowers-skills) 的独立仓库。"
+    },
+    {
+      "en-US": "**What this means for you:**",
+      "zh-Hans": "**这对您意味着：**"
+    },
+    {
+      "en-US": "- **First install:** Plugin automatically clones skills to `~/.config/superpowers/skills/`\n- **Forking:** During setup, you'll be offered the option to fork the skills repo (if `gh` is installed)\n- **Updates:** Skills auto-update on session start (fast-forward when possible)\n- **Contributing:** Work on branches, commit locally, submit PRs to upstream\n- **No more shadowing:** Old two-tier system (personal/core) replaced with single-repo branch workflow",
+      "zh-Hans": "* **首次安装：** 插件自动将技能克隆到 `~/.config/superpowers/skills/`\n* **分叉：** 在设置过程中，您将获得分叉技能仓库的选项（如果安装了 `gh`）\n* **更新：** 技能在会话开始时自动更新（尽可能快进）\n* **贡献：** 在分支上工作，本地提交，向上游提交 PR\n* **不再有影子系统：** 旧的两层系统（个人/核心）被单一仓库分支工作流程取代"
+    },
+    {
+      "en-US": "**Migration:**",
+      "zh-Hans": "**迁移：**"
+    },
+    {
+      "en-US": "If you have an existing installation:",
+      "zh-Hans": "如果您有现有安装："
+    },
+    {
+      "en-US": "1. Your old `~/.config/superpowers/.git` will be backed up to `~/.config/superpowers/.git.bak`\n2. Old skills will be backed up to `~/.config/superpowers/skills.bak`\n3. Fresh clone of obra/superpowers-skills will be created at `~/.config/superpowers/skills/`",
+      "zh-Hans": "1. 您旧的 `~/.config/superpowers/.git` 将备份到 `~/.config/superpowers/.git.bak`\n2. 旧技能将备份到 `~/.config/superpowers/skills.bak`\n3. 将在 `~/.config/superpowers/skills/` 处创建 obra/superpowers-skills 的新鲜克隆"
+    },
+    {
+      "en-US": "### Removed Features",
+      "zh-Hans": "### 移除的功能"
+    },
+    {
+      "en-US": "- **Personal superpowers overlay system** - Replaced with git branch workflow\n- **setup-personal-superpowers hook** - Replaced by initialize-skills.sh",
+      "zh-Hans": "* **个人 superpowers 覆盖系统** - 被 git 分支工作流程取代\n* **setup-personal-superpowers 钩子** - 被 initialize-skills.sh 取代"
+    },
+    {
+      "en-US": "## New Features",
+      "zh-Hans": "## 新功能"
+    },
+    {
+      "en-US": "### Skills Repository Infrastructure",
+      "zh-Hans": "### 技能仓库基础设施"
+    },
+    {
+      "en-US": "**Automatic Clone & Setup** (`lib/initialize-skills.sh`)",
+      "zh-Hans": "**自动克隆与设置** (`lib/initialize-skills.sh`)"
+    },
+    {
+      "en-US": "- Clones obra/superpowers-skills on first run\n- Offers fork creation if GitHub CLI is installed\n- Sets up upstream/origin remotes correctly\n- Handles migration from old installation",
+      "zh-Hans": "* 首次运行时克隆 obra/superpowers-skills\n* 如果安装了 GitHub CLI，则提供分叉创建选项\n* 正确设置上游/源远程仓库\n* 处理从旧安装的迁移"
+    },
+    {
+      "en-US": "**Auto-Update**",
+      "zh-Hans": "**自动更新**"
+    },
+    {
+      "en-US": "- Fetches from tracking remote on every session start\n- Auto-merges with fast-forward when possible\n- Notifies when manual sync needed (branch diverged)\n- Uses pulling-updates-from-skills-repository skill for manual sync",
+      "zh-Hans": "* 每次会话开始时从跟踪远程仓库获取\n* 尽可能快进自动合并\n* 需要手动同步时通知（分支分叉）\n* 使用 pulling-updates-from-skills-repository 技能进行手动同步"
+    },
+    {
+      "en-US": "### New Skills",
+      "zh-Hans": "### 新技能"
+    },
+    {
+      "en-US": "**Problem-Solving Skills** (`skills/problem-solving/`)",
+      "zh-Hans": "**问题解决技能** (`skills/problem-solving/`)"
+    },
+    {
+      "en-US": "- **collision-zone-thinking** - Force unrelated concepts together for emergent insights\n- **inversion-exercise** - Flip assumptions to reveal hidden constraints\n- **meta-pattern-recognition** - Spot universal principles across domains\n- **scale-game** - Test at extremes to expose fundamental truths\n- **simplification-cascades** - Find insights that eliminate multiple components\n- **when-stuck** - Dispatch to right problem-solving technique",
+      "zh-Hans": "* **collision-zone-thinking** - 强制无关概念碰撞以获得涌现的洞察\n* **inversion-exercise** - 翻转假设以揭示隐藏的约束\n* **meta-pattern-recognition** - 发现跨领域的通用原则\n* **scale-game** - 在极端情况下测试以暴露基本真理\n* **simplification-cascades** - 找到消除多个组件的洞察\n* **when-stuck** - 派遣到正确的问题解决技术"
+    },
+    {
+      "en-US": "**Research Skills** (`skills/research/`)",
+      "zh-Hans": "**研究技能** (`skills/research/`)"
+    },
+    {
+      "en-US": "- **tracing-knowledge-lineages** - Understand how ideas evolved over time",
+      "zh-Hans": "* **tracing-knowledge-lineages** - 理解想法如何随时间演变"
+    },
+    {
+      "en-US": "**Architecture Skills** (`skills/architecture/`)",
+      "zh-Hans": "**架构技能** (`skills/architecture/`)"
+    },
+    {
+      "en-US": "- **preserving-productive-tensions** - Keep multiple valid approaches instead of forcing premature resolution",
+      "zh-Hans": "* **preserving-productive-tensions** - 保持多种有效方法，而不是强制过早解决"
+    },
+    {
+      "en-US": "### Skills Improvements",
+      "zh-Hans": "### 技能改进"
+    },
+    {
+      "en-US": "**using-skills (formerly getting-started)**",
+      "zh-Hans": "**using-skills（原 getting-started）**"
+    },
+    {
+      "en-US": "- Renamed from getting-started to using-skills\n- Complete rewrite with imperative tone (v4.0.0)\n- Front-loaded critical rules\n- Added \"Why\" explanations for all workflows\n- Always includes /SKILL.md suffix in references\n- Clearer distinction between rigid rules and flexible patterns",
+      "zh-Hans": "* 从 getting-started 重命名为 using-skills\n* 使用命令式语调完全重写 (v4.0.0)\n* 前置关键规则\n* 为所有工作流程添加了“为什么”解释\n* 引用中始终包含 /SKILL.md 后缀\n* 更清晰地区分严格规则和灵活模式"
+    },
+    {
+      "en-US": "**writing-skills**",
+      "zh-Hans": "**writing-skills**"
+    },
+    {
+      "en-US": "- Cross-referencing guidance moved from using-skills\n- Added token efficiency section (word count targets)\n- Improved CSO (Claude Search Optimization) guidance",
+      "zh-Hans": "* 交叉引用指南从 using-skills 移出\n* 添加了令牌效率部分（字数目标）\n* 改进了 CSO（Claude 搜索优化）指南"
+    },
+    {
+      "en-US": "**sharing-skills**",
+      "zh-Hans": "**sharing-skills**"
+    },
+    {
+      "en-US": "- Updated for new branch-and-PR workflow (v2.0.0)\n- Removed personal/core split references",
+      "zh-Hans": "* 更新为新的分支和 PR 工作流程 (v2.0.0)\n* 移除了个人/核心分离引用"
+    },
+    {
+      "en-US": "**pulling-updates-from-skills-repository** (new)",
+      "zh-Hans": "**pulling-updates-from-skills-repository（新）**"
+    },
+    {
+      "en-US": "- Complete workflow for syncing with upstream\n- Replaces old \"updating-skills\" skill",
+      "zh-Hans": "* 与上游同步的完整工作流程\n* 取代了旧的“updating-skills”技能"
+    },
+    {
+      "en-US": "### Tools Improvements",
+      "zh-Hans": "### 工具改进"
+    },
+    {
+      "en-US": "**find-skills**",
+      "zh-Hans": "**find-skills**"
+    },
+    {
+      "en-US": "- Now outputs full paths with /SKILL.md suffix\n- Makes paths directly usable with Read tool\n- Updated help text",
+      "zh-Hans": "* 现在输出带有 /SKILL.md 后缀的完整路径\n* 使路径可直接与 Read 工具一起使用\n* 更新了帮助文本"
+    },
+    {
+      "en-US": "**skill-run**",
+      "zh-Hans": "**skill-run**"
+    },
+    {
+      "en-US": "- Moved from scripts/ to skills/using-skills/\n- Improved documentation",
+      "zh-Hans": "* 从 scripts/ 移动到 skills/using-skills/\n* 改进了文档"
+    },
+    {
+      "en-US": "### Plugin Infrastructure",
+      "zh-Hans": "### 插件基础设施"
+    },
+    {
+      "en-US": "**Session Start Hook**",
+      "zh-Hans": "**会话开始钩子**"
+    },
+    {
+      "en-US": "- Now loads from skills repository location\n- Shows full skills list at session start\n- Prints skills location info\n- Shows update status (updated successfully / behind upstream)\n- Moved \"skills behind\" warning to end of output",
+      "zh-Hans": "* 现在从技能仓库位置加载\n* 在会话开始时显示完整的技能列表\n* 打印技能位置信息\n* 显示更新状态（成功更新 / 落后于上游）\n* 将“技能落后”警告移至输出末尾"
+    },
+    {
+      "en-US": "**Environment Variables**",
+      "zh-Hans": "**环境变量**"
+    },
+    {
+      "en-US": "- `SUPERPOWERS_SKILLS_ROOT` set to `~/.config/superpowers/skills`\n- Used consistently throughout all paths",
+      "zh-Hans": "* `SUPERPOWERS_SKILLS_ROOT` 设置为 `~/.config/superpowers/skills`\n* 在所有路径中一致使用"
+    },
+    {
+      "en-US": "## Bug Fixes",
+      "zh-Hans": "## 错误修复"
+    },
+    {
+      "en-US": "- Fixed duplicate upstream remote addition when forking\n- Fixed find-skills double \"skills/\" prefix in output\n- Removed obsolete setup-personal-superpowers call from session-start\n- Fixed path references throughout hooks and commands",
+      "zh-Hans": "* 修复了分叉时重复添加上游远程仓库的问题\n* 修复了 find-skills 输出中双“skills/”前缀的问题\n* 从 session-start 中移除了过时的 setup-personal-superpowers 调用\n* 修复了整个钩子和命令中的路径引用"
+    },
+    {
+      "en-US": "## Documentation",
+      "zh-Hans": "## 文档"
+    },
+    {
+      "en-US": "### README",
+      "zh-Hans": "### README"
+    },
+    {
+      "en-US": "- Updated for new skills repository architecture\n- Prominent link to superpowers-skills repo\n- Updated auto-update description\n- Fixed skill names and references\n- Updated Meta skills list",
+      "zh-Hans": "* 更新为新的技能仓库架构\n* 显著链接到 superpowers-skills 仓库\n* 更新了自动更新描述\n* 修复了技能名称和引用\n* 更新了元技能列表"
+    },
+    {
+      "en-US": "### Testing Documentation",
+      "zh-Hans": "### 测试文档"
+    },
+    {
+      "en-US": "- Added comprehensive testing checklist (`docs/TESTING-CHECKLIST.md`)\n- Created local marketplace config for testing\n- Documented manual testing scenarios",
+      "zh-Hans": "* 添加了全面的测试清单 (`docs/TESTING-CHECKLIST.md`)\n* 为测试创建了本地市场配置\n* 记录了手动测试场景"
+    },
+    {
+      "en-US": "## Technical Details",
+      "zh-Hans": "## 技术细节"
+    },
+    {
+      "en-US": "### File Changes",
+      "zh-Hans": "### 文件变更"
+    },
+    {
+      "en-US": "**Added:**",
+      "zh-Hans": "**添加：**"
+    },
+    {
+      "en-US": "- `lib/initialize-skills.sh` - Skills repo initialization and auto-update\n- `docs/TESTING-CHECKLIST.md` - Manual testing scenarios\n- `.claude-plugin/marketplace.json` - Local testing config",
+      "zh-Hans": "* `lib/initialize-skills.sh` - 技能仓库初始化和自动更新\n* `docs/TESTING-CHECKLIST.md` - 手动测试场景\n* `.claude-plugin/marketplace.json` - 本地测试配置"
+    },
+    {
+      "en-US": "**Removed:**",
+      "zh-Hans": "**移除：**"
+    },
+    {
+      "en-US": "- `skills/` directory (82 files) - Now in obra/superpowers-skills\n- `scripts/` directory - Now in obra/superpowers-skills/skills/using-skills/\n- `hooks/setup-personal-superpowers.sh` - Obsolete",
+      "zh-Hans": "* `skills/` 目录（82 个文件）- 现在位于 obra/superpowers-skills\n* `scripts/` 目录 - 现在位于 obra/superpowers-skills/skills/using-skills/\n* `hooks/setup-personal-superpowers.sh` - 已过时"
+    },
+    {
+      "en-US": "**Modified:**",
+      "zh-Hans": "**修改：**"
+    },
+    {
+      "en-US": "- `hooks/session-start.sh` - Use skills from ~/.config/superpowers/skills\n- `commands/brainstorm.md` - Updated paths to SUPERPOWERS_SKILLS_ROOT\n- `commands/write-plan.md` - Updated paths to SUPERPOWERS_SKILLS_ROOT\n- `commands/execute-plan.md` - Updated paths to SUPERPOWERS_SKILLS_ROOT\n- `README.md` - Complete rewrite for new architecture",
+      "zh-Hans": "* `hooks/session-start.sh` - 使用来自 ~/.config/superpowers/skills 的技能\n* `commands/brainstorm.md` - 更新路径至 SUPERPOWERS\\_SKILLS\\_ROOT\n* `commands/write-plan.md` - 更新路径至 SUPERPOWERS\\_SKILLS\\_ROOT\n* `commands/execute-plan.md` - 更新路径至 SUPERPOWERS\\_SKILLS\\_ROOT\n* `README.md` - 为新架构完全重写"
+    },
+    {
+      "en-US": "### Commit History",
+      "zh-Hans": "### 提交历史"
+    },
+    {
+      "en-US": "This release includes:",
+      "zh-Hans": "此版本包括："
+    },
+    {
+      "en-US": "- 20+ commits for skills repository separation\n- PR #1: Amplifier-inspired problem-solving and research skills\n- PR #2: Personal superpowers overlay system (later replaced)\n- Multiple skill refinements and documentation improvements",
+      "zh-Hans": "* 20+ 次提交用于技能仓库分离\n* PR #1：受放大器启发的问题解决和研究技能\n* PR #2：个人 superpowers 覆盖系统（后来被取代）\n* 多次技能细化和文档改进"
+    },
+    {
+      "en-US": "## Upgrade Instructions",
+      "zh-Hans": "## 升级说明"
+    },
+    {
+      "en-US": "### Fresh Install",
+      "zh-Hans": "### 全新安装"
+    },
+    {
+      "en-US": "```bash\n# In Claude Code\n/plugin marketplace add obra/superpowers-marketplace\n/plugin install superpowers@superpowers-marketplace\n```",
+      "zh-Hans": "```bash\n# In Claude Code\n/plugin marketplace add obra/superpowers-marketplace\n/plugin install superpowers@superpowers-marketplace\n```"
+    },
+    {
+      "en-US": "The plugin handles everything automatically.",
+      "zh-Hans": "插件自动处理一切。"
+    },
+    {
+      "en-US": "### Upgrading from v1.x",
+      "zh-Hans": "### 从 v1.x 升级"
+    },
+    {
+      "en-US": "1. **Backup your personal skills** (if you have any):\n   ```bash\n   cp -r ~/.config/superpowers/skills ~/superpowers-skills-backup\n   ```\n\n2. **Update the plugin:**\n   ```bash\n   /plugin update superpowers\n   ```\n\n3. **On next session start:**\n   - Old installation will be backed up automatically\n   - Fresh skills repo will be cloned\n   - If you have GitHub CLI, you'll be offered the option to fork\n\n4. **Migrate personal skills** (if you had any):\n   - Create a branch in your local skills repo\n   - Copy your personal skills from backup\n   - Commit and push to your fork\n   - Consider contributing back via PR",
+      "zh-Hans": "1. **备份您的个人技能**（如果有的话）：\n   ```bash\n   cp -r ~/.config/superpowers/skills ~/superpowers-skills-backup\n   ```\n\n2. **更新插件：**\n   ```bash\n   /plugin update superpowers\n   ```\n\n3. **在下一次会话开始时：**\n   * 旧安装将自动备份\n   * 将克隆全新的技能仓库\n   * 如果你有 GitHub CLI，系统将提供 fork 选项\n\n4. **迁移个人技能**（如果你有的话）：\n   * 在本地技能仓库中创建一个分支\n   * 从备份中复制你的个人技能\n   * 提交并推送到你的 fork\n   * 考虑通过 PR 回馈社区"
+    },
+    {
+      "en-US": "## What's Next",
+      "zh-Hans": "## 下一步"
+    },
+    {
+      "en-US": "### For Users",
+      "zh-Hans": "### 对于用户"
+    },
+    {
+      "en-US": "- Explore the new problem-solving skills\n- Try the branch-based workflow for skill improvements\n- Contribute skills back to the community",
+      "zh-Hans": "* 探索新的问题解决技能\n* 尝试基于分支的工作流来改进技能\n* 将技能贡献回社区"
+    },
+    {
+      "en-US": "### For Contributors",
+      "zh-Hans": "### 对于贡献者"
+    },
+    {
+      "en-US": "- Skills repository is now at https://github.com/obra/superpowers-skills\n- Fork → Branch → PR workflow\n- See skills/meta/writing-skills/SKILL.md for TDD approach to documentation",
+      "zh-Hans": "* 技能仓库现位于 https://github.com/obra/superpowers-skills\n* 采用 Fork → 分支 → PR 的工作流\n* 查看 skills/meta/writing-skills/SKILL.md 了解文档的 TDD 方法"
+    },
+    {
+      "en-US": "## Known Issues",
+      "zh-Hans": "## 已知问题"
+    },
+    {
+      "en-US": "None at this time.",
+      "zh-Hans": "目前没有。"
+    },
+    {
+      "en-US": "## Credits",
+      "zh-Hans": "## 致谢"
+    },
+    {
+      "en-US": "- Problem-solving skills inspired by Amplifier patterns\n- Community contributions and feedback\n- Extensive testing and iteration on skill effectiveness",
+      "zh-Hans": "* 问题解决技能灵感来源于 Amplifier 模式\n* 社区贡献和反馈\n* 对技能有效性进行了广泛的测试和迭代"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "**Full Changelog:** https://github.com/obra/superpowers/compare/dd013f6...main\n**Skills Repository:** https://github.com/obra/superpowers-skills\n**Issues:** https://github.com/obra/superpowers/issues",
+      "zh-Hans": "**完整更新日志：** https://github.com/obra/superpowers/compare/dd013f6...main\n**技能仓库：** https://github.com/obra/superpowers-skills\n**问题反馈：** https://github.com/obra/superpowers/issues"
+    }
+  ]
+}

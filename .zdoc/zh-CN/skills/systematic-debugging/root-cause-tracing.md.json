@@ -1,0 +1,210 @@
+{
+  "sourceFile": "skills/systematic-debugging/root-cause-tracing.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Root Cause Tracing",
+      "zh-Hans": "# 根源追溯"
+    },
+    {
+      "en-US": "## Overview",
+      "zh-Hans": "## 概述"
+    },
+    {
+      "en-US": "Bugs often manifest deep in the call stack (git init in wrong directory, file created in wrong location, database opened with wrong path). Your instinct is to fix where the error appears, but that's treating a symptom.",
+      "zh-Hans": "Bug 往往在调用栈深处显现（在错误目录执行 git init、文件创建在错误位置、使用错误路径打开数据库）。你的直觉是在错误出现的地方修复，但这只是治标。"
+    },
+    {
+      "en-US": "**Core principle:** Trace backward through the call chain until you find the original trigger, then fix at the source.",
+      "zh-Hans": "**核心原则：** 沿着调用链向后追溯，直到找到最初的触发点，然后在源头修复。"
+    },
+    {
+      "en-US": "## When to Use",
+      "zh-Hans": "## 何时使用"
+    },
+    {
+      "en-US": "```dot\ndigraph when_to_use {\n    \"Bug appears deep in stack?\" [shape=diamond];\n    \"Can trace backwards?\" [shape=diamond];\n    \"Fix at symptom point\" [shape=box];\n    \"Trace to original trigger\" [shape=box];\n    \"BETTER: Also add defense-in-depth\" [shape=box];\n\n    \"Bug appears deep in stack?\" -> \"Can trace backwards?\" [label=\"yes\"];\n    \"Can trace backwards?\" -> \"Trace to original trigger\" [label=\"yes\"];\n    \"Can trace backwards?\" -> \"Fix at symptom point\" [label=\"no - dead end\"];\n    \"Trace to original trigger\" -> \"BETTER: Also add defense-in-depth\";\n}\n```",
+      "zh-Hans": "```dot\ndigraph when_to_use {\n    \"Bug appears deep in stack?\" [shape=diamond];\n    \"Can trace backwards?\" [shape=diamond];\n    \"Fix at symptom point\" [shape=box];\n    \"Trace to original trigger\" [shape=box];\n    \"BETTER: Also add defense-in-depth\" [shape=box];\n\n    \"Bug appears deep in stack?\" -> \"Can trace backwards?\" [label=\"yes\"];\n    \"Can trace backwards?\" -> \"Trace to original trigger\" [label=\"yes\"];\n    \"Can trace backwards?\" -> \"Fix at symptom point\" [label=\"no - dead end\"];\n    \"Trace to original trigger\" -> \"BETTER: Also add defense-in-depth\";\n}\n```"
+    },
+    {
+      "en-US": "**Use when:**",
+      "zh-Hans": "**在以下情况使用：**"
+    },
+    {
+      "en-US": "- Error happens deep in execution (not at entry point)\n- Stack trace shows long call chain\n- Unclear where invalid data originated\n- Need to find which test/code triggers the problem",
+      "zh-Hans": "* 错误发生在执行深处（而非入口点）\n* 堆栈跟踪显示很长的调用链\n* 不清楚无效数据源自何处\n* 需要找出哪个测试/代码触发了问题"
+    },
+    {
+      "en-US": "## The Tracing Process",
+      "zh-Hans": "## 追溯流程"
+    },
+    {
+      "en-US": "### 1. Observe the Symptom",
+      "zh-Hans": "### 1. 观察症状"
+    },
+    {
+      "en-US": "```\nError: git init failed in /Users/jesse/project/packages/core\n```",
+      "zh-Hans": "```\nError: git init failed in /Users/jesse/project/packages/core\n```"
+    },
+    {
+      "en-US": "### 2. Find Immediate Cause",
+      "zh-Hans": "### 2. 找到直接原因"
+    },
+    {
+      "en-US": "**What code directly causes this?**",
+      "zh-Hans": "**是什么代码直接导致了这个问题？**"
+    },
+    {
+      "en-US": "```typescript\nawait execFileAsync('git', ['init'], { cwd: projectDir });\n```",
+      "zh-Hans": "```typescript\nawait execFileAsync('git', ['init'], { cwd: projectDir });\n```"
+    },
+    {
+      "en-US": "### 3. Ask: What Called This?",
+      "zh-Hans": "### 3. 提问：是谁调用了它？"
+    },
+    {
+      "en-US": "```typescript\nWorktreeManager.createSessionWorktree(projectDir, sessionId)\n  → called by Session.initializeWorkspace()\n  → called by Session.create()\n  → called by test at Project.create()\n```",
+      "zh-Hans": "```typescript\nWorktreeManager.createSessionWorktree(projectDir, sessionId)\n  → called by Session.initializeWorkspace()\n  → called by Session.create()\n  → called by test at Project.create()\n```"
+    },
+    {
+      "en-US": "### 4. Keep Tracing Up",
+      "zh-Hans": "### 4. 持续向上追溯"
+    },
+    {
+      "en-US": "**What value was passed?**",
+      "zh-Hans": "**传递了什么值？**"
+    },
+    {
+      "en-US": "- `projectDir = ''` (empty string!)\n- Empty string as `cwd` resolves to `process.cwd()`\n- That's the source code directory!",
+      "zh-Hans": "* `projectDir = ''`（空字符串！）\n* 空字符串作为 `cwd` 解析为 `process.cwd()`\n* 那就是源代码目录！"
+    },
+    {
+      "en-US": "### 5. Find Original Trigger",
+      "zh-Hans": "### 5. 找到原始触发点"
+    },
+    {
+      "en-US": "**Where did empty string come from?**",
+      "zh-Hans": "**空字符串从何而来？**"
+    },
+    {
+      "en-US": "```typescript\nconst context = setupCoreTest(); // Returns { tempDir: '' }\nProject.create('name', context.tempDir); // Accessed before beforeEach!\n```",
+      "zh-Hans": "```typescript\nconst context = setupCoreTest(); // Returns { tempDir: '' }\nProject.create('name', context.tempDir); // Accessed before beforeEach!\n```"
+    },
+    {
+      "en-US": "## Adding Stack Traces",
+      "zh-Hans": "## 添加堆栈跟踪"
+    },
+    {
+      "en-US": "When you can't trace manually, add instrumentation:",
+      "zh-Hans": "当无法手动追溯时，添加检测代码："
+    },
+    {
+      "en-US": "```typescript\n// Before the problematic operation\nasync function gitInit(directory: string) {\n  const stack = new Error().stack;\n  console.error('DEBUG git init:', {\n    directory,\n    cwd: process.cwd(),\n    nodeEnv: process.env.NODE_ENV,\n    stack,\n  });\n\n  await execFileAsync('git', ['init'], { cwd: directory });\n}\n```",
+      "zh-Hans": "```typescript\n// Before the problematic operation\nasync function gitInit(directory: string) {\n  const stack = new Error().stack;\n  console.error('DEBUG git init:', {\n    directory,\n    cwd: process.cwd(),\n    nodeEnv: process.env.NODE_ENV,\n    stack,\n  });\n\n  await execFileAsync('git', ['init'], { cwd: directory });\n}\n```"
+    },
+    {
+      "en-US": "**Critical:** Use `console.error()` in tests (not logger - may not show)",
+      "zh-Hans": "**关键：** 在测试中使用 `console.error()`（不要使用 logger - 可能不会显示）"
+    },
+    {
+      "en-US": "**Run and capture:**",
+      "zh-Hans": "**运行并捕获：**"
+    },
+    {
+      "en-US": "```bash\nnpm test 2>&1 | grep 'DEBUG git init'\n```",
+      "zh-Hans": "```bash\nnpm test 2>&1 | grep 'DEBUG git init'\n```"
+    },
+    {
+      "en-US": "**Analyze stack traces:**",
+      "zh-Hans": "**分析堆栈跟踪：**"
+    },
+    {
+      "en-US": "- Look for test file names\n- Find the line number triggering the call\n- Identify the pattern (same test? same parameter?)",
+      "zh-Hans": "* 查找测试文件名\n* 找到触发调用的行号\n* 识别模式（相同的测试？相同的参数？）"
+    },
+    {
+      "en-US": "## Finding Which Test Causes Pollution",
+      "zh-Hans": "## 找出导致污染的测试"
+    },
+    {
+      "en-US": "If something appears during tests but you don't know which test:",
+      "zh-Hans": "如果某问题在测试期间出现，但不知道是哪个测试导致的："
+    },
+    {
+      "en-US": "Use the bisection script `find-polluter.sh` in this directory:",
+      "zh-Hans": "使用此目录中的二分查找脚本 `find-polluter.sh`："
+    },
+    {
+      "en-US": "```bash\n./find-polluter.sh '.git' 'src/**/*.test.ts'\n```",
+      "zh-Hans": "```bash\n./find-polluter.sh '.git' 'src/**/*.test.ts'\n```"
+    },
+    {
+      "en-US": "Runs tests one-by-one, stops at first polluter. See script for usage.",
+      "zh-Hans": "逐个运行测试，在第一个污染者处停止。查看脚本了解用法。"
+    },
+    {
+      "en-US": "## Real Example: Empty projectDir",
+      "zh-Hans": "## 实际示例：空 projectDir"
+    },
+    {
+      "en-US": "**Symptom:** `.git` created in `packages/core/` (source code)",
+      "zh-Hans": "**症状：** `.git` 在 `packages/core/` 中创建（源代码目录）"
+    },
+    {
+      "en-US": "**Trace chain:**",
+      "zh-Hans": "**追溯链：**"
+    },
+    {
+      "en-US": "1. `git init` runs in `process.cwd()` ← empty cwd parameter\n2. WorktreeManager called with empty projectDir\n3. Session.create() passed empty string\n4. Test accessed `context.tempDir` before beforeEach\n5. setupCoreTest() returns `{ tempDir: '' }` initially",
+      "zh-Hans": "1. `git init` 在 `process.cwd()` 中运行 ← 空的 cwd 参数\n2. WorktreeManager 被调用时带有空的 projectDir\n3. Session.create() 被传入空字符串\n4. 测试在 beforeEach 之前访问了 `context.tempDir`\n5. setupCoreTest() 最初返回 `{ tempDir: '' }`"
+    },
+    {
+      "en-US": "**Root cause:** Top-level variable initialization accessing empty value",
+      "zh-Hans": "**根本原因：** 顶层变量初始化时访问了空值"
+    },
+    {
+      "en-US": "**Fix:** Made tempDir a getter that throws if accessed before beforeEach",
+      "zh-Hans": "**修复：** 将 tempDir 改为 getter，如果在 beforeEach 之前访问则抛出错误"
+    },
+    {
+      "en-US": "**Also added defense-in-depth:**",
+      "zh-Hans": "**同时添加纵深防御：**"
+    },
+    {
+      "en-US": "- Layer 1: Project.create() validates directory\n- Layer 2: WorkspaceManager validates not empty\n- Layer 3: NODE_ENV guard refuses git init outside tmpdir\n- Layer 4: Stack trace logging before git init",
+      "zh-Hans": "* 第 1 层：Project.create() 验证目录\n* 第 2 层：WorkspaceManager 验证非空\n* 第 3 层：NODE\\_ENV 防护拒绝在 tmpdir 外进行 git init\n* 第 4 层：在 git init 前记录堆栈跟踪"
+    },
+    {
+      "en-US": "## Key Principle",
+      "zh-Hans": "## 关键原则"
+    },
+    {
+      "en-US": "```dot\ndigraph principle {\n    \"Found immediate cause\" [shape=ellipse];\n    \"Can trace one level up?\" [shape=diamond];\n    \"Trace backwards\" [shape=box];\n    \"Is this the source?\" [shape=diamond];\n    \"Fix at source\" [shape=box];\n    \"Add validation at each layer\" [shape=box];\n    \"Bug impossible\" [shape=doublecircle];\n    \"NEVER fix just the symptom\" [shape=octagon, style=filled, fillcolor=red, fontcolor=white];\n\n    \"Found immediate cause\" -> \"Can trace one level up?\";\n    \"Can trace one level up?\" -> \"Trace backwards\" [label=\"yes\"];\n    \"Can trace one level up?\" -> \"NEVER fix just the symptom\" [label=\"no\"];\n    \"Trace backwards\" -> \"Is this the source?\";\n    \"Is this the source?\" -> \"Trace backwards\" [label=\"no - keeps going\"];\n    \"Is this the source?\" -> \"Fix at source\" [label=\"yes\"];\n    \"Fix at source\" -> \"Add validation at each layer\";\n    \"Add validation at each layer\" -> \"Bug impossible\";\n}\n```",
+      "zh-Hans": "```dot\ndigraph principle {\n    \"Found immediate cause\" [shape=ellipse];\n    \"Can trace one level up?\" [shape=diamond];\n    \"Trace backwards\" [shape=box];\n    \"Is this the source?\" [shape=diamond];\n    \"Fix at source\" [shape=box];\n    \"Add validation at each layer\" [shape=box];\n    \"Bug impossible\" [shape=doublecircle];\n    \"NEVER fix just the symptom\" [shape=octagon, style=filled, fillcolor=red, fontcolor=white];\n\n    \"Found immediate cause\" -> \"Can trace one level up?\";\n    \"Can trace one level up?\" -> \"Trace backwards\" [label=\"yes\"];\n    \"Can trace one level up?\" -> \"NEVER fix just the symptom\" [label=\"no\"];\n    \"Trace backwards\" -> \"Is this the source?\";\n    \"Is this the source?\" -> \"Trace backwards\" [label=\"no - keeps going\"];\n    \"Is this the source?\" -> \"Fix at source\" [label=\"yes\"];\n    \"Fix at source\" -> \"Add validation at each layer\";\n    \"Add validation at each layer\" -> \"Bug impossible\";\n}\n```"
+    },
+    {
+      "en-US": "**NEVER fix just where the error appears.** Trace back to find the original trigger.",
+      "zh-Hans": "**切勿仅仅在错误出现的地方修复。** 追溯回去找到原始触发点。"
+    },
+    {
+      "en-US": "## Stack Trace Tips",
+      "zh-Hans": "## 堆栈跟踪技巧"
+    },
+    {
+      "en-US": "**In tests:** Use `console.error()` not logger - logger may be suppressed\n**Before operation:** Log before the dangerous operation, not after it fails\n**Include context:** Directory, cwd, environment variables, timestamps\n**Capture stack:** `new Error().stack` shows complete call chain",
+      "zh-Hans": "**在测试中：** 使用 `console.error()` 而非 logger - logger 可能被抑制\n**在操作前：** 在危险操作前记录，而不是在它失败后\n**包含上下文：** 目录、cwd、环境变量、时间戳\n**捕获堆栈：** `new Error().stack` 显示完整的调用链"
+    },
+    {
+      "en-US": "## Real-World Impact",
+      "zh-Hans": "## 实际影响"
+    },
+    {
+      "en-US": "From debugging session (2025-10-03):",
+      "zh-Hans": "来自调试会话（2025-10-03）："
+    },
+    {
+      "en-US": "- Found root cause through 5-level trace\n- Fixed at source (getter validation)\n- Added 4 layers of defense\n- 1847 tests passed, zero pollution",
+      "zh-Hans": "* 通过 5 级追溯找到根本原因\n* 在源头修复（getter 验证）\n* 添加了 4 层防御\n* 1847 个测试通过，零污染"
+    }
+  ]
+}

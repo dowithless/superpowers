@@ -1,0 +1,138 @@
+{
+  "sourceFile": "skills/requesting-code-review/SKILL.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "---\nname: requesting-code-review\ndescription: Use when completing tasks, implementing major features, or before merging to verify work meets requirements\n---",
+      "zh-Hans": "---\nname: requesting-code-review\ndescription: 用于完成任务、实现主要功能或合并前验证工作是否符合要求时使用\n---"
+    },
+    {
+      "en-US": "# Requesting Code Review",
+      "zh-Hans": "# 请求代码审查"
+    },
+    {
+      "en-US": "Dispatch superpowers:code-reviewer subagent to catch issues before they cascade. The reviewer gets precisely crafted context for evaluation — never your session's history. This keeps the reviewer focused on the work product, not your thought process, and preserves your own context for continued work.",
+      "zh-Hans": "调度 superpowers:code-reviewer 子代理以在问题蔓延前将其捕获。审查者会获得精心构建的评估上下文——绝不会是你会话的历史记录。这能让审查者专注于工作成果，而非你的思考过程，并为你自己的后续工作保留上下文。"
+    },
+    {
+      "en-US": "**Core principle:** Review early, review often.",
+      "zh-Hans": "**核心原则：** 早审查，常审查。"
+    },
+    {
+      "en-US": "## When to Request Review",
+      "zh-Hans": "## 何时请求审查"
+    },
+    {
+      "en-US": "**Mandatory:**",
+      "zh-Hans": "**强制情况：**"
+    },
+    {
+      "en-US": "- After each task in subagent-driven development\n- After completing major feature\n- Before merge to main",
+      "zh-Hans": "* 在子代理驱动开发的每项任务之后\n* 完成主要功能后\n* 合并到主分支前"
+    },
+    {
+      "en-US": "**Optional but valuable:**",
+      "zh-Hans": "**可选但很有价值：**"
+    },
+    {
+      "en-US": "- When stuck (fresh perspective)\n- Before refactoring (baseline check)\n- After fixing complex bug",
+      "zh-Hans": "* 遇到瓶颈时（获取新视角）\n* 重构之前（基线检查）\n* 修复复杂错误后"
+    },
+    {
+      "en-US": "## How to Request",
+      "zh-Hans": "## 如何请求"
+    },
+    {
+      "en-US": "**1. Get git SHAs:**",
+      "zh-Hans": "**1. 获取 git SHA：**"
+    },
+    {
+      "en-US": "```bash\nBASE_SHA=$(git rev-parse HEAD~1)  # or origin/main\nHEAD_SHA=$(git rev-parse HEAD)\n```",
+      "zh-Hans": "```bash\nBASE_SHA=$(git rev-parse HEAD~1)  # or origin/main\nHEAD_SHA=$(git rev-parse HEAD)\n```"
+    },
+    {
+      "en-US": "**2. Dispatch code-reviewer subagent:**",
+      "zh-Hans": "**2. 调度 code-reviewer 子代理：**"
+    },
+    {
+      "en-US": "Use Task tool with superpowers:code-reviewer type, fill template at `code-reviewer.md`",
+      "zh-Hans": "使用 Task 工具，类型为 superpowers:code-reviewer，填写位于 `code-reviewer.md` 的模板"
+    },
+    {
+      "en-US": "**Placeholders:**",
+      "zh-Hans": "**占位符说明：**"
+    },
+    {
+      "en-US": "- `{WHAT_WAS_IMPLEMENTED}` - What you just built\n- `{PLAN_OR_REQUIREMENTS}` - What it should do\n- `{BASE_SHA}` - Starting commit\n- `{HEAD_SHA}` - Ending commit\n- `{DESCRIPTION}` - Brief summary",
+      "zh-Hans": "* `{WHAT_WAS_IMPLEMENTED}` - 你刚刚构建了什么\n* `{PLAN_OR_REQUIREMENTS}` - 它应该做什么\n* `{BASE_SHA}` - 起始提交\n* `{HEAD_SHA}` - 结束提交\n* `{DESCRIPTION}` - 简要总结"
+    },
+    {
+      "en-US": "**3. Act on feedback:**",
+      "zh-Hans": "**3. 处理反馈：**"
+    },
+    {
+      "en-US": "- Fix Critical issues immediately\n- Fix Important issues before proceeding\n- Note Minor issues for later\n- Push back if reviewer is wrong (with reasoning)",
+      "zh-Hans": "* 立即修复 关键 问题\n* 在继续之前修复 重要 问题\n* 记录 次要 问题稍后处理\n* 如果审查者有误，请提出反驳（并附上理由）"
+    },
+    {
+      "en-US": "## Example",
+      "zh-Hans": "## 示例"
+    },
+    {
+      "en-US": "```\n[Just completed Task 2: Add verification function]\n\nYou: Let me request code review before proceeding.\n\nBASE_SHA=$(git log --oneline | grep \"Task 1\" | head -1 | awk '{print $1}')\nHEAD_SHA=$(git rev-parse HEAD)\n\n[Dispatch superpowers:code-reviewer subagent]\n  WHAT_WAS_IMPLEMENTED: Verification and repair functions for conversation index\n  PLAN_OR_REQUIREMENTS: Task 2 from docs/superpowers/plans/deployment-plan.md\n  BASE_SHA: a7981ec\n  HEAD_SHA: 3df7661\n  DESCRIPTION: Added verifyIndex() and repairIndex() with 4 issue types\n\n[Subagent returns]:\n  Strengths: Clean architecture, real tests\n  Issues:\n    Important: Missing progress indicators\n    Minor: Magic number (100) for reporting interval\n  Assessment: Ready to proceed\n\nYou: [Fix progress indicators]\n[Continue to Task 3]\n```",
+      "zh-Hans": "```\n[Just completed Task 2: Add verification function]\n\nYou: Let me request code review before proceeding.\n\nBASE_SHA=$(git log --oneline | grep \"Task 1\" | head -1 | awk '{print $1}')\nHEAD_SHA=$(git rev-parse HEAD)\n\n[Dispatch superpowers:code-reviewer subagent]\n  WHAT_WAS_IMPLEMENTED: Verification and repair functions for conversation index\n  PLAN_OR_REQUIREMENTS: Task 2 from docs/superpowers/plans/deployment-plan.md\n  BASE_SHA: a7981ec\n  HEAD_SHA: 3df7661\n  DESCRIPTION: Added verifyIndex() and repairIndex() with 4 issue types\n\n[Subagent returns]:\n  Strengths: Clean architecture, real tests\n  Issues:\n    Important: Missing progress indicators\n    Minor: Magic number (100) for reporting interval\n  Assessment: Ready to proceed\n\nYou: [Fix progress indicators]\n[Continue to Task 3]\n```"
+    },
+    {
+      "en-US": "## Integration with Workflows",
+      "zh-Hans": "## 与工作流的集成"
+    },
+    {
+      "en-US": "**Subagent-Driven Development:**",
+      "zh-Hans": "**子代理驱动开发：**"
+    },
+    {
+      "en-US": "- Review after EACH task\n- Catch issues before they compound\n- Fix before moving to next task",
+      "zh-Hans": "* 在 每项 任务后审查\n* 在问题累积前将其捕获\n* 在进入下一任务前修复"
+    },
+    {
+      "en-US": "**Executing Plans:**",
+      "zh-Hans": "**执行计划时：**"
+    },
+    {
+      "en-US": "- Review after each batch (3 tasks)\n- Get feedback, apply, continue",
+      "zh-Hans": "* 每批（3项任务）后审查\n* 获取反馈，应用，继续"
+    },
+    {
+      "en-US": "**Ad-Hoc Development:**",
+      "zh-Hans": "**临时开发：**"
+    },
+    {
+      "en-US": "- Review before merge\n- Review when stuck",
+      "zh-Hans": "* 合并前审查\n* 遇到瓶颈时审查"
+    },
+    {
+      "en-US": "## Red Flags",
+      "zh-Hans": "## 危险信号"
+    },
+    {
+      "en-US": "**Never:**",
+      "zh-Hans": "**切勿：**"
+    },
+    {
+      "en-US": "- Skip review because \"it's simple\"\n- Ignore Critical issues\n- Proceed with unfixed Important issues\n- Argue with valid technical feedback",
+      "zh-Hans": "* 因为“很简单”而跳过审查\n* 忽视 关键 问题\n* 带着未修复的 重要 问题继续\n* 与有效的技术反馈争论"
+    },
+    {
+      "en-US": "**If reviewer wrong:**",
+      "zh-Hans": "**如果审查者有误：**"
+    },
+    {
+      "en-US": "- Push back with technical reasoning\n- Show code/tests that prove it works\n- Request clarification",
+      "zh-Hans": "* 用技术推理提出反驳\n* 展示证明其有效的代码/测试\n* 请求澄清"
+    },
+    {
+      "en-US": "See template at: requesting-code-review/code-reviewer.md",
+      "zh-Hans": "模板见：requesting-code-review/code-reviewer.md"
+    }
+  ]
+}

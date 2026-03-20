@@ -1,0 +1,286 @@
+{
+  "sourceFile": "skills/test-driven-development/testing-anti-patterns.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Testing Anti-Patterns",
+      "zh-Hans": "# 测试反模式"
+    },
+    {
+      "en-US": "**Load this reference when:** writing or changing tests, adding mocks, or tempted to add test-only methods to production code.",
+      "zh-Hans": "**在以下情况下参考本文：** 编写或修改测试时、添加模拟对象时、或忍不住想在生产代码中添加仅供测试的方法时。"
+    },
+    {
+      "en-US": "## Overview",
+      "zh-Hans": "## 概述"
+    },
+    {
+      "en-US": "Tests must verify real behavior, not mock behavior. Mocks are a means to isolate, not the thing being tested.",
+      "zh-Hans": "测试必须验证真实行为，而非模拟行为。模拟对象是用于隔离的手段，而非被测试的对象。"
+    },
+    {
+      "en-US": "**Core principle:** Test what the code does, not what the mocks do.",
+      "zh-Hans": "**核心原则：** 测试代码做了什么，而非模拟对象做了什么。"
+    },
+    {
+      "en-US": "**Following strict TDD prevents these anti-patterns.**",
+      "zh-Hans": "**遵循严格的测试驱动开发可以防止这些反模式。**"
+    },
+    {
+      "en-US": "## The Iron Laws",
+      "zh-Hans": "## 铁律"
+    },
+    {
+      "en-US": "```\n1. NEVER test mock behavior\n2. NEVER add test-only methods to production classes\n3. NEVER mock without understanding dependencies\n```",
+      "zh-Hans": "```\n1. NEVER test mock behavior\n2. NEVER add test-only methods to production classes\n3. NEVER mock without understanding dependencies\n```"
+    },
+    {
+      "en-US": "## Anti-Pattern 1: Testing Mock Behavior",
+      "zh-Hans": "## 反模式 1：测试模拟行为"
+    },
+    {
+      "en-US": "**The violation:**",
+      "zh-Hans": "**违规情况：**"
+    },
+    {
+      "en-US": "```typescript\n// ❌ BAD: Testing that the mock exists\ntest('renders sidebar', () => {\n  render(<Page />);\n  expect(screen.getByTestId('sidebar-mock')).toBeInTheDocument();\n});\n```",
+      "zh-Hans": "```typescript\n// ❌ BAD: Testing that the mock exists\ntest('renders sidebar', () => {\n  render(<Page />);\n  expect(screen.getByTestId('sidebar-mock')).toBeInTheDocument();\n});\n```"
+    },
+    {
+      "en-US": "**Why this is wrong:**",
+      "zh-Hans": "**错误原因：**"
+    },
+    {
+      "en-US": "- You're verifying the mock works, not that the component works\n- Test passes when mock is present, fails when it's not\n- Tells you nothing about real behavior",
+      "zh-Hans": "* 你验证的是模拟对象是否工作，而非组件是否工作\n* 测试在模拟对象存在时通过，不存在时失败\n* 无法提供任何关于真实行为的信息"
+    },
+    {
+      "en-US": "**your human partner's correction:** \"Are we testing the behavior of a mock?\"",
+      "zh-Hans": "**你的人类伙伴的纠正：** \"我们是在测试模拟对象的行为吗？\""
+    },
+    {
+      "en-US": "**The fix:**",
+      "zh-Hans": "**修复方法：**"
+    },
+    {
+      "en-US": "```typescript\n// ✅ GOOD: Test real component or don't mock it\ntest('renders sidebar', () => {\n  render(<Page />);  // Don't mock sidebar\n  expect(screen.getByRole('navigation')).toBeInTheDocument();\n});\n\n// OR if sidebar must be mocked for isolation:\n// Don't assert on the mock - test Page's behavior with sidebar present\n```",
+      "zh-Hans": "```typescript\n// ✅ GOOD: Test real component or don't mock it\ntest('renders sidebar', () => {\n  render(<Page />);  // Don't mock sidebar\n  expect(screen.getByRole('navigation')).toBeInTheDocument();\n});\n\n// OR if sidebar must be mocked for isolation:\n// Don't assert on the mock - test Page's behavior with sidebar present\n```"
+    },
+    {
+      "en-US": "### Gate Function",
+      "zh-Hans": "### 门控函数"
+    },
+    {
+      "en-US": "```\nBEFORE asserting on any mock element:\n  Ask: \"Am I testing real component behavior or just mock existence?\"\n\n  IF testing mock existence:\n    STOP - Delete the assertion or unmock the component\n\n  Test real behavior instead\n```",
+      "zh-Hans": "```\nBEFORE asserting on any mock element:\n  Ask: \"Am I testing real component behavior or just mock existence?\"\n\n  IF testing mock existence:\n    STOP - Delete the assertion or unmock the component\n\n  Test real behavior instead\n```"
+    },
+    {
+      "en-US": "## Anti-Pattern 2: Test-Only Methods in Production",
+      "zh-Hans": "## 反模式 2：生产代码中的仅供测试方法"
+    },
+    {
+      "en-US": "**The violation:**",
+      "zh-Hans": "**违规情况：**"
+    },
+    {
+      "en-US": "```typescript\n// ❌ BAD: destroy() only used in tests\nclass Session {\n  async destroy() {  // Looks like production API!\n    await this._workspaceManager?.destroyWorkspace(this.id);\n    // ... cleanup\n  }\n}\n\n// In tests\nafterEach(() => session.destroy());\n```",
+      "zh-Hans": "```typescript\n// ❌ BAD: destroy() only used in tests\nclass Session {\n  async destroy() {  // Looks like production API!\n    await this._workspaceManager?.destroyWorkspace(this.id);\n    // ... cleanup\n  }\n}\n\n// In tests\nafterEach(() => session.destroy());\n```"
+    },
+    {
+      "en-US": "**Why this is wrong:**",
+      "zh-Hans": "**错误原因：**"
+    },
+    {
+      "en-US": "- Production class polluted with test-only code\n- Dangerous if accidentally called in production\n- Violates YAGNI and separation of concerns\n- Confuses object lifecycle with entity lifecycle",
+      "zh-Hans": "* 生产类被仅供测试的代码污染\n* 如果在生产中意外调用会很危险\n* 违反了 YAGNI 原则和关注点分离\n* 混淆了对象生命周期与实体生命周期"
+    },
+    {
+      "en-US": "**The fix:**",
+      "zh-Hans": "**修复方法：**"
+    },
+    {
+      "en-US": "```typescript\n// ✅ GOOD: Test utilities handle test cleanup\n// Session has no destroy() - it's stateless in production\n\n// In test-utils/\nexport async function cleanupSession(session: Session) {\n  const workspace = session.getWorkspaceInfo();\n  if (workspace) {\n    await workspaceManager.destroyWorkspace(workspace.id);\n  }\n}\n\n// In tests\nafterEach(() => cleanupSession(session));\n```",
+      "zh-Hans": "```typescript\n// ✅ GOOD: Test utilities handle test cleanup\n// Session has no destroy() - it's stateless in production\n\n// In test-utils/\nexport async function cleanupSession(session: Session) {\n  const workspace = session.getWorkspaceInfo();\n  if (workspace) {\n    await workspaceManager.destroyWorkspace(workspace.id);\n  }\n}\n\n// In tests\nafterEach(() => cleanupSession(session));\n```"
+    },
+    {
+      "en-US": "### Gate Function",
+      "zh-Hans": "### 门控函数"
+    },
+    {
+      "en-US": "```\nBEFORE adding any method to production class:\n  Ask: \"Is this only used by tests?\"\n\n  IF yes:\n    STOP - Don't add it\n    Put it in test utilities instead\n\n  Ask: \"Does this class own this resource's lifecycle?\"\n\n  IF no:\n    STOP - Wrong class for this method\n```",
+      "zh-Hans": "```\nBEFORE adding any method to production class:\n  Ask: \"Is this only used by tests?\"\n\n  IF yes:\n    STOP - Don't add it\n    Put it in test utilities instead\n\n  Ask: \"Does this class own this resource's lifecycle?\"\n\n  IF no:\n    STOP - Wrong class for this method\n```"
+    },
+    {
+      "en-US": "## Anti-Pattern 3: Mocking Without Understanding",
+      "zh-Hans": "## 反模式 3：在不理解的情况下模拟"
+    },
+    {
+      "en-US": "**The violation:**",
+      "zh-Hans": "**违规情况：**"
+    },
+    {
+      "en-US": "```typescript\n// ❌ BAD: Mock breaks test logic\ntest('detects duplicate server', () => {\n  // Mock prevents config write that test depends on!\n  vi.mock('ToolCatalog', () => ({\n    discoverAndCacheTools: vi.fn().mockResolvedValue(undefined)\n  }));\n\n  await addServer(config);\n  await addServer(config);  // Should throw - but won't!\n});\n```",
+      "zh-Hans": "```typescript\n// ❌ BAD: Mock breaks test logic\ntest('detects duplicate server', () => {\n  // Mock prevents config write that test depends on!\n  vi.mock('ToolCatalog', () => ({\n    discoverAndCacheTools: vi.fn().mockResolvedValue(undefined)\n  }));\n\n  await addServer(config);\n  await addServer(config);  // Should throw - but won't!\n});\n```"
+    },
+    {
+      "en-US": "**Why this is wrong:**",
+      "zh-Hans": "**错误原因：**"
+    },
+    {
+      "en-US": "- Mocked method had side effect test depended on (writing config)\n- Over-mocking to \"be safe\" breaks actual behavior\n- Test passes for wrong reason or fails mysteriously",
+      "zh-Hans": "* 被模拟的方法具有测试所依赖的副作用（例如写入配置）\n* 过度模拟以\"确保安全\"会破坏实际行为\n* 测试因错误原因通过或神秘地失败"
+    },
+    {
+      "en-US": "**The fix:**",
+      "zh-Hans": "**修复方法：**"
+    },
+    {
+      "en-US": "```typescript\n// ✅ GOOD: Mock at correct level\ntest('detects duplicate server', () => {\n  // Mock the slow part, preserve behavior test needs\n  vi.mock('MCPServerManager'); // Just mock slow server startup\n\n  await addServer(config);  // Config written\n  await addServer(config);  // Duplicate detected ✓\n});\n```",
+      "zh-Hans": "```typescript\n// ✅ GOOD: Mock at correct level\ntest('detects duplicate server', () => {\n  // Mock the slow part, preserve behavior test needs\n  vi.mock('MCPServerManager'); // Just mock slow server startup\n\n  await addServer(config);  // Config written\n  await addServer(config);  // Duplicate detected ✓\n});\n```"
+    },
+    {
+      "en-US": "### Gate Function",
+      "zh-Hans": "### 门控函数"
+    },
+    {
+      "en-US": "```\nBEFORE mocking any method:\n  STOP - Don't mock yet\n\n  1. Ask: \"What side effects does the real method have?\"\n  2. Ask: \"Does this test depend on any of those side effects?\"\n  3. Ask: \"Do I fully understand what this test needs?\"\n\n  IF depends on side effects:\n    Mock at lower level (the actual slow/external operation)\n    OR use test doubles that preserve necessary behavior\n    NOT the high-level method the test depends on\n\n  IF unsure what test depends on:\n    Run test with real implementation FIRST\n    Observe what actually needs to happen\n    THEN add minimal mocking at the right level\n\n  Red flags:\n    - \"I'll mock this to be safe\"\n    - \"This might be slow, better mock it\"\n    - Mocking without understanding the dependency chain\n```",
+      "zh-Hans": "```\nBEFORE mocking any method:\n  STOP - Don't mock yet\n\n  1. Ask: \"What side effects does the real method have?\"\n  2. Ask: \"Does this test depend on any of those side effects?\"\n  3. Ask: \"Do I fully understand what this test needs?\"\n\n  IF depends on side effects:\n    Mock at lower level (the actual slow/external operation)\n    OR use test doubles that preserve necessary behavior\n    NOT the high-level method the test depends on\n\n  IF unsure what test depends on:\n    Run test with real implementation FIRST\n    Observe what actually needs to happen\n    THEN add minimal mocking at the right level\n\n  Red flags:\n    - \"I'll mock this to be safe\"\n    - \"This might be slow, better mock it\"\n    - Mocking without understanding the dependency chain\n```"
+    },
+    {
+      "en-US": "## Anti-Pattern 4: Incomplete Mocks",
+      "zh-Hans": "## 反模式 4：不完整的模拟"
+    },
+    {
+      "en-US": "**The violation:**",
+      "zh-Hans": "**违规情况：**"
+    },
+    {
+      "en-US": "```typescript\n// ❌ BAD: Partial mock - only fields you think you need\nconst mockResponse = {\n  status: 'success',\n  data: { userId: '123', name: 'Alice' }\n  // Missing: metadata that downstream code uses\n};\n\n// Later: breaks when code accesses response.metadata.requestId\n```",
+      "zh-Hans": "```typescript\n// ❌ BAD: Partial mock - only fields you think you need\nconst mockResponse = {\n  status: 'success',\n  data: { userId: '123', name: 'Alice' }\n  // Missing: metadata that downstream code uses\n};\n\n// Later: breaks when code accesses response.metadata.requestId\n```"
+    },
+    {
+      "en-US": "**Why this is wrong:**",
+      "zh-Hans": "**错误原因：**"
+    },
+    {
+      "en-US": "- **Partial mocks hide structural assumptions** - You only mocked fields you know about\n- **Downstream code may depend on fields you didn't include** - Silent failures\n- **Tests pass but integration fails** - Mock incomplete, real API complete\n- **False confidence** - Test proves nothing about real behavior",
+      "zh-Hans": "* **部分模拟隐藏了结构假设** - 你只模拟了你知道的字段\n* **下游代码可能依赖于你未包含的字段** - 导致静默失败\n* **测试通过但集成失败** - 模拟不完整，真实 API 完整\n* **虚假的信心** - 测试无法证明任何关于真实行为的信息"
+    },
+    {
+      "en-US": "**The Iron Rule:** Mock the COMPLETE data structure as it exists in reality, not just fields your immediate test uses.",
+      "zh-Hans": "**铁律：** 模拟现实中存在的**完整**数据结构，而不仅仅是你当前测试使用的字段。"
+    },
+    {
+      "en-US": "**The fix:**",
+      "zh-Hans": "**修复方法：**"
+    },
+    {
+      "en-US": "```typescript\n// ✅ GOOD: Mirror real API completeness\nconst mockResponse = {\n  status: 'success',\n  data: { userId: '123', name: 'Alice' },\n  metadata: { requestId: 'req-789', timestamp: 1234567890 }\n  // All fields real API returns\n};\n```",
+      "zh-Hans": "```typescript\n// ✅ GOOD: Mirror real API completeness\nconst mockResponse = {\n  status: 'success',\n  data: { userId: '123', name: 'Alice' },\n  metadata: { requestId: 'req-789', timestamp: 1234567890 }\n  // All fields real API returns\n};\n```"
+    },
+    {
+      "en-US": "### Gate Function",
+      "zh-Hans": "### 门控函数"
+    },
+    {
+      "en-US": "```\nBEFORE creating mock responses:\n  Check: \"What fields does the real API response contain?\"\n\n  Actions:\n    1. Examine actual API response from docs/examples\n    2. Include ALL fields system might consume downstream\n    3. Verify mock matches real response schema completely\n\n  Critical:\n    If you're creating a mock, you must understand the ENTIRE structure\n    Partial mocks fail silently when code depends on omitted fields\n\n  If uncertain: Include all documented fields\n```",
+      "zh-Hans": "```\nBEFORE creating mock responses:\n  Check: \"What fields does the real API response contain?\"\n\n  Actions:\n    1. Examine actual API response from docs/examples\n    2. Include ALL fields system might consume downstream\n    3. Verify mock matches real response schema completely\n\n  Critical:\n    If you're creating a mock, you must understand the ENTIRE structure\n    Partial mocks fail silently when code depends on omitted fields\n\n  If uncertain: Include all documented fields\n```"
+    },
+    {
+      "en-US": "## Anti-Pattern 5: Integration Tests as Afterthought",
+      "zh-Hans": "## 反模式 5：集成测试作为事后补救"
+    },
+    {
+      "en-US": "**The violation:**",
+      "zh-Hans": "**违规情况：**"
+    },
+    {
+      "en-US": "```\n✅ Implementation complete\n❌ No tests written\n\"Ready for testing\"\n```",
+      "zh-Hans": "```\n✅ Implementation complete\n❌ No tests written\n\"Ready for testing\"\n```"
+    },
+    {
+      "en-US": "**Why this is wrong:**",
+      "zh-Hans": "**错误原因：**"
+    },
+    {
+      "en-US": "- Testing is part of implementation, not optional follow-up\n- TDD would have caught this\n- Can't claim complete without tests",
+      "zh-Hans": "* 测试是实施的一部分，而非可选的后续步骤\n* 测试驱动开发本应发现此问题\n* 没有测试就不能声称完成"
+    },
+    {
+      "en-US": "**The fix:**",
+      "zh-Hans": "**修复方法：**"
+    },
+    {
+      "en-US": "```\nTDD cycle:\n1. Write failing test\n2. Implement to pass\n3. Refactor\n4. THEN claim complete\n```",
+      "zh-Hans": "```\nTDD cycle:\n1. Write failing test\n2. Implement to pass\n3. Refactor\n4. THEN claim complete\n```"
+    },
+    {
+      "en-US": "## When Mocks Become Too Complex",
+      "zh-Hans": "## 当模拟变得过于复杂时"
+    },
+    {
+      "en-US": "**Warning signs:**",
+      "zh-Hans": "**警告信号：**"
+    },
+    {
+      "en-US": "- Mock setup longer than test logic\n- Mocking everything to make test pass\n- Mocks missing methods real components have\n- Test breaks when mock changes",
+      "zh-Hans": "* 模拟设置比测试逻辑更长\n* 模拟一切以使测试通过\n* 模拟缺少真实组件拥有的方法\n* 模拟更改时测试中断"
+    },
+    {
+      "en-US": "**your human partner's question:** \"Do we need to be using a mock here?\"",
+      "zh-Hans": "**你的人类伙伴的问题：** \"我们真的需要在这里使用模拟吗？\""
+    },
+    {
+      "en-US": "**Consider:** Integration tests with real components often simpler than complex mocks",
+      "zh-Hans": "**考虑：** 使用真实组件的集成测试通常比复杂的模拟更简单"
+    },
+    {
+      "en-US": "## TDD Prevents These Anti-Patterns",
+      "zh-Hans": "## 测试驱动开发防止这些反模式"
+    },
+    {
+      "en-US": "**Why TDD helps:**",
+      "zh-Hans": "**测试驱动开发为何有效：**"
+    },
+    {
+      "en-US": "1. **Write test first** → Forces you to think about what you're actually testing\n2. **Watch it fail** → Confirms test tests real behavior, not mocks\n3. **Minimal implementation** → No test-only methods creep in\n4. **Real dependencies** → You see what the test actually needs before mocking",
+      "zh-Hans": "1. **先写测试** → 迫使你思考实际要测试什么\n2. **观察它失败** → 确认测试的是真实行为，而非模拟\n3. **最小实现** → 防止仅供测试的方法混入\n4. **真实依赖** → 在模拟之前，你能看到测试实际需要什么"
+    },
+    {
+      "en-US": "**If you're testing mock behavior, you violated TDD** - you added mocks without watching test fail against real code first.",
+      "zh-Hans": "**如果你在测试模拟行为，你就违反了测试驱动开发** - 你在没有先观察测试对真实代码失败的情况下就添加了模拟。"
+    },
+    {
+      "en-US": "## Quick Reference",
+      "zh-Hans": "## 快速参考"
+    },
+    {
+      "en-US": "| Anti-Pattern | Fix |\n|--------------|-----|\n| Assert on mock elements | Test real component or unmock it |\n| Test-only methods in production | Move to test utilities |\n| Mock without understanding | Understand dependencies first, mock minimally |\n| Incomplete mocks | Mirror real API completely |\n| Tests as afterthought | TDD - tests first |\n| Over-complex mocks | Consider integration tests |",
+      "zh-Hans": "| 反模式 | 修复方法 |\n|--------------|-----|\n| 断言模拟元素 | 测试真实组件或取消模拟 |\n| 生产代码中的仅供测试方法 | 移至测试工具类 |\n| 不理解就模拟 | 先理解依赖关系，最小化模拟 |\n| 不完整的模拟 | 完全镜像真实 API |\n| 测试作为事后补救 | 测试驱动开发 - 测试先行 |\n| 过度复杂的模拟 | 考虑集成测试 |"
+    },
+    {
+      "en-US": "## Red Flags",
+      "zh-Hans": "## 危险信号"
+    },
+    {
+      "en-US": "- Assertion checks for `*-mock` test IDs\n- Methods only called in test files\n- Mock setup is >50% of test\n- Test fails when you remove mock\n- Can't explain why mock is needed\n- Mocking \"just to be safe\"",
+      "zh-Hans": "* 断言检查 `*-mock` 测试 ID\n* 仅在测试文件中调用的方法\n* 模拟设置占测试的 50% 以上\n* 移除模拟时测试失败\n* 无法解释为何需要模拟\n* 模拟\"只是为了安全\""
+    },
+    {
+      "en-US": "## The Bottom Line",
+      "zh-Hans": "## 底线"
+    },
+    {
+      "en-US": "**Mocks are tools to isolate, not things to test.**",
+      "zh-Hans": "**模拟对象是用于隔离的工具，而非要测试的东西。**"
+    },
+    {
+      "en-US": "If TDD reveals you're testing mock behavior, you've gone wrong.",
+      "zh-Hans": "如果测试驱动开发揭示你正在测试模拟行为，那你就做错了。"
+    },
+    {
+      "en-US": "Fix: Test real behavior or question why you're mocking at all.",
+      "zh-Hans": "修复方法：测试真实行为，或者质疑你为何要使用模拟。"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "sourceFile": "skills/using-superpowers/references/gemini-tools.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Gemini CLI Tool Mapping",
+      "zh-Hans": "# Gemini CLI 工具映射"
+    },
+    {
+      "en-US": "Skills use Claude Code tool names. When you encounter these in a skill, use your platform equivalent:",
+      "zh-Hans": "技能使用 Claude Code 工具名称。当您在技能中遇到这些名称时，请使用您平台上的等效工具："
+    },
+    {
+      "en-US": "| Skill references | Gemini CLI equivalent |\n|-----------------|----------------------|\n| `Read` (file reading) | `read_file` |\n| `Write` (file creation) | `write_file` |\n| `Edit` (file editing) | `replace` |\n| `Bash` (run commands) | `run_shell_command` |\n| `Grep` (search file content) | `grep_search` |\n| `Glob` (search files by name) | `glob` |\n| `TodoWrite` (task tracking) | `write_todos` |\n| `Skill` tool (invoke a skill) | `activate_skill` |\n| `WebSearch` | `google_web_search` |\n| `WebFetch` | `web_fetch` |\n| `Task` tool (dispatch subagent) | No equivalent — Gemini CLI does not support subagents |",
+      "zh-Hans": "| 技能引用 | Gemini CLI 等效工具 |\n|-----------------|----------------------|\n| `Read`（文件读取） | `read_file` |\n| `Write`（文件创建） | `write_file` |\n| `Edit`（文件编辑） | `replace` |\n| `Bash`（运行命令） | `run_shell_command` |\n| `Grep`（搜索文件内容） | `grep_search` |\n| `Glob`（按名称搜索文件） | `glob` |\n| `TodoWrite`（任务跟踪） | `write_todos` |\n| `Skill` 工具（调用技能） | `activate_skill` |\n| `WebSearch` | `google_web_search` |\n| `WebFetch` | `web_fetch` |\n| `Task` 工具（分派子代理） | 无等效工具 — Gemini CLI 不支持子代理 |"
+    },
+    {
+      "en-US": "## No subagent support",
+      "zh-Hans": "## 无子代理支持"
+    },
+    {
+      "en-US": "Gemini CLI has no equivalent to Claude Code's `Task` tool. Skills that rely on subagent dispatch (`subagent-driven-development`, `dispatching-parallel-agents`) will fall back to single-session execution via `executing-plans`.",
+      "zh-Hans": "Gemini CLI 没有与 Claude Code 的 `Task` 工具等效的工具。依赖子代理分派（`subagent-driven-development`，`dispatching-parallel-agents`）的技能将回退到通过 `executing-plans` 进行单会话执行。"
+    },
+    {
+      "en-US": "## Additional Gemini CLI tools",
+      "zh-Hans": "## 额外的 Gemini CLI 工具"
+    },
+    {
+      "en-US": "These tools are available in Gemini CLI but have no Claude Code equivalent:",
+      "zh-Hans": "这些工具在 Gemini CLI 中可用，但没有 Claude Code 的等效工具："
+    },
+    {
+      "en-US": "| Tool | Purpose |\n|------|---------|\n| `list_directory` | List files and subdirectories |\n| `save_memory` | Persist facts to GEMINI.md across sessions |\n| `ask_user` | Request structured input from the user |\n| `tracker_create_task` | Rich task management (create, update, list, visualize) |\n| `enter_plan_mode` / `exit_plan_mode` | Switch to read-only research mode before making changes |",
+      "zh-Hans": "| 工具 | 用途 |\n|------|---------|\n| `list_directory` | 列出文件和子目录 |\n| `save_memory` | 跨会话将事实持久化到 GEMINI.md |\n| `ask_user` | 向用户请求结构化输入 |\n| `tracker_create_task` | 丰富的任务管理（创建、更新、列出、可视化） |\n| `enter_plan_mode` / `exit_plan_mode` | 在进行更改之前切换到只读研究模式 |"
+    }
+  ]
+}

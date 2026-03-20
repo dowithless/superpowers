@@ -1,0 +1,630 @@
+{
+  "sourceFile": "docs/superpowers/plans/2026-02-19-visual-brainstorming-refactor.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Visual Brainstorming Refactor Implementation Plan",
+      "zh-Hans": "# 视觉化头脑风暴重构实施计划"
+    },
+    {
+      "en-US": "> **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.",
+      "zh-Hans": "> **对于智能体工作者：** 必需：使用 superpowers:subagent-driven-development（如果子智能体可用）或 superpowers:executing-plans 来实施此计划。步骤使用复选框（`- [ ]`）语法进行跟踪。"
+    },
+    {
+      "en-US": "**Goal:** Refactor visual brainstorming from blocking TUI feedback model to non-blocking \"Browser Displays, Terminal Commands\" architecture.",
+      "zh-Hans": "**目标：** 将视觉化头脑风暴从阻塞式 TUI 反馈模型重构为非阻塞式“浏览器显示，终端命令”架构。"
+    },
+    {
+      "en-US": "**Architecture:** Browser becomes an interactive display; terminal stays the conversation channel. Server writes user events to a per-screen `.events` file that Claude reads on its next turn. Eliminates `wait-for-feedback.sh` and all `TaskOutput` blocking.",
+      "zh-Hans": "**架构：** 浏览器成为交互式显示界面；终端保持为对话通道。服务器将用户事件写入一个每屏的 `.events` 文件，供 Claude 在其下一次轮次读取。消除 `wait-for-feedback.sh` 和所有 `TaskOutput` 阻塞。"
+    },
+    {
+      "en-US": "**Tech Stack:** Node.js (Express, ws, chokidar), vanilla HTML/CSS/JS",
+      "zh-Hans": "**技术栈：** Node.js (Express, ws, chokidar), 原生 HTML/CSS/JS"
+    },
+    {
+      "en-US": "**Spec:** `docs/superpowers/specs/2026-02-19-visual-brainstorming-refactor-design.md`",
+      "zh-Hans": "**规范：** `docs/superpowers/specs/2026-02-19-visual-brainstorming-refactor-design.md`"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## File Map",
+      "zh-Hans": "## 文件映射"
+    },
+    {
+      "en-US": "| File | Action | Responsibility |\n|------|--------|---------------|\n| `lib/brainstorm-server/index.js` | Modify | Server: add `.events` file writing, clear on new screen, replace `wrapInFrame` |\n| `lib/brainstorm-server/frame-template.html` | Modify | Template: remove feedback footer, add content placeholder + selection indicator |\n| `lib/brainstorm-server/helper.js` | Modify | Client JS: remove send/feedback functions, narrow to click capture + indicator updates |\n| `lib/brainstorm-server/wait-for-feedback.sh` | Delete | No longer needed |\n| `skills/brainstorming/visual-companion.md` | Modify | Skill instructions: rewrite loop to non-blocking flow |\n| `tests/brainstorm-server/server.test.js` | Modify | Tests: update for new template structure and helper.js API |",
+      "zh-Hans": "| 文件 | 操作 | 职责 |\n|------|--------|---------------|\n| `lib/brainstorm-server/index.js` | 修改 | 服务器：添加 `.events` 文件写入，在新屏幕时清除，替换 `wrapInFrame` |\n| `lib/brainstorm-server/frame-template.html` | 修改 | 模板：移除反馈页脚，添加内容占位符 + 选择指示器 |\n| `lib/brainstorm-server/helper.js` | 修改 | 客户端 JS：移除发送/反馈函数，精简为点击捕获 + 指示器更新 |\n| `lib/brainstorm-server/wait-for-feedback.sh` | 删除 | 不再需要 |\n| `skills/brainstorming/visual-companion.md` | 修改 | 技能说明：重写循环为非阻塞式流程 |\n| `tests/brainstorm-server/server.test.js` | 修改 | 测试：更新以适应新模板结构和 helper.js API |"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## Chunk 1: Server, Template, Client, Tests, Skill",
+      "zh-Hans": "## 块 1：服务器、模板、客户端、测试、技能"
+    },
+    {
+      "en-US": "### Task 1: Update `frame-template.html`",
+      "zh-Hans": "### 任务 1：更新 `frame-template.html`"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `lib/brainstorm-server/frame-template.html`\n\n- [ ] **Step 1: Remove the feedback footer HTML**",
+      "zh-Hans": "* 修改：`lib/brainstorm-server/frame-template.html`\n\n* \\[ ] **步骤 1：移除反馈页脚 HTML**"
+    },
+    {
+      "en-US": "Replace the feedback-footer div (lines 227-233) with a selection indicator bar:",
+      "zh-Hans": "将 feedback-footer div（第 227-233 行）替换为选择指示器栏："
+    },
+    {
+      "en-US": "```html\n  <div class=\"indicator-bar\">\n    <span id=\"indicator-text\">Click an option above, then return to the terminal</span>\n  </div>\n```",
+      "zh-Hans": "```html\n  <div class=\"indicator-bar\">\n    <span id=\"indicator-text\">Click an option above, then return to the terminal</span>\n  </div>\n```"
+    },
+    {
+      "en-US": "Also replace the default content inside `#claude-content` (lines 220-223) with the content placeholder:",
+      "zh-Hans": "同时将 `#claude-content` 内的默认内容（第 220-223 行）替换为内容占位符："
+    },
+    {
+      "en-US": "```html\n    <div id=\"claude-content\">\n      <!-- CONTENT -->\n    </div>\n```",
+      "zh-Hans": "```html\n    <div id=\"claude-content\">\n      <!-- CONTENT -->\n    </div>\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Replace feedback footer CSS with indicator bar CSS**",
+      "zh-Hans": "* \\[ ] **步骤 2：将反馈页脚 CSS 替换为指示器栏 CSS**"
+    },
+    {
+      "en-US": "Remove the `.feedback-footer`, `.feedback-footer label`, `.feedback-row`, and the textarea/button styles within `.feedback-footer` (lines 82-112).",
+      "zh-Hans": "移除 `.feedback-footer`、`.feedback-footer label`、`.feedback-row` 以及 `.feedback-footer` 内的 textarea/button 样式（第 82-112 行）。"
+    },
+    {
+      "en-US": "Add indicator bar CSS:",
+      "zh-Hans": "添加指示器栏 CSS："
+    },
+    {
+      "en-US": "```css\n    .indicator-bar {\n      background: var(--bg-secondary);\n      border-top: 1px solid var(--border);\n      padding: 0.5rem 1.5rem;\n      flex-shrink: 0;\n      text-align: center;\n    }\n    .indicator-bar span {\n      font-size: 0.75rem;\n      color: var(--text-secondary);\n    }\n    .indicator-bar .selected-text {\n      color: var(--accent);\n      font-weight: 500;\n    }\n```",
+      "zh-Hans": "```css\n    .indicator-bar {\n      background: var(--bg-secondary);\n      border-top: 1px solid var(--border);\n      padding: 0.5rem 1.5rem;\n      flex-shrink: 0;\n      text-align: center;\n    }\n    .indicator-bar span {\n      font-size: 0.75rem;\n      color: var(--text-secondary);\n    }\n    .indicator-bar .selected-text {\n      color: var(--accent);\n      font-weight: 500;\n    }\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 3: Verify template renders**",
+      "zh-Hans": "* \\[ ] **步骤 3：验证模板渲染**"
+    },
+    {
+      "en-US": "Run the test suite to check the template still loads:",
+      "zh-Hans": "运行测试套件以检查模板是否仍能加载："
+    },
+    {
+      "en-US": "```bash\ncd /Users/drewritter/prime-rad/superpowers && node tests/brainstorm-server/server.test.js\n```",
+      "zh-Hans": "```bash\ncd /Users/drewritter/prime-rad/superpowers && node tests/brainstorm-server/server.test.js\n```"
+    },
+    {
+      "en-US": "Expected: Tests 1-5 should still pass. Tests 6-8 may fail (expected — they assert old structure).",
+      "zh-Hans": "预期：测试 1-5 应仍通过。测试 6-8 可能失败（预期如此——它们断言的是旧结构）。"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Commit**",
+      "zh-Hans": "* \\[ ] **步骤 4：提交**"
+    },
+    {
+      "en-US": "```bash\ngit add lib/brainstorm-server/frame-template.html\ngit commit -m \"Replace feedback footer with selection indicator bar in brainstorm template\"\n```",
+      "zh-Hans": "```bash\ngit add lib/brainstorm-server/frame-template.html\ngit commit -m \"Replace feedback footer with selection indicator bar in brainstorm template\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 2: Update `index.js` — content injection and `.events` file",
+      "zh-Hans": "### 任务 2：更新 `index.js` — 内容注入和 `.events` 文件"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `lib/brainstorm-server/index.js`\n\n- [ ] **Step 1: Write failing test for `.events` file writing**",
+      "zh-Hans": "* 修改：`lib/brainstorm-server/index.js`\n\n* \\[ ] **步骤 1：为 `.events` 文件写入编写失败测试**"
+    },
+    {
+      "en-US": "Add to `tests/brainstorm-server/server.test.js` after Test 4 area — a new test that sends a WebSocket event with a `choice` field and verifies `.events` file is written:",
+      "zh-Hans": "在 `tests/brainstorm-server/server.test.js` 的测试 4 区域后添加——一个新的测试，发送带有 `choice` 字段的 WebSocket 事件，并验证 `.events` 文件被写入："
+    },
+    {
+      "en-US": "```javascript\n    // Test: Choice events written to .events file\n    console.log('Test: Choice events written to .events file');\n    const ws3 = new WebSocket(`ws://localhost:${TEST_PORT}`);\n    await new Promise(resolve => ws3.on('open', resolve));\n\n    ws3.send(JSON.stringify({ type: 'click', choice: 'a', text: 'Option A' }));\n    await sleep(300);\n\n    const eventsFile = path.join(TEST_DIR, '.events');\n    assert(fs.existsSync(eventsFile), '.events file should exist after choice click');\n    const lines = fs.readFileSync(eventsFile, 'utf-8').trim().split('\\n');\n    const event = JSON.parse(lines[lines.length - 1]);\n    assert.strictEqual(event.choice, 'a', 'Event should contain choice');\n    assert.strictEqual(event.text, 'Option A', 'Event should contain text');\n    ws3.close();\n    console.log('  PASS');\n```",
+      "zh-Hans": "```javascript\n    // Test: Choice events written to .events file\n    console.log('Test: Choice events written to .events file');\n    const ws3 = new WebSocket(`ws://localhost:${TEST_PORT}`);\n    await new Promise(resolve => ws3.on('open', resolve));\n\n    ws3.send(JSON.stringify({ type: 'click', choice: 'a', text: 'Option A' }));\n    await sleep(300);\n\n    const eventsFile = path.join(TEST_DIR, '.events');\n    assert(fs.existsSync(eventsFile), '.events file should exist after choice click');\n    const lines = fs.readFileSync(eventsFile, 'utf-8').trim().split('\\n');\n    const event = JSON.parse(lines[lines.length - 1]);\n    assert.strictEqual(event.choice, 'a', 'Event should contain choice');\n    assert.strictEqual(event.text, 'Option A', 'Event should contain text');\n    ws3.close();\n    console.log('  PASS');\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Run test to verify it fails**",
+      "zh-Hans": "* \\[ ] **步骤 2：运行测试以验证其失败**"
+    },
+    {
+      "en-US": "```bash\ncd /Users/drewritter/prime-rad/superpowers && node tests/brainstorm-server/server.test.js\n```",
+      "zh-Hans": "```bash\ncd /Users/drewritter/prime-rad/superpowers && node tests/brainstorm-server/server.test.js\n```"
+    },
+    {
+      "en-US": "Expected: New test FAILS — `.events` file doesn't exist yet.",
+      "zh-Hans": "预期：新测试失败——`.events` 文件尚不存在。"
+    },
+    {
+      "en-US": "- [ ] **Step 3: Write failing test for `.events` file clearing on new screen**",
+      "zh-Hans": "* \\[ ] **步骤 3：为 `.events` 文件在新屏幕时清除编写失败测试**"
+    },
+    {
+      "en-US": "Add another test:",
+      "zh-Hans": "添加另一个测试："
+    },
+    {
+      "en-US": "```javascript\n    // Test: .events cleared on new screen\n    console.log('Test: .events cleared on new screen');\n    // .events file should still exist from previous test\n    assert(fs.existsSync(path.join(TEST_DIR, '.events')), '.events should exist before new screen');\n    fs.writeFileSync(path.join(TEST_DIR, 'new-screen.html'), '<h2>New screen</h2>');\n    await sleep(500);\n    assert(!fs.existsSync(path.join(TEST_DIR, '.events')), '.events should be cleared after new screen');\n    console.log('  PASS');\n```",
+      "zh-Hans": "```javascript\n    // Test: .events cleared on new screen\n    console.log('Test: .events cleared on new screen');\n    // .events file should still exist from previous test\n    assert(fs.existsSync(path.join(TEST_DIR, '.events')), '.events should exist before new screen');\n    fs.writeFileSync(path.join(TEST_DIR, 'new-screen.html'), '<h2>New screen</h2>');\n    await sleep(500);\n    assert(!fs.existsSync(path.join(TEST_DIR, '.events')), '.events should be cleared after new screen');\n    console.log('  PASS');\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Run test to verify it fails**",
+      "zh-Hans": "* \\[ ] **步骤 4：运行测试以验证其失败**"
+    },
+    {
+      "en-US": "```bash\ncd /Users/drewritter/prime-rad/superpowers && node tests/brainstorm-server/server.test.js\n```",
+      "zh-Hans": "```bash\ncd /Users/drewritter/prime-rad/superpowers && node tests/brainstorm-server/server.test.js\n```"
+    },
+    {
+      "en-US": "Expected: New test FAILS — `.events` not cleared on screen push.",
+      "zh-Hans": "预期：新测试失败——`.events` 在推送屏幕时未被清除。"
+    },
+    {
+      "en-US": "- [ ] **Step 5: Implement `.events` file writing in `index.js`**",
+      "zh-Hans": "* \\[ ] **步骤 5：在 `index.js` 中实现 `.events` 文件写入**"
+    },
+    {
+      "en-US": "In the WebSocket `message` handler (line 74-77 of `index.js`), after the `console.log`, add:",
+      "zh-Hans": "在 WebSocket `message` 处理程序中（`index.js` 的第 74-77 行），`console.log` 之后，添加："
+    },
+    {
+      "en-US": "```javascript\n    // Write user events to .events file for Claude to read\n    if (event.choice) {\n      const eventsFile = path.join(SCREEN_DIR, '.events');\n      fs.appendFileSync(eventsFile, JSON.stringify(event) + '\\n');\n    }\n```",
+      "zh-Hans": "```javascript\n    // Write user events to .events file for Claude to read\n    if (event.choice) {\n      const eventsFile = path.join(SCREEN_DIR, '.events');\n      fs.appendFileSync(eventsFile, JSON.stringify(event) + '\\n');\n    }\n```"
+    },
+    {
+      "en-US": "In the chokidar `add` handler (line 104-111), add `.events` clearing:",
+      "zh-Hans": "在 chokidar `add` 处理程序中（第 104-111 行），添加 `.events` 清除："
+    },
+    {
+      "en-US": "```javascript\n    if (filePath.endsWith('.html')) {\n      // Clear events from previous screen\n      const eventsFile = path.join(SCREEN_DIR, '.events');\n      if (fs.existsSync(eventsFile)) fs.unlinkSync(eventsFile);\n\n      console.log(JSON.stringify({ type: 'screen-added', file: filePath }));\n      // ... existing reload broadcast\n    }\n```",
+      "zh-Hans": "```javascript\n    if (filePath.endsWith('.html')) {\n      // Clear events from previous screen\n      const eventsFile = path.join(SCREEN_DIR, '.events');\n      if (fs.existsSync(eventsFile)) fs.unlinkSync(eventsFile);\n\n      console.log(JSON.stringify({ type: 'screen-added', file: filePath }));\n      // ... existing reload broadcast\n    }\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 6: Replace `wrapInFrame` with comment placeholder injection**",
+      "zh-Hans": "* \\[ ] **步骤 6：用注释占位符注入替换 `wrapInFrame`**"
+    },
+    {
+      "en-US": "Replace the `wrapInFrame` function (lines 27-32 of `index.js`):",
+      "zh-Hans": "替换 `wrapInFrame` 函数（`index.js` 的第 27-32 行）："
+    },
+    {
+      "en-US": "```javascript\nfunction wrapInFrame(content) {\n  return frameTemplate.replace('<!-- CONTENT -->', content);\n}\n```",
+      "zh-Hans": "```javascript\nfunction wrapInFrame(content) {\n  return frameTemplate.replace('<!-- CONTENT -->', content);\n}\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 7: Run all tests**",
+      "zh-Hans": "* \\[ ] **步骤 7：运行所有测试**"
+    },
+    {
+      "en-US": "```bash\ncd /Users/drewritter/prime-rad/superpowers && node tests/brainstorm-server/server.test.js\n```",
+      "zh-Hans": "```bash\ncd /Users/drewritter/prime-rad/superpowers && node tests/brainstorm-server/server.test.js\n```"
+    },
+    {
+      "en-US": "Expected: New `.events` tests PASS. Existing tests may still have failures from old assertions (fixed in Task 4).",
+      "zh-Hans": "预期：新的 `.events` 测试通过。现有测试可能仍有来自旧断言的失败（将在任务 4 中修复）。"
+    },
+    {
+      "en-US": "- [ ] **Step 8: Commit**",
+      "zh-Hans": "* \\[ ] **步骤 8：提交**"
+    },
+    {
+      "en-US": "```bash\ngit add lib/brainstorm-server/index.js tests/brainstorm-server/server.test.js\ngit commit -m \"Add .events file writing and comment-based content injection to brainstorm server\"\n```",
+      "zh-Hans": "```bash\ngit add lib/brainstorm-server/index.js tests/brainstorm-server/server.test.js\ngit commit -m \"Add .events file writing and comment-based content injection to brainstorm server\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 3: Simplify `helper.js`",
+      "zh-Hans": "### 任务 3：简化 `helper.js`"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `lib/brainstorm-server/helper.js`\n\n- [ ] **Step 1: Remove `sendToClaude` function**",
+      "zh-Hans": "* 修改：`lib/brainstorm-server/helper.js`\n\n* \\[ ] **步骤 1：移除 `sendToClaude` 函数**"
+    },
+    {
+      "en-US": "Delete the `sendToClaude` function (lines 92-106) — the function body and the page takeover HTML.",
+      "zh-Hans": "删除 `sendToClaude` 函数（第 92-106 行）——函数体和页面接管 HTML。"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Remove `window.send` function**",
+      "zh-Hans": "* \\[ ] **步骤 2：移除 `window.send` 函数**"
+    },
+    {
+      "en-US": "Delete the `window.send` function (lines 120-129) — was tied to the removed Send button.",
+      "zh-Hans": "删除 `window.send` 函数（第 120-129 行）——该函数与已移除的发送按钮绑定。"
+    },
+    {
+      "en-US": "- [ ] **Step 3: Remove form submission and input change handlers**",
+      "zh-Hans": "* \\[ ] **步骤 3：移除表单提交和输入变更处理程序**"
+    },
+    {
+      "en-US": "Delete the form submission handler (lines 57-71) and the input change handler (lines 73-89) including the `inputTimeout` variable.",
+      "zh-Hans": "删除表单提交处理程序（第 57-71 行）和输入变更处理程序（第 73-89 行），包括 `inputTimeout` 变量。"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Remove `pageshow` event listener**",
+      "zh-Hans": "* \\[ ] **步骤 4：移除 `pageshow` 事件监听器**"
+    },
+    {
+      "en-US": "Delete the `pageshow` listener we added earlier (no textarea to clear anymore).",
+      "zh-Hans": "删除我们之前添加的 `pageshow` 监听器（不再有需要清除的文本域）。"
+    },
+    {
+      "en-US": "- [ ] **Step 5: Narrow click handler to `[data-choice]` only**",
+      "zh-Hans": "* \\[ ] **步骤 5：将点击处理程序精简为仅 `[data-choice]`**"
+    },
+    {
+      "en-US": "Replace the click handler (lines 36-55) with a narrower version:",
+      "zh-Hans": "替换点击处理程序（第 36-55 行）为一个更精简的版本："
+    },
+    {
+      "en-US": "```javascript\n  // Capture clicks on choice elements\n  document.addEventListener('click', (e) => {\n    const target = e.target.closest('[data-choice]');\n    if (!target) return;\n\n    sendEvent({\n      type: 'click',\n      text: target.textContent.trim(),\n      choice: target.dataset.choice,\n      id: target.id || null\n    });\n  });\n```",
+      "zh-Hans": "```javascript\n  // Capture clicks on choice elements\n  document.addEventListener('click', (e) => {\n    const target = e.target.closest('[data-choice]');\n    if (!target) return;\n\n    sendEvent({\n      type: 'click',\n      text: target.textContent.trim(),\n      choice: target.dataset.choice,\n      id: target.id || null\n    });\n  });\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 6: Add indicator bar update on choice click**",
+      "zh-Hans": "* \\[ ] **步骤 6：在选择点击时添加指示器栏更新**"
+    },
+    {
+      "en-US": "After the `sendEvent` call in the click handler, add:",
+      "zh-Hans": "在点击处理程序中的 `sendEvent` 调用后，添加："
+    },
+    {
+      "en-US": "```javascript\n    // Update indicator bar\n    const indicator = document.getElementById('indicator-text');\n    if (indicator) {\n      const label = target.querySelector('h3, .content h3, .card-body h3')?.textContent?.trim() || target.dataset.choice;\n      indicator.innerHTML = '<span class=\"selected-text\">' + label + ' selected</span> — return to terminal to continue';\n    }\n```",
+      "zh-Hans": "```javascript\n    // Update indicator bar\n    const indicator = document.getElementById('indicator-text');\n    if (indicator) {\n      const label = target.querySelector('h3, .content h3, .card-body h3')?.textContent?.trim() || target.dataset.choice;\n      indicator.innerHTML = '<span class=\"selected-text\">' + label + ' selected</span> — return to terminal to continue';\n    }\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 7: Remove `sendToClaude` from `window.brainstorm` API**",
+      "zh-Hans": "* \\[ ] **步骤 7：从 `window.brainstorm` API 中移除 `sendToClaude`**"
+    },
+    {
+      "en-US": "Update the `window.brainstorm` object (lines 132-136) to remove `sendToClaude`:",
+      "zh-Hans": "更新 `window.brainstorm` 对象（第 132-136 行）以移除 `sendToClaude`："
+    },
+    {
+      "en-US": "```javascript\n  window.brainstorm = {\n    send: sendEvent,\n    choice: (value, metadata = {}) => sendEvent({ type: 'choice', value, ...metadata })\n  };\n```",
+      "zh-Hans": "```javascript\n  window.brainstorm = {\n    send: sendEvent,\n    choice: (value, metadata = {}) => sendEvent({ type: 'choice', value, ...metadata })\n  };\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 8: Run tests**",
+      "zh-Hans": "* \\[ ] **步骤 8：运行测试**"
+    },
+    {
+      "en-US": "```bash\ncd /Users/drewritter/prime-rad/superpowers && node tests/brainstorm-server/server.test.js\n```",
+      "zh-Hans": "```bash\ncd /Users/drewritter/prime-rad/superpowers && node tests/brainstorm-server/server.test.js\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 9: Commit**",
+      "zh-Hans": "* \\[ ] **步骤 9：提交**"
+    },
+    {
+      "en-US": "```bash\ngit add lib/brainstorm-server/helper.js\ngit commit -m \"Simplify helper.js: remove feedback functions, narrow to choice capture + indicator\"\n```",
+      "zh-Hans": "```bash\ngit add lib/brainstorm-server/helper.js\ngit commit -m \"Simplify helper.js: remove feedback functions, narrow to choice capture + indicator\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 4: Update tests for new structure",
+      "zh-Hans": "### 任务 4：为新结构更新测试"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `tests/brainstorm-server/server.test.js`",
+      "zh-Hans": "* 修改：`tests/brainstorm-server/server.test.js`"
+    },
+    {
+      "en-US": "**Note:** Line references below are from the _original_ file. Task 2 inserted new tests earlier in the file, so actual line numbers will be shifted. Find tests by their `console.log` labels (e.g., \"Test 5:\", \"Test 6:\").",
+      "zh-Hans": "**注意：** 下面的行号引用来自*原始*文件。任务 2 在文件更早位置插入了新测试，因此实际行号会发生偏移。通过 `console.log` 标签（例如 \"Test 5:\"、\"Test 6:\"）查找测试。"
+    },
+    {
+      "en-US": "- [ ] **Step 1: Update Test 5 (full document assertion)**",
+      "zh-Hans": "* \\[ ] **步骤 1：更新测试 5（完整文档断言）**"
+    },
+    {
+      "en-US": "Find the Test 5 assertion `!fullRes.body.includes('feedback-footer')`. Change it to: Full documents should NOT have the indicator bar either (they're served as-is):",
+      "zh-Hans": "找到测试 5 的断言 `!fullRes.body.includes('feedback-footer')`。将其更改为：完整文档不应该有指示器栏（它们按原样提供）："
+    },
+    {
+      "en-US": "```javascript\n    assert(!fullRes.body.includes('indicator-bar') || fullDoc.includes('indicator-bar'),\n      'Should not wrap full documents in frame template');\n```",
+      "zh-Hans": "```javascript\n    assert(!fullRes.body.includes('indicator-bar') || fullDoc.includes('indicator-bar'),\n      'Should not wrap full documents in frame template');\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Update Test 6 (fragment wrapping)**",
+      "zh-Hans": "* \\[ ] **步骤 2：更新测试 6（片段包装）**"
+    },
+    {
+      "en-US": "Line 125: Replace `feedback-footer` assertion with indicator bar assertion:",
+      "zh-Hans": "第 125 行：将 `feedback-footer` 断言替换为指示器栏断言："
+    },
+    {
+      "en-US": "```javascript\n    assert(fragRes.body.includes('indicator-bar'), 'Fragment should get indicator bar from frame');\n```",
+      "zh-Hans": "```javascript\n    assert(fragRes.body.includes('indicator-bar'), 'Fragment should get indicator bar from frame');\n```"
+    },
+    {
+      "en-US": "Also verify content placeholder was replaced (fragment content appears, placeholder comment doesn't):",
+      "zh-Hans": "同时验证内容占位符已被替换（片段内容出现，占位符注释不出现）："
+    },
+    {
+      "en-US": "```javascript\n    assert(!fragRes.body.includes('<!-- CONTENT -->'), 'Content placeholder should be replaced');\n```",
+      "zh-Hans": "```javascript\n    assert(!fragRes.body.includes('<!-- CONTENT -->'), 'Content placeholder should be replaced');\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 3: Update Test 7 (helper.js API)**",
+      "zh-Hans": "* \\[ ] **步骤 3：更新测试 7（helper.js API）**"
+    },
+    {
+      "en-US": "Lines 140-142: Update assertions to reflect the new API surface:",
+      "zh-Hans": "第 140-142 行：更新断言以反映新的 API 接口："
+    },
+    {
+      "en-US": "```javascript\n    assert(helperContent.includes('toggleSelect'), 'helper.js should define toggleSelect');\n    assert(helperContent.includes('sendEvent'), 'helper.js should define sendEvent');\n    assert(helperContent.includes('selectedChoice'), 'helper.js should track selectedChoice');\n    assert(helperContent.includes('brainstorm'), 'helper.js should expose brainstorm API');\n    assert(!helperContent.includes('sendToClaude'), 'helper.js should not contain sendToClaude');\n```",
+      "zh-Hans": "```javascript\n    assert(helperContent.includes('toggleSelect'), 'helper.js should define toggleSelect');\n    assert(helperContent.includes('sendEvent'), 'helper.js should define sendEvent');\n    assert(helperContent.includes('selectedChoice'), 'helper.js should track selectedChoice');\n    assert(helperContent.includes('brainstorm'), 'helper.js should expose brainstorm API');\n    assert(!helperContent.includes('sendToClaude'), 'helper.js should not contain sendToClaude');\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Replace Test 8 (sendToClaude theming) with indicator bar test**",
+      "zh-Hans": "* \\[ ] **步骤 4：将测试 8（sendToClaude 主题）替换为指示器栏测试**"
+    },
+    {
+      "en-US": "Replace Test 8 (lines 145-149) — `sendToClaude` no longer exists. Test the indicator bar instead:",
+      "zh-Hans": "替换测试 8（第 145-149 行）——`sendToClaude` 不再存在。改为测试指示器栏："
+    },
+    {
+      "en-US": "```javascript\n    // Test 8: Indicator bar uses CSS variables (theme support)\n    console.log('Test 8: Indicator bar uses CSS variables');\n    const templateContent = fs.readFileSync(\n      path.join(__dirname, '../../lib/brainstorm-server/frame-template.html'), 'utf-8'\n    );\n    assert(templateContent.includes('indicator-bar'), 'Template should have indicator bar');\n    assert(templateContent.includes('indicator-text'), 'Template should have indicator text element');\n    console.log('  PASS');\n```",
+      "zh-Hans": "```javascript\n    // Test 8: Indicator bar uses CSS variables (theme support)\n    console.log('Test 8: Indicator bar uses CSS variables');\n    const templateContent = fs.readFileSync(\n      path.join(__dirname, '../../lib/brainstorm-server/frame-template.html'), 'utf-8'\n    );\n    assert(templateContent.includes('indicator-bar'), 'Template should have indicator bar');\n    assert(templateContent.includes('indicator-text'), 'Template should have indicator text element');\n    console.log('  PASS');\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 5: Run full test suite**",
+      "zh-Hans": "* \\[ ] **步骤 5：运行完整测试套件**"
+    },
+    {
+      "en-US": "```bash\ncd /Users/drewritter/prime-rad/superpowers && node tests/brainstorm-server/server.test.js\n```",
+      "zh-Hans": "```bash\ncd /Users/drewritter/prime-rad/superpowers && node tests/brainstorm-server/server.test.js\n```"
+    },
+    {
+      "en-US": "Expected: ALL tests PASS.",
+      "zh-Hans": "预期：所有测试通过。"
+    },
+    {
+      "en-US": "- [ ] **Step 6: Commit**",
+      "zh-Hans": "* \\[ ] **步骤 6：提交**"
+    },
+    {
+      "en-US": "```bash\ngit add tests/brainstorm-server/server.test.js\ngit commit -m \"Update brainstorm server tests for new template structure and helper.js API\"\n```",
+      "zh-Hans": "```bash\ngit add tests/brainstorm-server/server.test.js\ngit commit -m \"Update brainstorm server tests for new template structure and helper.js API\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 5: Delete `wait-for-feedback.sh`",
+      "zh-Hans": "### 任务 5：删除 `wait-for-feedback.sh`"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Delete: `lib/brainstorm-server/wait-for-feedback.sh`\n\n- [ ] **Step 1: Verify no other files import or reference `wait-for-feedback.sh`**",
+      "zh-Hans": "* 删除：`lib/brainstorm-server/wait-for-feedback.sh`\n\n* \\[ ] **步骤 1：验证没有其他文件导入或引用 `wait-for-feedback.sh`**"
+    },
+    {
+      "en-US": "Search the codebase:",
+      "zh-Hans": "搜索代码库："
+    },
+    {
+      "en-US": "```bash\ngrep -r \"wait-for-feedback\" /Users/drewritter/prime-rad/superpowers/ --include=\"*.js\" --include=\"*.md\" --include=\"*.sh\" --include=\"*.json\"\n```",
+      "zh-Hans": "```bash\ngrep -r \"wait-for-feedback\" /Users/drewritter/prime-rad/superpowers/ --include=\"*.js\" --include=\"*.md\" --include=\"*.sh\" --include=\"*.json\"\n```"
+    },
+    {
+      "en-US": "Expected references: only `visual-companion.md` (rewritten in Task 6) and possibly release notes (historical, leave as-is).",
+      "zh-Hans": "预期引用：只有 `visual-companion.md`（将在任务 6 中重写）以及可能的发布说明（历史记录，保留原样）。"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Delete the file**",
+      "zh-Hans": "* \\[ ] **步骤 2：删除文件**"
+    },
+    {
+      "en-US": "```bash\nrm lib/brainstorm-server/wait-for-feedback.sh\n```",
+      "zh-Hans": "```bash\nrm lib/brainstorm-server/wait-for-feedback.sh\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 3: Run tests to confirm nothing breaks**",
+      "zh-Hans": "* \\[ ] **步骤 3：运行测试以确认没有破坏任何东西**"
+    },
+    {
+      "en-US": "```bash\ncd /Users/drewritter/prime-rad/superpowers && node tests/brainstorm-server/server.test.js\n```",
+      "zh-Hans": "```bash\ncd /Users/drewritter/prime-rad/superpowers && node tests/brainstorm-server/server.test.js\n```"
+    },
+    {
+      "en-US": "Expected: All tests PASS (no test referenced this file).",
+      "zh-Hans": "预期：所有测试通过（没有测试引用此文件）。"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Commit**",
+      "zh-Hans": "* \\[ ] **步骤 4：提交**"
+    },
+    {
+      "en-US": "```bash\ngit add -u lib/brainstorm-server/wait-for-feedback.sh\ngit commit -m \"Delete wait-for-feedback.sh: replaced by .events file\"\n```",
+      "zh-Hans": "```bash\ngit add -u lib/brainstorm-server/wait-for-feedback.sh\ngit commit -m \"Delete wait-for-feedback.sh: replaced by .events file\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 6: Rewrite `visual-companion.md`",
+      "zh-Hans": "### 任务 6：重写 `visual-companion.md`"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `skills/brainstorming/visual-companion.md`\n\n- [ ] **Step 1: Update \"How It Works\" description (line 18)**",
+      "zh-Hans": "* 修改：`skills/brainstorming/visual-companion.md`\n\n* \\[ ] **步骤 1：更新“工作原理”描述（第 18 行）**"
+    },
+    {
+      "en-US": "Replace the sentence about receiving feedback \"as JSON\" with:",
+      "zh-Hans": "将关于接收反馈“作为 JSON”的句子替换为："
+    },
+    {
+      "en-US": "```markdown\nThe server watches a directory for HTML files and serves the newest one to the browser. You write HTML content, the user sees it in their browser and can click to select options. Selections are recorded to a `.events` file that you read on your next turn.\n```",
+      "zh-Hans": "```markdown\n服务器监视一个目录中的 HTML 文件，并将最新的一个提供给浏览器。你编写 HTML 内容，用户在其浏览器中查看，并可以通过点击来选择选项。选择会被记录到一个 `.events` 文件中，供你在下一回合读取。\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Update fragment description (line 20)**",
+      "zh-Hans": "* \\[ ] **步骤 2：更新片段描述（第 20 行）**"
+    },
+    {
+      "en-US": "Remove \"feedback footer\" from the description of what the frame template provides:",
+      "zh-Hans": "从框架模板提供的描述中移除“反馈页脚”："
+    },
+    {
+      "en-US": "```markdown\n**Content fragments vs full documents:** If your HTML file starts with `<!DOCTYPE` or `<html`, the server serves it as-is (just injects the helper script). Otherwise, the server automatically wraps your content in the frame template — adding the header, CSS theme, selection indicator, and all interactive infrastructure. **Write content fragments by default.** Only write full documents when you need complete control over the page.\n```",
+      "zh-Hans": "```markdown\n**内容片段与完整文档：** 如果您的 HTML 文件以 `<!DOCTYPE` 或 `<html` 开头，服务器会直接提供它（仅注入辅助脚本）。否则，服务器会自动将您的内容包装在框架模板中——添加页眉、CSS 主题、选择指示器以及所有交互式基础结构。**默认情况下请编写内容片段。** 仅在需要完全控制页面时编写完整文档。\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 3: Rewrite \"The Loop\" section (lines 36-61)**",
+      "zh-Hans": "* \\[ ] **步骤 3：重写“循环”部分（第 36-61 行）**"
+    },
+    {
+      "en-US": "Replace the entire \"The Loop\" section with:",
+      "zh-Hans": "替换整个“循环”部分为："
+    },
+    {
+      "en-US": "```markdown\n## The Loop\n\n1. **Write HTML** to a new file in `screen_dir`:\n   - Use semantic filenames: `platform.html`, `visual-style.html`, `layout.html`\n   - **Never reuse filenames** — each screen gets a fresh file\n   - Use Write tool — **never use cat/heredoc** (dumps noise into terminal)\n   - Server automatically serves the newest file\n\n2. **Tell user what to expect and end your turn:**\n   - Remind them of the URL (every step, not just first)\n   - Give a brief text summary of what's on screen (e.g., \"Showing 3 layout options for the homepage\")\n   - Ask them to respond in the terminal: \"Take a look and let me know what you think. Click to select an option if you'd like.\"\n\n3. **On your next turn** — after the user responds in the terminal:\n   - Read `$SCREEN_DIR/.events` if it exists — this contains the user's browser interactions (clicks, selections) as JSON lines\n   - Merge with the user's terminal text to get the full picture\n   - The terminal message is the primary feedback; `.events` provides structured interaction data\n\n4. **Iterate or advance** — if feedback changes current screen, write a new file (e.g., `layout-v2.html`). Only move to the next question when the current step is validated.\n\n5. Repeat until done.\n```",
+      "zh-Hans": "```markdown\n## 循环流程\n\n1.  **编写 HTML** 到 `screen_dir` 中的一个新文件：\n    *   使用语义化的文件名：`platform.html`、`visual-style.html`、`layout.html`\n    *   **切勿重用文件名** — 每个屏幕都应使用一个全新的文件\n    *   使用 Write 工具 — **切勿使用 cat/heredoc**（这会将噪音输出到终端）\n    *   服务器会自动提供最新的文件\n\n2.  **告知用户预期结果并结束你的回合：**\n    *   提醒他们 URL（每一步都要提醒，不仅仅是第一步）\n    *   简要描述屏幕上的内容（例如，“为主页展示了 3 个布局选项”）\n    *   请他们在终端中回复：“查看一下并告诉我你的想法。如果你想选择某个选项，请点击它。”\n\n3.  **在你的下一个回合** — 在用户在终端中回复之后：\n    *   如果 `$SCREEN_DIR/.events` 存在，请读取它 — 它包含用户的浏览器交互（点击、选择）数据，以 JSON 行格式记录\n    *   将其与用户的终端文本合并，以获得完整的反馈信息\n    *   终端消息是主要的反馈来源；`.events` 提供结构化的交互数据\n\n4.  **迭代或推进** — 如果反馈改变了当前屏幕，则写入一个新文件（例如，`layout-v2.html`）。只有当当前步骤得到确认后，才进入下一个问题。\n\n5.  重复以上步骤，直到完成。\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Replace \"User Feedback Format\" section (lines 165-174)**",
+      "zh-Hans": "* \\[ ] **步骤 4：替换“用户反馈格式”部分（第 165-174 行）**"
+    },
+    {
+      "en-US": "Replace with:",
+      "zh-Hans": "替换为："
+    },
+    {
+      "en-US": "```markdown\n## Browser Events Format\n\nWhen the user clicks options in the browser, their interactions are recorded to `$SCREEN_DIR/.events` (one JSON object per line). The file is cleared automatically when you push a new screen.\n\n```jsonl\n{\"type\":\"click\",\"choice\":\"a\",\"text\":\"Option A - Simple Layout\",\"timestamp\":1706000101}\n{\"type\":\"click\",\"choice\":\"c\",\"text\":\"Option C - Complex Grid\",\"timestamp\":1706000108}\n{\"type\":\"click\",\"choice\":\"b\",\"text\":\"Option B - Hybrid\",\"timestamp\":1706000115}\n```",
+      "zh-Hans": "````markdown\n## 浏览器事件格式\n\n当用户在浏览器中点击选项时，其交互会被记录到 `$SCREEN_DIR/.events`（每行一个 JSON 对象）。当你推送新屏幕时，该文件会自动清空。\n\n```jsonl\n{\"type\":\"click\",\"choice\":\"a\",\"text\":\"Option A - Simple Layout\",\"timestamp\":1706000101}\n{\"type\":\"click\",\"choice\":\"c\",\"text\":\"Option C - Complex Grid\",\"timestamp\":1706000108}\n{\"type\":\"click\",\"choice\":\"b\",\"text\":\"Option B - Hybrid\",\"timestamp\":1706000115}\n\n````"
+    },
+    {
+      "en-US": "The full event stream shows the user's exploration path — they may click multiple options before settling. The last `choice` event is typically the final selection, but the pattern of clicks can reveal hesitation or preferences worth asking about.",
+      "zh-Hans": "完整的事件流显示了用户的探索路径——他们可能在确定之前点击了多个选项。最后一个 `choice` 事件通常是最终选择，但点击模式可能揭示值得询问的犹豫或偏好。"
+    },
+    {
+      "en-US": "If `.events` doesn't exist, the user didn't interact with the browser — use only their terminal text.",
+      "zh-Hans": "如果 `.events` 不存在，则用户未与浏览器交互——仅使用其终端文本。"
+    },
+    {
+      "en-US": "```\n\n- [ ] **Step 5: Update \"Writing Content Fragments\" description (line 65)**\n\nRemove \"feedback footer\" reference:\n\n```markdown\nWrite just the content that goes inside the page. The server wraps it in the frame template automatically (header, theme CSS, selection indicator, and all interactive infrastructure).\n```",
+      "zh-Hans": "````\n\n- [ ] **Step 5: Update \"Writing Content Fragments\" description (line 65)**\n\nRemove \"feedback footer\" reference:\n\n```markdown\nWrite just the content that goes inside the page. The server wraps it in the frame template automatically (header, theme CSS, selection indicator, and all interactive infrastructure).\n````"
+    },
+    {
+      "en-US": "- [ ] **Step 6: Update Reference section (lines 200-203)**",
+      "zh-Hans": "* \\[ ] **步骤 6：更新参考部分（第 200-203 行）**"
+    },
+    {
+      "en-US": "Remove the helper.js reference description about \"JS API\" — the API is now minimal. Keep the path reference:",
+      "zh-Hans": "移除关于“JS API”的 helper.js 引用描述——API 现在是最小化的。保留路径引用："
+    },
+    {
+      "en-US": "```markdown\n## Reference\n\n- Frame template (CSS reference): `${CLAUDE_PLUGIN_ROOT}/lib/brainstorm-server/frame-template.html`\n- Helper script (client-side): `${CLAUDE_PLUGIN_ROOT}/lib/brainstorm-server/helper.js`\n```",
+      "zh-Hans": "```markdown\n## 参考\n\n- 框架模板（CSS 参考）：`${CLAUDE_PLUGIN_ROOT}/lib/brainstorm-server/frame-template.html`\n- 辅助脚本（客户端）：`${CLAUDE_PLUGIN_ROOT}/lib/brainstorm-server/helper.js`\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 7: Commit**",
+      "zh-Hans": "* \\[ ] **步骤 7：提交**"
+    },
+    {
+      "en-US": "```bash\ngit add skills/brainstorming/visual-companion.md\ngit commit -m \"Rewrite visual-companion.md for non-blocking browser-displays-terminal-commands flow\"\n```",
+      "zh-Hans": "```bash\ngit add skills/brainstorming/visual-companion.md\ngit commit -m \"Rewrite visual-companion.md for non-blocking browser-displays-terminal-commands flow\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 7: Final verification",
+      "zh-Hans": "### 任务 7：最终验证"
+    },
+    {
+      "en-US": "- [ ] **Step 1: Run full test suite**",
+      "zh-Hans": "* \\[ ] **步骤 1：运行完整测试套件**"
+    },
+    {
+      "en-US": "```bash\ncd /Users/drewritter/prime-rad/superpowers && node tests/brainstorm-server/server.test.js\n```",
+      "zh-Hans": "```bash\ncd /Users/drewritter/prime-rad/superpowers && node tests/brainstorm-server/server.test.js\n```"
+    },
+    {
+      "en-US": "Expected: ALL tests PASS.",
+      "zh-Hans": "预期：所有测试通过。"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Manual smoke test**",
+      "zh-Hans": "* \\[ ] **步骤 2：手动冒烟测试**"
+    },
+    {
+      "en-US": "Start the server manually and verify the flow works end-to-end:",
+      "zh-Hans": "手动启动服务器并验证端到端流程是否工作："
+    },
+    {
+      "en-US": "```bash\ncd /Users/drewritter/prime-rad/superpowers && lib/brainstorm-server/start-server.sh --project-dir /tmp/brainstorm-smoke-test\n```",
+      "zh-Hans": "```bash\ncd /Users/drewritter/prime-rad/superpowers && lib/brainstorm-server/start-server.sh --project-dir /tmp/brainstorm-smoke-test\n```"
+    },
+    {
+      "en-US": "Write a test fragment, open in browser, click an option, verify `.events` file is written, verify indicator bar updates. Then stop the server:",
+      "zh-Hans": "写入一个测试片段，在浏览器中打开，点击一个选项，验证 `.events` 文件被写入，验证指示器栏更新。然后停止服务器："
+    },
+    {
+      "en-US": "```bash\nlib/brainstorm-server/stop-server.sh <screen_dir from start output>\n```",
+      "zh-Hans": "```bash\nlib/brainstorm-server/stop-server.sh <screen_dir from start output>\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 3: Verify no stale references remain**",
+      "zh-Hans": "* \\[ ] **步骤 3：验证没有残留的陈旧引用**"
+    },
+    {
+      "en-US": "```bash\ngrep -r \"wait-for-feedback\\|sendToClaude\\|feedback-footer\\|send-to-claude\\|TaskOutput.*block.*true\" /Users/drewritter/prime-rad/superpowers/ --include=\"*.js\" --include=\"*.md\" --include=\"*.sh\" --include=\"*.html\" | grep -v node_modules | grep -v RELEASE-NOTES | grep -v \"\\.md:.*spec\\|plan\"\n```",
+      "zh-Hans": "```bash\ngrep -r \"wait-for-feedback\\|sendToClaude\\|feedback-footer\\|send-to-claude\\|TaskOutput.*block.*true\" /Users/drewritter/prime-rad/superpowers/ --include=\"*.js\" --include=\"*.md\" --include=\"*.sh\" --include=\"*.html\" | grep -v node_modules | grep -v RELEASE-NOTES | grep -v \"\\.md:.*spec\\|plan\"\n```"
+    },
+    {
+      "en-US": "Expected: No hits outside of release notes and the spec/plan docs (which are historical).",
+      "zh-Hans": "预期：除了发布说明和规范/计划文档（这些是历史记录）外，没有其他匹配项。"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Final commit if any cleanup needed**",
+      "zh-Hans": "* \\[ ] **步骤 4：如果需要任何清理，进行最终提交**"
+    },
+    {
+      "en-US": "```bash\ngit status\n# Review untracked/modified files, stage specific files as needed, commit if clean\n```",
+      "zh-Hans": "```bash\ngit status\n# Review untracked/modified files, stage specific files as needed, commit if clean\n```"
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "sourceFile": "CODE_OF_CONDUCT.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Contributor Covenant Code of Conduct",
+      "zh-Hans": "# 贡献者公约行为准则"
+    },
+    {
+      "en-US": "## Our Pledge",
+      "zh-Hans": "## 我们的承诺"
+    },
+    {
+      "en-US": "We as members, contributors, and leaders pledge to make participation in our\ncommunity a harassment-free experience for everyone, regardless of age, body\nsize, visible or invisible disability, ethnicity, sex characteristics, gender\nidentity and expression, level of experience, education, socio-economic status,\nnationality, personal appearance, race, religion, or sexual identity\nand orientation.",
+      "zh-Hans": "我们作为成员、贡献者和领导者承诺，无论年龄、体型、可见或不可见的残疾、民族、性别特征、性别认同与表达、经验水平、教育程度、社会经济地位、国籍、个人外貌、种族、宗教信仰或性取向与性认同如何，都将使参与我们社区成为对所有人无骚扰的体验。"
+    },
+    {
+      "en-US": "We pledge to act and interact in ways that contribute to an open, welcoming,\ndiverse, inclusive, and healthy community.",
+      "zh-Hans": "我们承诺以促进开放、友善、多元、包容和健康社区的方式行事和互动。"
+    },
+    {
+      "en-US": "## Our Standards",
+      "zh-Hans": "## 我们的标准"
+    },
+    {
+      "en-US": "Examples of behavior that contributes to a positive environment for our\ncommunity include:",
+      "zh-Hans": "有助于为我们社区创造积极环境的行为示例包括："
+    },
+    {
+      "en-US": "* Demonstrating empathy and kindness toward other people\n* Being respectful of differing opinions, viewpoints, and experiences\n* Giving and gracefully accepting constructive feedback\n* Accepting responsibility and apologizing to those affected by our mistakes,\n  and learning from the experience\n* Focusing on what is best not just for us as individuals, but for the\n  overall community",
+      "zh-Hans": "* 对他人表现出同理心和善意\n* 尊重不同的意见、观点和经验\n* 给予并优雅地接受建设性反馈\n* 承担责任，向受我们错误影响的人道歉，并从经验中学习\n* 关注不仅对我们个人，而且对整个社区最有利的事情"
+    },
+    {
+      "en-US": "Examples of unacceptable behavior include:",
+      "zh-Hans": "不可接受的行为示例包括："
+    },
+    {
+      "en-US": "* The use of sexualized language or imagery, and sexual attention or\n  advances of any kind\n* Trolling, insulting or derogatory comments, and personal or political attacks\n* Public or private harassment\n* Publishing others' private information, such as a physical or email\n  address, without their explicit permission\n* Other conduct which could reasonably be considered inappropriate in a\n  professional setting",
+      "zh-Hans": "* 使用带有性暗示的语言或图像，以及任何形式的性关注或性挑逗\n* 挑衅、侮辱或贬损性评论，以及个人或政治攻击\n* 公开或私下的骚扰\n* 未经他人明确许可，发布他人的私人信息，例如物理地址或电子邮件地址\n* 其他在专业环境中可能被视为不当的行为"
+    },
+    {
+      "en-US": "## Enforcement Responsibilities",
+      "zh-Hans": "## 执行责任"
+    },
+    {
+      "en-US": "Community leaders are responsible for clarifying and enforcing our standards of\nacceptable behavior and will take appropriate and fair corrective action in\nresponse to any behavior that they deem inappropriate, threatening, offensive,\nor harmful.",
+      "zh-Hans": "社区领导者有责任澄清和执行我们的可接受行为标准，并将对他们认为不当、威胁、冒犯或有害的任何行为采取适当且公平的纠正措施。"
+    },
+    {
+      "en-US": "Community leaders have the right and responsibility to remove, edit, or reject\ncomments, commits, code, wiki edits, issues, and other contributions that are\nnot aligned to this Code of Conduct, and will communicate reasons for moderation\ndecisions when appropriate.",
+      "zh-Hans": "社区领导者有权且有责任删除、编辑或拒绝与行为准则不符的评论、提交、代码、维基编辑、问题和其他贡献，并将在适当时沟通审核决定的原因。"
+    },
+    {
+      "en-US": "## Scope",
+      "zh-Hans": "## 适用范围"
+    },
+    {
+      "en-US": "This Code of Conduct applies within all community spaces, and also applies when\nan individual is officially representing the community in public spaces.\nExamples of representing our community include using an official e-mail address,\nposting via an official social media account, or acting as an appointed\nrepresentative at an online or offline event.",
+      "zh-Hans": "本行为准则适用于所有社区空间，也适用于个人在公共空间正式代表社区的情况。代表我们社区的示例包括使用官方电子邮件地址、通过官方社交媒体账户发帖，或在线上或线下活动中担任指定代表。"
+    },
+    {
+      "en-US": "## Enforcement",
+      "zh-Hans": "## 执行"
+    },
+    {
+      "en-US": "Instances of abusive, harassing, or otherwise unacceptable behavior may be\nreported to the community leaders responsible for enforcement at\njesse@primeradiant.com.\nAll complaints will be reviewed and investigated promptly and fairly.",
+      "zh-Hans": "虐待、骚扰或其他不可接受行为的实例可以向负责执行的社区领导者报告，邮箱为 jesse@primeradiant.com。\n所有投诉都将得到及时和公平的审查和调查。"
+    },
+    {
+      "en-US": "All community leaders are obligated to respect the privacy and security of the\nreporter of any incident.",
+      "zh-Hans": "所有社区领导者都有义务尊重任何事件报告者的隐私和安全。"
+    },
+    {
+      "en-US": "## Enforcement Guidelines",
+      "zh-Hans": "## 执行指南"
+    },
+    {
+      "en-US": "Community leaders will follow these Community Impact Guidelines in determining\nthe consequences for any action they deem in violation of this Code of Conduct:",
+      "zh-Hans": "社区领导者将遵循以下社区影响指南，确定他们认为违反本行为准则的任何行为的后果："
+    },
+    {
+      "en-US": "### 1. Correction",
+      "zh-Hans": "### 1. 纠正"
+    },
+    {
+      "en-US": "**Community Impact**: Use of inappropriate language or other behavior deemed\nunprofessional or unwelcome in the community.",
+      "zh-Hans": "**社区影响**：使用不当语言或其他在社区中被视为不专业或不受欢迎的行为。"
+    },
+    {
+      "en-US": "**Consequence**: A private, written warning from community leaders, providing\nclarity around the nature of the violation and an explanation of why the\nbehavior was inappropriate. A public apology may be requested.",
+      "zh-Hans": "**后果**：社区领导者发出私人的书面警告，明确说明违规性质，并解释为何该行为不当。可能会要求公开道歉。"
+    },
+    {
+      "en-US": "### 2. Warning",
+      "zh-Hans": "### 2. 警告"
+    },
+    {
+      "en-US": "**Community Impact**: A violation through a single incident or series\nof actions.",
+      "zh-Hans": "**社区影响**：通过单个事件或一系列行为造成的违规。"
+    },
+    {
+      "en-US": "**Consequence**: A warning with consequences for continued behavior. No\ninteraction with the people involved, including unsolicited interaction with\nthose enforcing the Code of Conduct, for a specified period of time. This\nincludes avoiding interactions in community spaces as well as external channels\nlike social media. Violating these terms may lead to a temporary or\npermanent ban.",
+      "zh-Hans": "**后果**：带有持续行为后果的警告。在规定时间内，不得与相关人员互动，包括与行为准则执行者进行未经请求的互动。这包括避免在社区空间以及社交媒体等外部渠道的互动。违反这些条款可能导致暂时或永久封禁。"
+    },
+    {
+      "en-US": "### 3. Temporary Ban",
+      "zh-Hans": "### 3. 暂时封禁"
+    },
+    {
+      "en-US": "**Community Impact**: A serious violation of community standards, including\nsustained inappropriate behavior.",
+      "zh-Hans": "**社区影响**：严重违反社区标准，包括持续的不当行为。"
+    },
+    {
+      "en-US": "**Consequence**: A temporary ban from any sort of interaction or public\ncommunication with the community for a specified period of time. No public or\nprivate interaction with the people involved, including unsolicited interaction\nwith those enforcing the Code of Conduct, is allowed during this period.\nViolating these terms may lead to a permanent ban.",
+      "zh-Hans": "**后果**：在规定时间内，禁止与社区进行任何形式的互动或公开交流。在此期间，不允许与相关人员（包括行为准则执行者）进行公开或私下的互动。违反这些条款可能导致永久封禁。"
+    },
+    {
+      "en-US": "### 4. Permanent Ban",
+      "zh-Hans": "### 4. 永久封禁"
+    },
+    {
+      "en-US": "**Community Impact**: Demonstrating a pattern of violation of community\nstandards, including sustained inappropriate behavior,  harassment of an\nindividual, or aggression toward or disparagement of classes of individuals.",
+      "zh-Hans": "**社区影响**：表现出违反社区标准的模式，包括持续的不当行为、对个人的骚扰，或对某类人群的攻击或贬低。"
+    },
+    {
+      "en-US": "**Consequence**: A permanent ban from any sort of public interaction within\nthe community.",
+      "zh-Hans": "**后果**：永久禁止在社区内进行任何形式的公开互动。"
+    },
+    {
+      "en-US": "## Attribution",
+      "zh-Hans": "## 致谢"
+    },
+    {
+      "en-US": "This Code of Conduct is adapted from the [Contributor Covenant][homepage],\nversion 2.0, available at\nhttps://www.contributor-covenant.org/version/2/0/code_of_conduct.html.",
+      "zh-Hans": "本行为准则改编自 [Contributor Covenant][homepage]，\n版本 2.0，可在\nhttps://www.contributor-covenant.org/version/2/0/code\\_of\\_conduct.html 获取。"
+    },
+    {
+      "en-US": "Community Impact Guidelines were inspired by [Mozilla's code of conduct\nenforcement ladder](https://github.com/mozilla/diversity).",
+      "zh-Hans": "社区影响指南的灵感来自 [Mozilla 的行为准则执行阶梯](https://github.com/mozilla/diversity)。"
+    },
+    {
+      "en-US": "[homepage]: https://www.contributor-covenant.org",
+      "zh-Hans": "[homepage]: https://www.contributor-covenant.org"
+    },
+    {
+      "en-US": "For answers to common questions about this code of conduct, see the FAQ at\nhttps://www.contributor-covenant.org/faq. Translations are available at\nhttps://www.contributor-covenant.org/translations.",
+      "zh-Hans": "有关本行为准则常见问题的解答，请参阅常见问题解答页面：\nhttps://www.contributor-covenant.org/faq。翻译版本可在\nhttps://www.contributor-covenant.org/translations 获取。"
+    }
+  ]
+}

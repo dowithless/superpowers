@@ -1,0 +1,146 @@
+{
+  "sourceFile": "skills/systematic-debugging/defense-in-depth.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Defense-in-Depth Validation",
+      "zh-Hans": "# 纵深防御验证"
+    },
+    {
+      "en-US": "## Overview",
+      "zh-Hans": "## 概述"
+    },
+    {
+      "en-US": "When you fix a bug caused by invalid data, adding validation at one place feels sufficient. But that single check can be bypassed by different code paths, refactoring, or mocks.",
+      "zh-Hans": "当你修复一个由无效数据引起的缺陷时，在某一处添加验证似乎就足够了。但这一单一的检查可能会被不同的代码路径、重构或模拟所绕过。"
+    },
+    {
+      "en-US": "**Core principle:** Validate at EVERY layer data passes through. Make the bug structurally impossible.",
+      "zh-Hans": "**核心原则：** 在数据经过的**每一层**都进行验证。从结构上杜绝缺陷的发生。"
+    },
+    {
+      "en-US": "## Why Multiple Layers",
+      "zh-Hans": "## 为何需要多层验证"
+    },
+    {
+      "en-US": "Single validation: \"We fixed the bug\"\nMultiple layers: \"We made the bug impossible\"",
+      "zh-Hans": "单一验证：\"我们修复了缺陷\"\n多层验证：\"我们使缺陷不可能发生\""
+    },
+    {
+      "en-US": "Different layers catch different cases:",
+      "zh-Hans": "不同层级能捕获不同情况："
+    },
+    {
+      "en-US": "- Entry validation catches most bugs\n- Business logic catches edge cases\n- Environment guards prevent context-specific dangers\n- Debug logging helps when other layers fail",
+      "zh-Hans": "* 入口验证捕获大多数缺陷\n* 业务逻辑捕获边缘情况\n* 环境防护防止特定上下文下的危险\n* 调试日志在其他层级失效时提供帮助"
+    },
+    {
+      "en-US": "## The Four Layers",
+      "zh-Hans": "## 四层防御"
+    },
+    {
+      "en-US": "### Layer 1: Entry Point Validation",
+      "zh-Hans": "### 第一层：入口点验证"
+    },
+    {
+      "en-US": "**Purpose:** Reject obviously invalid input at API boundary",
+      "zh-Hans": "**目的：** 在 API 边界拒绝明显无效的输入"
+    },
+    {
+      "en-US": "```typescript\nfunction createProject(name: string, workingDirectory: string) {\n  if (!workingDirectory || workingDirectory.trim() === '') {\n    throw new Error('workingDirectory cannot be empty');\n  }\n  if (!existsSync(workingDirectory)) {\n    throw new Error(`workingDirectory does not exist: ${workingDirectory}`);\n  }\n  if (!statSync(workingDirectory).isDirectory()) {\n    throw new Error(`workingDirectory is not a directory: ${workingDirectory}`);\n  }\n  // ... proceed\n}\n```",
+      "zh-Hans": "```typescript\nfunction createProject(name: string, workingDirectory: string) {\n  if (!workingDirectory || workingDirectory.trim() === '') {\n    throw new Error('workingDirectory cannot be empty');\n  }\n  if (!existsSync(workingDirectory)) {\n    throw new Error(`workingDirectory does not exist: ${workingDirectory}`);\n  }\n  if (!statSync(workingDirectory).isDirectory()) {\n    throw new Error(`workingDirectory is not a directory: ${workingDirectory}`);\n  }\n  // ... proceed\n}\n```"
+    },
+    {
+      "en-US": "### Layer 2: Business Logic Validation",
+      "zh-Hans": "### 第二层：业务逻辑验证"
+    },
+    {
+      "en-US": "**Purpose:** Ensure data makes sense for this operation",
+      "zh-Hans": "**目的：** 确保数据对于该操作有意义"
+    },
+    {
+      "en-US": "```typescript\nfunction initializeWorkspace(projectDir: string, sessionId: string) {\n  if (!projectDir) {\n    throw new Error('projectDir required for workspace initialization');\n  }\n  // ... proceed\n}\n```",
+      "zh-Hans": "```typescript\nfunction initializeWorkspace(projectDir: string, sessionId: string) {\n  if (!projectDir) {\n    throw new Error('projectDir required for workspace initialization');\n  }\n  // ... proceed\n}\n```"
+    },
+    {
+      "en-US": "### Layer 3: Environment Guards",
+      "zh-Hans": "### 第三层：环境防护"
+    },
+    {
+      "en-US": "**Purpose:** Prevent dangerous operations in specific contexts",
+      "zh-Hans": "**目的：** 防止在特定上下文中执行危险操作"
+    },
+    {
+      "en-US": "```typescript\nasync function gitInit(directory: string) {\n  // In tests, refuse git init outside temp directories\n  if (process.env.NODE_ENV === 'test') {\n    const normalized = normalize(resolve(directory));\n    const tmpDir = normalize(resolve(tmpdir()));\n\n    if (!normalized.startsWith(tmpDir)) {\n      throw new Error(\n        `Refusing git init outside temp dir during tests: ${directory}`\n      );\n    }\n  }\n  // ... proceed\n}\n```",
+      "zh-Hans": "```typescript\nasync function gitInit(directory: string) {\n  // In tests, refuse git init outside temp directories\n  if (process.env.NODE_ENV === 'test') {\n    const normalized = normalize(resolve(directory));\n    const tmpDir = normalize(resolve(tmpdir()));\n\n    if (!normalized.startsWith(tmpDir)) {\n      throw new Error(\n        `Refusing git init outside temp dir during tests: ${directory}`\n      );\n    }\n  }\n  // ... proceed\n}\n```"
+    },
+    {
+      "en-US": "### Layer 4: Debug Instrumentation",
+      "zh-Hans": "### 第四层：调试插桩"
+    },
+    {
+      "en-US": "**Purpose:** Capture context for forensics",
+      "zh-Hans": "**目的：** 为取证捕获上下文信息"
+    },
+    {
+      "en-US": "```typescript\nasync function gitInit(directory: string) {\n  const stack = new Error().stack;\n  logger.debug('About to git init', {\n    directory,\n    cwd: process.cwd(),\n    stack,\n  });\n  // ... proceed\n}\n```",
+      "zh-Hans": "```typescript\nasync function gitInit(directory: string) {\n  const stack = new Error().stack;\n  logger.debug('About to git init', {\n    directory,\n    cwd: process.cwd(),\n    stack,\n  });\n  // ... proceed\n}\n```"
+    },
+    {
+      "en-US": "## Applying the Pattern",
+      "zh-Hans": "## 应用此模式"
+    },
+    {
+      "en-US": "When you find a bug:",
+      "zh-Hans": "当你发现一个缺陷时："
+    },
+    {
+      "en-US": "1. **Trace the data flow** - Where does bad value originate? Where used?\n2. **Map all checkpoints** - List every point data passes through\n3. **Add validation at each layer** - Entry, business, environment, debug\n4. **Test each layer** - Try to bypass layer 1, verify layer 2 catches it",
+      "zh-Hans": "1. **追踪数据流** - 不良值源于何处？在何处使用？\n2. **映射所有检查点** - 列出数据经过的每一个点\n3. **在每一层添加验证** - 入口、业务、环境、调试\n4. **测试每一层** - 尝试绕过第 1 层，验证第 2 层能捕获它"
+    },
+    {
+      "en-US": "## Example from Session",
+      "zh-Hans": "## 会话示例"
+    },
+    {
+      "en-US": "Bug: Empty `projectDir` caused `git init` in source code",
+      "zh-Hans": "缺陷：空的 `projectDir` 导致源代码中的 `git init`"
+    },
+    {
+      "en-US": "**Data flow:**",
+      "zh-Hans": "**数据流：**"
+    },
+    {
+      "en-US": "1. Test setup → empty string\n2. `Project.create(name, '')`\n3. `WorkspaceManager.createWorkspace('')`\n4. `git init` runs in `process.cwd()`",
+      "zh-Hans": "1. 测试设置 → 空字符串\n2. `Project.create(name, '')`\n3. `WorkspaceManager.createWorkspace('')`\n4. `git init` 在 `process.cwd()` 中运行"
+    },
+    {
+      "en-US": "**Four layers added:**",
+      "zh-Hans": "**添加的四层防御：**"
+    },
+    {
+      "en-US": "- Layer 1: `Project.create()` validates not empty/exists/writable\n- Layer 2: `WorkspaceManager` validates projectDir not empty\n- Layer 3: `WorktreeManager` refuses git init outside tmpdir in tests\n- Layer 4: Stack trace logging before git init",
+      "zh-Hans": "* 第一层：`Project.create()` 验证非空/存在/可写\n* 第二层：`WorkspaceManager` 验证 projectDir 非空\n* 第三层：`WorktreeManager` 在测试中拒绝在 tmpdir 之外进行 git init\n* 第四层：在 git init 之前进行堆栈跟踪日志记录"
+    },
+    {
+      "en-US": "**Result:** All 1847 tests passed, bug impossible to reproduce",
+      "zh-Hans": "**结果：** 所有 1847 个测试通过，缺陷无法复现"
+    },
+    {
+      "en-US": "## Key Insight",
+      "zh-Hans": "## 关键洞见"
+    },
+    {
+      "en-US": "All four layers were necessary. During testing, each layer caught bugs the others missed:",
+      "zh-Hans": "所有四层防御都是必要的。在测试过程中，每一层都捕获了其他层遗漏的缺陷："
+    },
+    {
+      "en-US": "- Different code paths bypassed entry validation\n- Mocks bypassed business logic checks\n- Edge cases on different platforms needed environment guards\n- Debug logging identified structural misuse",
+      "zh-Hans": "* 不同的代码路径绕过了入口验证\n* 模拟绕过了业务逻辑检查\n* 不同平台上的边缘情况需要环境防护\n* 调试日志识别了结构性的误用"
+    },
+    {
+      "en-US": "**Don't stop at one validation point.** Add checks at every layer.",
+      "zh-Hans": "**不要止步于一个验证点。** 在每一层都添加检查。"
+    }
+  ]
+}

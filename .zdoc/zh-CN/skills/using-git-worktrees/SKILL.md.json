@@ -1,0 +1,266 @@
+{
+  "sourceFile": "skills/using-git-worktrees/SKILL.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "---\nname: using-git-worktrees\ndescription: Use when starting feature work that needs isolation from current workspace or before executing implementation plans - creates isolated git worktrees with smart directory selection and safety verification\n---",
+      "zh-Hans": "---\nname: using-git-worktrees\ndescription: 在需要与当前工作区隔离的功能工作开始时或执行实施计划之前使用 - 创建隔离的git工作树，具有智能目录选择和安全验证功能\n---"
+    },
+    {
+      "en-US": "# Using Git Worktrees",
+      "zh-Hans": "# 使用 Git Worktrees"
+    },
+    {
+      "en-US": "## Overview",
+      "zh-Hans": "## 概述"
+    },
+    {
+      "en-US": "Git worktrees create isolated workspaces sharing the same repository, allowing work on multiple branches simultaneously without switching.",
+      "zh-Hans": "Git worktrees 创建共享同一仓库的隔离工作空间，允许同时处理多个分支而无需切换。"
+    },
+    {
+      "en-US": "**Core principle:** Systematic directory selection + safety verification = reliable isolation.",
+      "zh-Hans": "**核心原则：** 系统化的目录选择 + 安全性验证 = 可靠的隔离。"
+    },
+    {
+      "en-US": "**Announce at start:** \"I'm using the using-git-worktrees skill to set up an isolated workspace.\"",
+      "zh-Hans": "**开始时声明：** \"我正在使用 using-git-worktrees 技能来设置一个隔离的工作空间。\""
+    },
+    {
+      "en-US": "## Directory Selection Process",
+      "zh-Hans": "## 目录选择流程"
+    },
+    {
+      "en-US": "Follow this priority order:",
+      "zh-Hans": "遵循以下优先级顺序："
+    },
+    {
+      "en-US": "### 1. Check Existing Directories",
+      "zh-Hans": "### 1. 检查现有目录"
+    },
+    {
+      "en-US": "```bash\n# Check in priority order\nls -d .worktrees 2>/dev/null     # Preferred (hidden)\nls -d worktrees 2>/dev/null      # Alternative\n```",
+      "zh-Hans": "```bash\n# Check in priority order\nls -d .worktrees 2>/dev/null     # Preferred (hidden)\nls -d worktrees 2>/dev/null      # Alternative\n```"
+    },
+    {
+      "en-US": "**If found:** Use that directory. If both exist, `.worktrees` wins.",
+      "zh-Hans": "**如果找到：** 使用该目录。如果两者都存在，`.worktrees` 优先。"
+    },
+    {
+      "en-US": "### 2. Check CLAUDE.md",
+      "zh-Hans": "### 2. 检查 CLAUDE.md"
+    },
+    {
+      "en-US": "```bash\ngrep -i \"worktree.*director\" CLAUDE.md 2>/dev/null\n```",
+      "zh-Hans": "```bash\ngrep -i \"worktree.*director\" CLAUDE.md 2>/dev/null\n```"
+    },
+    {
+      "en-US": "**If preference specified:** Use it without asking.",
+      "zh-Hans": "**如果指定了偏好：** 直接使用，无需询问。"
+    },
+    {
+      "en-US": "### 3. Ask User",
+      "zh-Hans": "### 3. 询问用户"
+    },
+    {
+      "en-US": "If no directory exists and no CLAUDE.md preference:",
+      "zh-Hans": "如果没有目录存在且 CLAUDE.md 中没有偏好设置："
+    },
+    {
+      "en-US": "```\nNo worktree directory found. Where should I create worktrees?\n\n1. .worktrees/ (project-local, hidden)\n2. ~/.config/superpowers/worktrees/<project-name>/ (global location)\n\nWhich would you prefer?\n```",
+      "zh-Hans": "```\nNo worktree directory found. Where should I create worktrees?\n\n1. .worktrees/ (project-local, hidden)\n2. ~/.config/superpowers/worktrees/<project-name>/ (global location)\n\nWhich would you prefer?\n```"
+    },
+    {
+      "en-US": "## Safety Verification",
+      "zh-Hans": "## 安全性验证"
+    },
+    {
+      "en-US": "### For Project-Local Directories (.worktrees or worktrees)",
+      "zh-Hans": "### 对于项目本地目录（.worktrees 或 worktrees）"
+    },
+    {
+      "en-US": "**MUST verify directory is ignored before creating worktree:**",
+      "zh-Hans": "**创建 worktree 前必须验证目录是否被忽略：**"
+    },
+    {
+      "en-US": "```bash\n# Check if directory is ignored (respects local, global, and system gitignore)\ngit check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/dev/null\n```",
+      "zh-Hans": "```bash\n# Check if directory is ignored (respects local, global, and system gitignore)\ngit check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/dev/null\n```"
+    },
+    {
+      "en-US": "**If NOT ignored:**",
+      "zh-Hans": "**如果未被忽略：**"
+    },
+    {
+      "en-US": "Per Jesse's rule \"Fix broken things immediately\":",
+      "zh-Hans": "根据 Jesse 的规则“立即修复损坏的东西”："
+    },
+    {
+      "en-US": "1. Add appropriate line to .gitignore\n2. Commit the change\n3. Proceed with worktree creation",
+      "zh-Hans": "1. 将适当的行添加到 .gitignore\n2. 提交更改\n3. 继续创建 worktree"
+    },
+    {
+      "en-US": "**Why critical:** Prevents accidentally committing worktree contents to repository.",
+      "zh-Hans": "**为何关键：** 防止意外地将 worktree 内容提交到仓库。"
+    },
+    {
+      "en-US": "### For Global Directory (~/.config/superpowers/worktrees)",
+      "zh-Hans": "### 对于全局目录 (~/.config/superpowers/worktrees)"
+    },
+    {
+      "en-US": "No .gitignore verification needed - outside project entirely.",
+      "zh-Hans": "无需 .gitignore 验证——完全在项目之外。"
+    },
+    {
+      "en-US": "## Creation Steps",
+      "zh-Hans": "## 创建步骤"
+    },
+    {
+      "en-US": "### 1. Detect Project Name",
+      "zh-Hans": "### 1. 检测项目名称"
+    },
+    {
+      "en-US": "```bash\nproject=$(basename \"$(git rev-parse --show-toplevel)\")\n```",
+      "zh-Hans": "```bash\nproject=$(basename \"$(git rev-parse --show-toplevel)\")\n```"
+    },
+    {
+      "en-US": "### 2. Create Worktree",
+      "zh-Hans": "### 2. 创建 Worktree"
+    },
+    {
+      "en-US": "```bash\n# Determine full path\ncase $LOCATION in\n  .worktrees|worktrees)\n    path=\"$LOCATION/$BRANCH_NAME\"\n    ;;\n  ~/.config/superpowers/worktrees/*)\n    path=\"~/.config/superpowers/worktrees/$project/$BRANCH_NAME\"\n    ;;\nesac\n\n# Create worktree with new branch\ngit worktree add \"$path\" -b \"$BRANCH_NAME\"\ncd \"$path\"\n```",
+      "zh-Hans": "```bash\n# Determine full path\ncase $LOCATION in\n  .worktrees|worktrees)\n    path=\"$LOCATION/$BRANCH_NAME\"\n    ;;\n  ~/.config/superpowers/worktrees/*)\n    path=\"~/.config/superpowers/worktrees/$project/$BRANCH_NAME\"\n    ;;\nesac\n\n# Create worktree with new branch\ngit worktree add \"$path\" -b \"$BRANCH_NAME\"\ncd \"$path\"\n```"
+    },
+    {
+      "en-US": "### 3. Run Project Setup",
+      "zh-Hans": "### 3. 运行项目设置"
+    },
+    {
+      "en-US": "Auto-detect and run appropriate setup:",
+      "zh-Hans": "自动检测并运行适当的设置："
+    },
+    {
+      "en-US": "```bash\n# Node.js\nif [ -f package.json ]; then npm install; fi\n\n# Rust\nif [ -f Cargo.toml ]; then cargo build; fi\n\n# Python\nif [ -f requirements.txt ]; then pip install -r requirements.txt; fi\nif [ -f pyproject.toml ]; then poetry install; fi\n\n# Go\nif [ -f go.mod ]; then go mod download; fi\n```",
+      "zh-Hans": "```bash\n# Node.js\nif [ -f package.json ]; then npm install; fi\n\n# Rust\nif [ -f Cargo.toml ]; then cargo build; fi\n\n# Python\nif [ -f requirements.txt ]; then pip install -r requirements.txt; fi\nif [ -f pyproject.toml ]; then poetry install; fi\n\n# Go\nif [ -f go.mod ]; then go mod download; fi\n```"
+    },
+    {
+      "en-US": "### 4. Verify Clean Baseline",
+      "zh-Hans": "### 4. 验证干净的基线"
+    },
+    {
+      "en-US": "Run tests to ensure worktree starts clean:",
+      "zh-Hans": "运行测试以确保 worktree 从干净状态开始："
+    },
+    {
+      "en-US": "```bash\n# Examples - use project-appropriate command\nnpm test\ncargo test\npytest\ngo test ./...\n```",
+      "zh-Hans": "```bash\n# Examples - use project-appropriate command\nnpm test\ncargo test\npytest\ngo test ./...\n```"
+    },
+    {
+      "en-US": "**If tests fail:** Report failures, ask whether to proceed or investigate.",
+      "zh-Hans": "**如果测试失败：** 报告失败，询问是继续还是调查。"
+    },
+    {
+      "en-US": "**If tests pass:** Report ready.",
+      "zh-Hans": "**如果测试通过：** 报告就绪。"
+    },
+    {
+      "en-US": "### 5. Report Location",
+      "zh-Hans": "### 5. 报告位置"
+    },
+    {
+      "en-US": "```\nWorktree ready at <full-path>\nTests passing (<N> tests, 0 failures)\nReady to implement <feature-name>\n```",
+      "zh-Hans": "```\nWorktree ready at <full-path>\nTests passing (<N> tests, 0 failures)\nReady to implement <feature-name>\n```"
+    },
+    {
+      "en-US": "## Quick Reference",
+      "zh-Hans": "## 快速参考"
+    },
+    {
+      "en-US": "| Situation | Action |\n|-----------|--------|\n| `.worktrees/` exists | Use it (verify ignored) |\n| `worktrees/` exists | Use it (verify ignored) |\n| Both exist | Use `.worktrees/` |\n| Neither exists | Check CLAUDE.md → Ask user |\n| Directory not ignored | Add to .gitignore + commit |\n| Tests fail during baseline | Report failures + ask |\n| No package.json/Cargo.toml | Skip dependency install |",
+      "zh-Hans": "| 情况 | 操作 |\n|-----------|--------|\n| `.worktrees/` 存在 | 使用它（验证是否被忽略） |\n| `worktrees/` 存在 | 使用它（验证是否被忽略） |\n| 两者都存在 | 使用 `.worktrees/` |\n| 都不存在 | 检查 CLAUDE.md → 询问用户 |\n| 目录未被忽略 | 添加到 .gitignore + 提交 |\n| 基线测试失败 | 报告失败 + 询问 |\n| 没有 package.json/Cargo.toml | 跳过依赖安装 |"
+    },
+    {
+      "en-US": "## Common Mistakes",
+      "zh-Hans": "## 常见错误"
+    },
+    {
+      "en-US": "### Skipping ignore verification",
+      "zh-Hans": "### 跳过忽略验证"
+    },
+    {
+      "en-US": "- **Problem:** Worktree contents get tracked, pollute git status\n- **Fix:** Always use `git check-ignore` before creating project-local worktree",
+      "zh-Hans": "* **问题：** Worktree 内容被跟踪，污染 git status\n* **修复：** 创建项目本地 worktree 前始终使用 `git check-ignore`"
+    },
+    {
+      "en-US": "### Assuming directory location",
+      "zh-Hans": "### 假设目录位置"
+    },
+    {
+      "en-US": "- **Problem:** Creates inconsistency, violates project conventions\n- **Fix:** Follow priority: existing > CLAUDE.md > ask",
+      "zh-Hans": "* **问题：** 造成不一致，违反项目约定\n* **修复：** 遵循优先级：现有 > CLAUDE.md > 询问"
+    },
+    {
+      "en-US": "### Proceeding with failing tests",
+      "zh-Hans": "### 在测试失败的情况下继续"
+    },
+    {
+      "en-US": "- **Problem:** Can't distinguish new bugs from pre-existing issues\n- **Fix:** Report failures, get explicit permission to proceed",
+      "zh-Hans": "* **问题：** 无法区分新错误与预先存在的问题\n* **修复：** 报告失败，获取明确的继续许可"
+    },
+    {
+      "en-US": "### Hardcoding setup commands",
+      "zh-Hans": "### 硬编码设置命令"
+    },
+    {
+      "en-US": "- **Problem:** Breaks on projects using different tools\n- **Fix:** Auto-detect from project files (package.json, etc.)",
+      "zh-Hans": "* **问题：** 在使用不同工具的项目上会失败\n* **修复：** 根据项目文件（package.json 等）自动检测"
+    },
+    {
+      "en-US": "## Example Workflow",
+      "zh-Hans": "## 示例工作流"
+    },
+    {
+      "en-US": "```\nYou: I'm using the using-git-worktrees skill to set up an isolated workspace.\n\n[Check .worktrees/ - exists]\n[Verify ignored - git check-ignore confirms .worktrees/ is ignored]\n[Create worktree: git worktree add .worktrees/auth -b feature/auth]\n[Run npm install]\n[Run npm test - 47 passing]\n\nWorktree ready at /Users/jesse/myproject/.worktrees/auth\nTests passing (47 tests, 0 failures)\nReady to implement auth feature\n```",
+      "zh-Hans": "```\nYou: I'm using the using-git-worktrees skill to set up an isolated workspace.\n\n[Check .worktrees/ - exists]\n[Verify ignored - git check-ignore confirms .worktrees/ is ignored]\n[Create worktree: git worktree add .worktrees/auth -b feature/auth]\n[Run npm install]\n[Run npm test - 47 passing]\n\nWorktree ready at /Users/jesse/myproject/.worktrees/auth\nTests passing (47 tests, 0 failures)\nReady to implement auth feature\n```"
+    },
+    {
+      "en-US": "## Red Flags",
+      "zh-Hans": "## 红色警报"
+    },
+    {
+      "en-US": "**Never:**",
+      "zh-Hans": "**绝不要：**"
+    },
+    {
+      "en-US": "- Create worktree without verifying it's ignored (project-local)\n- Skip baseline test verification\n- Proceed with failing tests without asking\n- Assume directory location when ambiguous\n- Skip CLAUDE.md check",
+      "zh-Hans": "* 不验证是否被忽略就创建 worktree（项目本地）\n* 跳过基线测试验证\n* 不询问就在测试失败的情况下继续\n* 在情况模糊时假设目录位置\n* 跳过 CLAUDE.md 检查"
+    },
+    {
+      "en-US": "**Always:**",
+      "zh-Hans": "**始终要：**"
+    },
+    {
+      "en-US": "- Follow directory priority: existing > CLAUDE.md > ask\n- Verify directory is ignored for project-local\n- Auto-detect and run project setup\n- Verify clean test baseline",
+      "zh-Hans": "* 遵循目录优先级：现有 > CLAUDE.md > 询问\n* 验证项目本地目录是否被忽略\n* 自动检测并运行项目设置\n* 验证干净的测试基线"
+    },
+    {
+      "en-US": "## Integration",
+      "zh-Hans": "## 集成"
+    },
+    {
+      "en-US": "**Called by:**",
+      "zh-Hans": "**由以下技能调用：**"
+    },
+    {
+      "en-US": "- **brainstorming** (Phase 4) - REQUIRED when design is approved and implementation follows\n- **subagent-driven-development** - REQUIRED before executing any tasks\n- **executing-plans** - REQUIRED before executing any tasks\n- Any skill needing isolated workspace",
+      "zh-Hans": "* **brainstorming** （第 4 阶段） - 当设计被批准并随后进行实现时 **必需**\n* **subagent-driven-development** - 在执行任何任务前 **必需**\n* **executing-plans** - 在执行任何任务前 **必需**\n* 任何需要隔离工作空间的技能"
+    },
+    {
+      "en-US": "**Pairs with:**",
+      "zh-Hans": "**与以下技能配合使用：**"
+    },
+    {
+      "en-US": "- **finishing-a-development-branch** - REQUIRED for cleanup after work complete",
+      "zh-Hans": "* **finishing-a-development-branch** - 工作完成后进行清理时 **必需**"
+    }
+  ]
+}

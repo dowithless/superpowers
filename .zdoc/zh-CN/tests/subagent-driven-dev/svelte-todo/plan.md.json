@@ -1,0 +1,358 @@
+{
+  "sourceFile": "tests/subagent-driven-dev/svelte-todo/plan.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Svelte Todo List - Implementation Plan",
+      "zh-Hans": "# Svelte 待办事项列表 - 实施计划"
+    },
+    {
+      "en-US": "Execute this plan using the `superpowers:subagent-driven-development` skill.",
+      "zh-Hans": "使用 `superpowers:subagent-driven-development` 技能执行此计划。"
+    },
+    {
+      "en-US": "## Context",
+      "zh-Hans": "## 背景"
+    },
+    {
+      "en-US": "Building a todo list app with Svelte. See `design.md` for full specification.",
+      "zh-Hans": "使用 Svelte 构建一个待办事项列表应用。完整规范请参见 `design.md`。"
+    },
+    {
+      "en-US": "## Tasks",
+      "zh-Hans": "## 任务"
+    },
+    {
+      "en-US": "### Task 1: Project Setup",
+      "zh-Hans": "### 任务 1：项目设置"
+    },
+    {
+      "en-US": "Create the Svelte project with Vite.",
+      "zh-Hans": "使用 Vite 创建 Svelte 项目。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Run `npm create vite@latest . -- --template svelte-ts`\n- Install dependencies with `npm install`\n- Verify dev server works\n- Clean up default Vite template content from App.svelte",
+      "zh-Hans": "* 运行 `npm create vite@latest . -- --template svelte-ts`\n* 使用 `npm install` 安装依赖项\n* 验证开发服务器正常工作\n* 清理 App.svelte 中默认的 Vite 模板内容"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- `npm run dev` starts server\n- App shows minimal \"Svelte Todos\" heading\n- `npm run build` succeeds",
+      "zh-Hans": "* `npm run dev` 启动服务器\n* 应用显示最小的 \"Svelte Todos\" 标题\n* `npm run build` 成功"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 2: Todo Store",
+      "zh-Hans": "### 任务 2：待办事项存储"
+    },
+    {
+      "en-US": "Create the Svelte store for todo state management.",
+      "zh-Hans": "创建用于状态管理的 Svelte store。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Create `src/lib/store.ts`\n- Define `Todo` interface with id, text, completed\n- Create writable store with initial empty array\n- Export functions: `addTodo(text)`, `toggleTodo(id)`, `deleteTodo(id)`, `clearCompleted()`\n- Create `src/lib/store.test.ts` with tests for each function",
+      "zh-Hans": "* 创建 `src/lib/store.ts`\n* 定义 `Todo` 接口，包含 id、text、completed\n* 创建具有初始空数组的可写 store\n* 导出函数：`addTodo(text)`、`toggleTodo(id)`、`deleteTodo(id)`、`clearCompleted()`\n* 创建 `src/lib/store.test.ts`，包含每个函数的测试"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- Tests pass: `npm run test` (install vitest if needed)",
+      "zh-Hans": "* 测试通过：`npm run test`（如果需要，安装 vitest）"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 3: localStorage Persistence",
+      "zh-Hans": "### 任务 3：localStorage 持久化"
+    },
+    {
+      "en-US": "Add persistence layer for todos.",
+      "zh-Hans": "为待办事项添加持久化层。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Create `src/lib/storage.ts`\n- Implement `loadTodos(): Todo[]` and `saveTodos(todos: Todo[])`\n- Handle JSON parse errors gracefully (return empty array)\n- Integrate with store: load on init, save on change\n- Add tests for load/save/error handling",
+      "zh-Hans": "* 创建 `src/lib/storage.ts`\n* 实现 `loadTodos(): Todo[]` 和 `saveTodos(todos: Todo[])`\n* 优雅地处理 JSON 解析错误（返回空数组）\n* 与 store 集成：初始化时加载，更改时保存\n* 为加载/保存/错误处理添加测试"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- Tests pass\n- Manual test: add todo, refresh page, todo persists",
+      "zh-Hans": "* 测试通过\n* 手动测试：添加待办事项，刷新页面，待办事项持久化"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 4: TodoInput Component",
+      "zh-Hans": "### 任务 4：TodoInput 组件"
+    },
+    {
+      "en-US": "Create the input component for adding todos.",
+      "zh-Hans": "创建用于添加待办事项的输入组件。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Create `src/lib/TodoInput.svelte`\n- Text input bound to local state\n- Add button calls `addTodo()` and clears input\n- Enter key also submits\n- Disable Add button when input is empty\n- Add component tests",
+      "zh-Hans": "* 创建 `src/lib/TodoInput.svelte`\n* 文本输入绑定到本地状态\n* 添加按钮调用 `addTodo()` 并清空输入\n* 回车键也可提交\n* 输入为空时禁用添加按钮\n* 添加组件测试"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- Tests pass\n- Component renders input and button",
+      "zh-Hans": "* 测试通过\n* 组件渲染输入框和按钮"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 5: TodoItem Component",
+      "zh-Hans": "### 任务 5：TodoItem 组件"
+    },
+    {
+      "en-US": "Create the single todo item component.",
+      "zh-Hans": "创建单个待办事项项组件。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Create `src/lib/TodoItem.svelte`\n- Props: `todo: Todo`\n- Checkbox toggles completion (calls `toggleTodo`)\n- Text with strikethrough when completed\n- Delete button (X) calls `deleteTodo`\n- Add component tests",
+      "zh-Hans": "* 创建 `src/lib/TodoItem.svelte`\n* 属性：`todo: Todo`\n* 复选框切换完成状态（调用 `toggleTodo`）\n* 完成时文本有删除线\n* 删除按钮（X）调用 `deleteTodo`\n* 添加组件测试"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- Tests pass\n- Component renders checkbox, text, delete button",
+      "zh-Hans": "* 测试通过\n* 组件渲染复选框、文本、删除按钮"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 6: TodoList Component",
+      "zh-Hans": "### 任务 6：TodoList 组件"
+    },
+    {
+      "en-US": "Create the list container component.",
+      "zh-Hans": "创建列表容器组件。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Create `src/lib/TodoList.svelte`\n- Props: `todos: Todo[]`\n- Renders TodoItem for each todo\n- Shows \"No todos yet\" when empty\n- Add component tests",
+      "zh-Hans": "* 创建 `src/lib/TodoList.svelte`\n* 属性：`todos: Todo[]`\n* 为每个待办事项渲染 TodoItem\n* 为空时显示 \"No todos yet\"\n* 添加组件测试"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- Tests pass\n- Component renders list of TodoItems",
+      "zh-Hans": "* 测试通过\n* 组件渲染 TodoItem 列表"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 7: FilterBar Component",
+      "zh-Hans": "### 任务 7：FilterBar 组件"
+    },
+    {
+      "en-US": "Create the filter and status bar component.",
+      "zh-Hans": "创建过滤器和状态栏组件。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Create `src/lib/FilterBar.svelte`\n- Props: `todos: Todo[]`, `filter: Filter`, `onFilterChange: (f: Filter) => void`\n- Show count: \"X items left\" (incomplete count)\n- Three filter buttons: All, Active, Completed\n- Active filter is visually highlighted\n- \"Clear completed\" button (hidden when no completed todos)\n- Add component tests",
+      "zh-Hans": "* 创建 `src/lib/FilterBar.svelte`\n* 属性：`todos: Todo[]`、`filter: Filter`、`onFilterChange: (f: Filter) => void`\n* 显示数量：\"X items left\"（未完成数量）\n* 三个过滤器按钮：全部、进行中、已完成\n* 活动过滤器视觉上高亮显示\n* \"清除已完成\" 按钮（没有已完成待办事项时隐藏）\n* 添加组件测试"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- Tests pass\n- Component renders count, filters, clear button",
+      "zh-Hans": "* 测试通过\n* 组件渲染数量、过滤器、清除按钮"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 8: App Integration",
+      "zh-Hans": "### 任务 8：应用集成"
+    },
+    {
+      "en-US": "Wire all components together in App.svelte.",
+      "zh-Hans": "在 App.svelte 中将所有组件连接起来。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Import all components and store\n- Add filter state (default: 'all')\n- Compute filtered todos based on filter state\n- Render: heading, TodoInput, TodoList, FilterBar\n- Pass appropriate props to each component",
+      "zh-Hans": "* 导入所有组件和 store\n* 添加过滤器状态（默认：'all'）\n* 根据过滤器状态计算过滤后的待办事项\n* 渲染：标题、TodoInput、TodoList、FilterBar\n* 向每个组件传递适当的属性"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- App renders all components\n- Adding todos works\n- Toggling works\n- Deleting works",
+      "zh-Hans": "* 应用渲染所有组件\n* 添加待办事项有效\n* 切换状态有效\n* 删除有效"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 9: Filter Functionality",
+      "zh-Hans": "### 任务 9：过滤功能"
+    },
+    {
+      "en-US": "Ensure filtering works end-to-end.",
+      "zh-Hans": "确保端到端的过滤工作。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Verify filter buttons change displayed todos\n- 'all' shows all todos\n- 'active' shows only incomplete todos\n- 'completed' shows only completed todos\n- Clear completed removes completed todos and resets filter if needed\n- Add integration tests",
+      "zh-Hans": "* 验证过滤器按钮更改显示的待办事项\n* 'all' 显示所有待办事项\n* 'active' 仅显示未完成的待办事项\n* 'completed' 仅显示已完成的待办事项\n* 清除已完成会移除已完成的待办事项，并在需要时重置过滤器\n* 添加集成测试"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- Filter tests pass\n- Manual verification of all filter states",
+      "zh-Hans": "* 过滤器测试通过\n* 手动验证所有过滤器状态"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 10: Styling and Polish",
+      "zh-Hans": "### 任务 10：样式和优化"
+    },
+    {
+      "en-US": "Add CSS styling for usability.",
+      "zh-Hans": "为可用性添加 CSS 样式。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Style the app to match the design mockup\n- Completed todos have strikethrough and muted color\n- Active filter button is highlighted\n- Input has focus styles\n- Delete button appears on hover (or always on mobile)\n- Responsive layout",
+      "zh-Hans": "* 将应用样式设置为与设计稿匹配\n* 已完成的待办事项有删除线和柔和颜色\n* 活动过滤器按钮高亮显示\n* 输入框具有焦点样式\n* 删除按钮在悬停时显示（或在移动设备上始终显示）\n* 响应式布局"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- App is visually usable\n- Styles don't break functionality",
+      "zh-Hans": "* 应用在视觉上可用\n* 样式不会破坏功能"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 11: End-to-End Tests",
+      "zh-Hans": "### 任务 11：端到端测试"
+    },
+    {
+      "en-US": "Add Playwright tests for full user flows.",
+      "zh-Hans": "为完整的用户流程添加 Playwright 测试。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Install Playwright: `npm init playwright@latest`\n- Create `tests/todo.spec.ts`\n- Test flows:\n  - Add a todo\n  - Complete a todo\n  - Delete a todo\n  - Filter todos\n  - Clear completed\n  - Persistence (add, reload, verify)",
+      "zh-Hans": "* 安装 Playwright：`npm init playwright@latest`\n* 创建 `tests/todo.spec.ts`\n* 测试流程：\n  * 添加待办事项\n  * 完成待办事项\n  * 删除待办事项\n  * 过滤待办事项\n  * 清除已完成\n  * 持久化（添加、重新加载、验证）"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- `npx playwright test` passes",
+      "zh-Hans": "* `npx playwright test` 通过"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 12: README",
+      "zh-Hans": "### 任务 12：README"
+    },
+    {
+      "en-US": "Document the project.",
+      "zh-Hans": "记录项目。"
+    },
+    {
+      "en-US": "**Do:**",
+      "zh-Hans": "**执行：**"
+    },
+    {
+      "en-US": "- Create `README.md` with:\n  - Project description\n  - Setup: `npm install`\n  - Development: `npm run dev`\n  - Testing: `npm test` and `npx playwright test`\n  - Build: `npm run build`",
+      "zh-Hans": "* 创建 `README.md`，包含：\n  * 项目描述\n  * 设置：`npm install`\n  * 开发：`npm run dev`\n  * 测试：`npm test` 和 `npx playwright test`\n  * 构建：`npm run build`"
+    },
+    {
+      "en-US": "**Verify:**",
+      "zh-Hans": "**验证：**"
+    },
+    {
+      "en-US": "- README accurately describes the project\n- Instructions work",
+      "zh-Hans": "* README 准确描述项目\n* 说明有效"
+    }
+  ]
+}
