@@ -36,7 +36,7 @@
     },
     {
       "en-US": "```\nPaymentError: Connection timeout to payments.api.com\n```",
-      "zh-Hans": "```\nPaymentError: Connection timeout to payments.api.com\n```"
+      "zh-Hans": "```\nPaymentError: 连接 payments.api.com 超时\n```"
     },
     {
       "en-US": "You remember that last week, another service had timeout issues and adding a retry fixed it. That took 2 minutes to implement.",

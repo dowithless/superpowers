@@ -172,7 +172,7 @@
     },
     {
       "en-US": "```\nAgent 1 → Fix agent-tool-abort.test.ts\nAgent 2 → Fix batch-completion-behavior.test.ts\nAgent 3 → Fix tool-approval-race-conditions.test.ts\n```",
-      "zh-Hans": "```\nAgent 1 → Fix agent-tool-abort.test.ts\nAgent 2 → Fix batch-completion-behavior.test.ts\nAgent 3 → Fix tool-approval-race-conditions.test.ts\n```"
+      "zh-Hans": "```\nAgent 1 → 修复 agent-tool-abort.test.ts\nAgent 2 → 修复 batch-completion-behavior.test.ts\nAgent 3 → 修复 tool-approval-race-conditions.test.ts\n```"
     },
     {
       "en-US": "**Results:**",

@@ -120,7 +120,7 @@
     },
     {
       "en-US": "```\nFetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.codex/INSTALL.md\n```",
-      "zh-Hans": "```\nFetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.codex/INSTALL.md\n```"
+      "zh-Hans": "```\n从 https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.codex/INSTALL.md 获取并遵循说明。\n```"
     },
     {
       "en-US": "**Detailed docs:** [docs/README.codex.md](docs/README.codex.md)",
@@ -136,7 +136,7 @@
     },
     {
       "en-US": "```\nFetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md\n```",
-      "zh-Hans": "```\nFetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md\n```"
+      "zh-Hans": "```\n从 https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md 获取并遵循说明。\n```"
     },
     {
       "en-US": "**Detailed docs:** [docs/README.opencode.md](docs/README.opencode.md)",

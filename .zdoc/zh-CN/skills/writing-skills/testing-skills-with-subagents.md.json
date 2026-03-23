@@ -260,7 +260,7 @@
     },
     {
       "en-US": "```\n</After>\n\n### 2. Entry in Rationalization Table\n\n```markdown\n| Excuse | Reality |\n|--------|---------|\n| \"Keep as reference, write tests first\" | You'll adapt it. That's testing after. Delete means delete. |\n```",
-      "zh-Hans": "````\n</After>\n\n### 2. Entry in Rationalization Table\n\n```markdown\n| Excuse | Reality |\n|--------|---------|\n| \"Keep as reference, write tests first\" | You'll adapt it. That's testing after. Delete means delete. |\n````"
+      "zh-Hans": "````\n</After>\n\n### 2. 合理化表格条目\n\n```markdown\n| Excuse | Reality |\n|--------|---------|\n| \"Keep as reference, write tests first\" | You'll adapt it. That's testing after. Delete means delete. |\n\n````"
     },
     {
       "en-US": "### 3. Red Flag Entry",

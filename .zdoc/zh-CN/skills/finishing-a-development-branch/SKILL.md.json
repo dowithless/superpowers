@@ -48,7 +48,7 @@
     },
     {
       "en-US": "```\nTests failing (<N> failures). Must fix before completing:\n\n[Show failures]\n\nCannot proceed with merge/PR until tests pass.\n```",
-      "zh-Hans": "```\nTests failing (<N> failures). Must fix before completing:\n\n[Show failures]\n\nCannot proceed with merge/PR until tests pass.\n```"
+      "zh-Hans": "```\n测试失败（<N> 个失败项）。完成前必须修复：\n\n[显示失败详情]\n\n测试通过前无法进行合并/拉取请求操作。\n```"
     },
     {
       "en-US": "Stop. Don't proceed to Step 2.",
@@ -80,7 +80,7 @@
     },
     {
       "en-US": "```\nImplementation complete. What would you like to do?\n\n1. Merge back to <base-branch> locally\n2. Push and create a Pull Request\n3. Keep the branch as-is (I'll handle it later)\n4. Discard this work\n\nWhich option?\n```",
-      "zh-Hans": "```\nImplementation complete. What would you like to do?\n\n1. Merge back to <base-branch> locally\n2. Push and create a Pull Request\n3. Keep the branch as-is (I'll handle it later)\n4. Discard this work\n\nWhich option?\n```"
+      "zh-Hans": "```\n实施完成。您想做什么？\n\n1. 在本地合并回 <base-branch>\n2. 推送并创建 Pull Request\n3. 保持分支原样（我稍后处理）\n4. 丢弃此项工作\n\n请选择哪个选项？\n```"
     },
     {
       "en-US": "**Don't add explanation** - keep options concise.",
@@ -136,7 +136,7 @@
     },
     {
       "en-US": "```\nThis will permanently delete:\n- Branch <name>\n- All commits: <commit-list>\n- Worktree at <path>\n\nType 'discard' to confirm.\n```",
-      "zh-Hans": "```\nThis will permanently delete:\n- Branch <name>\n- All commits: <commit-list>\n- Worktree at <path>\n\nType 'discard' to confirm.\n```"
+      "zh-Hans": "```\n这将永久删除：\n- 分支 <name>\n- 所有提交：<commit-list>\n- 位于 <path> 的工作树\n\n输入 'discard' 以确认。\n```"
     },
     {
       "en-US": "Wait for exact confirmation.",

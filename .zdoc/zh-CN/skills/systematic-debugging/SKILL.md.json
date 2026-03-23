@@ -32,7 +32,7 @@
     },
     {
       "en-US": "```\nNO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST\n```",
-      "zh-Hans": "```\nNO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST\n```"
+      "zh-Hans": "```\n未经根本原因调查，不得进行修复\n```"
     },
     {
       "en-US": "If you haven't completed Phase 1, you cannot propose fixes.",

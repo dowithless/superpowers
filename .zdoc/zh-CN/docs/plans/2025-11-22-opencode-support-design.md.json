@@ -136,7 +136,7 @@
     },
     {
       "en-US": "```\nsuperpowers/\n├── lib/\n│   └── skills-core.js           # NEW: Shared skill logic\n├── .codex/\n│   ├── superpowers-codex        # UPDATED: Use skills-core\n│   ├── superpowers-bootstrap.md\n│   └── INSTALL.md\n├── .opencode/\n│   ├── plugin/\n│   │   └── superpowers.js       # NEW: OpenCode plugin\n│   └── INSTALL.md               # NEW: Installation guide\n└── skills/                       # Unchanged\n```",
-      "zh-Hans": "```\nsuperpowers/\n├── lib/\n│   └── skills-core.js           # NEW: Shared skill logic\n├── .codex/\n│   ├── superpowers-codex        # UPDATED: Use skills-core\n│   ├── superpowers-bootstrap.md\n│   └── INSTALL.md\n├── .opencode/\n│   ├── plugin/\n│   │   └── superpowers.js       # NEW: OpenCode plugin\n│   └── INSTALL.md               # NEW: Installation guide\n└── skills/                       # Unchanged\n```"
+      "zh-Hans": "```\nsuperpowers/\n├── lib/\n│   └── skills-core.js           # 新增：共享技能逻辑\n├── .codex/\n│   ├── superpowers-codex        # 已更新：使用 skills-core\n│   ├── superpowers-bootstrap.md\n│   └── INSTALL.md\n├── .opencode/\n│   ├── plugin/\n│   │   └── superpowers.js       # 新增：OpenCode 插件\n│   └── INSTALL.md               # 新增：安装指南\n└── skills/                       # 未更改\n```"
     },
     {
       "en-US": "## Implementation Plan",

@@ -72,7 +72,7 @@
     },
     {
       "en-US": "```\ncmd/\n  fractals/\n    main.go           # Entry point, CLI setup\ninternal/\n  sierpinski/\n    sierpinski.go     # Algorithm\n    sierpinski_test.go\n  mandelbrot/\n    mandelbrot.go     # Algorithm\n    mandelbrot_test.go\n  cli/\n    root.go           # Root command, help\n    sierpinski.go     # Sierpinski subcommand\n    mandelbrot.go     # Mandelbrot subcommand\n```",
-      "zh-Hans": "```\ncmd/\n  fractals/\n    main.go           # Entry point, CLI setup\ninternal/\n  sierpinski/\n    sierpinski.go     # Algorithm\n    sierpinski_test.go\n  mandelbrot/\n    mandelbrot.go     # Algorithm\n    mandelbrot_test.go\n  cli/\n    root.go           # Root command, help\n    sierpinski.go     # Sierpinski subcommand\n    mandelbrot.go     # Mandelbrot subcommand\n```"
+      "zh-Hans": "```\ncmd/\n  fractals/\n    main.go           # 入口点，CLI 设置\ninternal/\n  sierpinski/\n    sierpinski.go     # 算法\n    sierpinski_test.go\n  mandelbrot/\n    mandelbrot.go     # 算法\n    mandelbrot_test.go\n  cli/\n    root.go           # 根命令，帮助\n    sierpinski.go     # Sierpinski 子命令\n    mandelbrot.go     # Mandelbrot 子命令\n```"
     },
     {
       "en-US": "## Dependencies",

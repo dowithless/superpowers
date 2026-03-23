@@ -676,7 +676,7 @@
     },
     {
       "en-US": "```\nYou have superpowers.\n```",
-      "zh-Hans": "```\nYou have superpowers.\n```"
+      "zh-Hans": "```\n你有 superpowers。\n```"
     },
     {
       "en-US": "## Usage",
@@ -692,7 +692,7 @@
     },
     {
       "en-US": "```\nuse find_skills tool\n```",
-      "zh-Hans": "```\nuse find_skills tool\n```"
+      "zh-Hans": "```\n使用 find_skills 工具\n```"
     },
     {
       "en-US": "### Loading a Skill",
@@ -704,7 +704,7 @@
     },
     {
       "en-US": "```\nuse use_skill tool with skill_name: \"superpowers:brainstorming\"\n```",
-      "zh-Hans": "```\nuse use_skill tool with skill_name: \"superpowers:brainstorming\"\n```"
+      "zh-Hans": "```\n使用 use_skill 工具，技能名称：\"superpowers:brainstorming\"\n```"
     },
     {
       "en-US": "### Personal Skills",
@@ -780,7 +780,7 @@
     },
     {
       "en-US": "```\n\n**Step 2: Verify file created**\n\nRun: `ls -l .opencode/INSTALL.md`\nExpected: File exists\n\n**Step 3: Commit**\n\n```bash\ngit add .opencode/INSTALL.md\ngit commit -m \"docs: add opencode installation guide\"\n```",
-      "zh-Hans": "````\n\n**Step 2: Verify file created**\n\nRun: `ls -l .opencode/INSTALL.md`\nExpected: File exists\n\n**Step 3: Commit**\n\n```bash\ngit add .opencode/INSTALL.md\ngit commit -m \"docs: add opencode installation guide\"\n````"
+      "zh-Hans": "````\n**Step 2: 验证文件已创建**\n\n运行: `ls -l .opencode/INSTALL.md`\n预期: 文件存在\n\n**Step 3: 提交**\n\n```bash\ngit add .opencode/INSTALL.md\ngit commit -m \"docs: add opencode installation guide\"\n\n````"
     },
     {
       "en-US": "---",

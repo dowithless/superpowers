@@ -32,7 +32,7 @@
     },
     {
       "en-US": "```\nNO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE\n```",
-      "zh-Hans": "```\nNO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE\n```"
+      "zh-Hans": "```\n无新验证证据不得提出完成声明\n```"
     },
     {
       "en-US": "If you haven't run the verification command in this message, you cannot claim it passes.",
@@ -44,7 +44,7 @@
     },
     {
       "en-US": "```\nBEFORE claiming any status or expressing satisfaction:\n\n1. IDENTIFY: What command proves this claim?\n2. RUN: Execute the FULL command (fresh, complete)\n3. READ: Full output, check exit code, count failures\n4. VERIFY: Does output confirm the claim?\n   - If NO: State actual status with evidence\n   - If YES: State claim WITH evidence\n5. ONLY THEN: Make the claim\n\nSkip any step = lying, not verifying\n```",
-      "zh-Hans": "```\nBEFORE claiming any status or expressing satisfaction:\n\n1. IDENTIFY: What command proves this claim?\n2. RUN: Execute the FULL command (fresh, complete)\n3. READ: Full output, check exit code, count failures\n4. VERIFY: Does output confirm the claim?\n   - If NO: State actual status with evidence\n   - If YES: State claim WITH evidence\n5. ONLY THEN: Make the claim\n\nSkip any step = lying, not verifying\n```"
+      "zh-Hans": "```\n在声明任何状态或表达满意之前：\n\n1. **识别**：哪个命令能证明这一声明？\n2. **运行**：执行完整的命令（全新的、完整的）\n3. **阅读**：查看完整输出，检查退出码，统计失败数量\n4. **验证**：输出是否确认了声明？\n   - 如果**否**：用证据说明实际状态\n   - 如果**是**：用证据说明声明\n5. **只有完成以上步骤后**：才能做出声明\n\n跳过任何步骤 = 撒谎，而非验证\n```"
     },
     {
       "en-US": "## Common Failures",
@@ -80,7 +80,7 @@
     },
     {
       "en-US": "```\n✅ [Run test command] [See: 34/34 pass] \"All tests pass\"\n❌ \"Should pass now\" / \"Looks correct\"\n```",
-      "zh-Hans": "```\n✅ [Run test command] [See: 34/34 pass] \"All tests pass\"\n❌ \"Should pass now\" / \"Looks correct\"\n```"
+      "zh-Hans": "```\n✅ [运行测试命令] [查看：34/34 通过] \"所有测试通过\"\n❌ \"现在应该通过\" / \"看起来正确\"\n```"
     },
     {
       "en-US": "**Regression tests (TDD Red-Green):**",
@@ -88,7 +88,7 @@
     },
     {
       "en-US": "```\n✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)\n❌ \"I've written a regression test\" (without red-green verification)\n```",
-      "zh-Hans": "```\n✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)\n❌ \"I've written a regression test\" (without red-green verification)\n```"
+      "zh-Hans": "```\n✅ 编写 → 运行（通过） → 恢复修复 → 运行（必须失败） → 还原 → 运行（通过）\n❌ \"我编写了一个回归测试\"（未进行红绿验证）\n```"
     },
     {
       "en-US": "**Build:**",
@@ -96,7 +96,7 @@
     },
     {
       "en-US": "```\n✅ [Run build] [See: exit 0] \"Build passes\"\n❌ \"Linter passed\" (linter doesn't check compilation)\n```",
-      "zh-Hans": "```\n✅ [Run build] [See: exit 0] \"Build passes\"\n❌ \"Linter passed\" (linter doesn't check compilation)\n```"
+      "zh-Hans": "```\n✅ [构建运行] [查看：退出码 0] \"构建通过\"\n❌ \"Linter 通过\" (linter 不检查编译)\n```"
     },
     {
       "en-US": "**Requirements:**",
@@ -104,7 +104,7 @@
     },
     {
       "en-US": "```\n✅ Re-read plan → Create checklist → Verify each → Report gaps or completion\n❌ \"Tests pass, phase complete\"\n```",
-      "zh-Hans": "```\n✅ Re-read plan → Create checklist → Verify each → Report gaps or completion\n❌ \"Tests pass, phase complete\"\n```"
+      "zh-Hans": "```\n✅ 重新审阅计划 → 创建检查清单 → 逐一核验 → 报告缺失或完成情况\n❌ \"测试通过，阶段完成\"\n```"
     },
     {
       "en-US": "**Agent delegation:**",
@@ -112,7 +112,7 @@
     },
     {
       "en-US": "```\n✅ Agent reports success → Check VCS diff → Verify changes → Report actual state\n❌ Trust agent report\n```",
-      "zh-Hans": "```\n✅ Agent reports success → Check VCS diff → Verify changes → Report actual state\n❌ Trust agent report\n```"
+      "zh-Hans": "```\n✅ Agent 报告成功 → 检查版本控制系统差异 → 验证变更 → 报告实际状态\n❌ 信任 Agent 报告\n```"
     },
     {
       "en-US": "## Why This Matters",

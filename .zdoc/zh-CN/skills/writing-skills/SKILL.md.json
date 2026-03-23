@@ -120,7 +120,7 @@
     },
     {
       "en-US": "```\nskills/\n  skill-name/\n    SKILL.md              # Main reference (required)\n    supporting-file.*     # Only if needed\n```",
-      "zh-Hans": "```\nskills/\n  skill-name/\n    SKILL.md              # Main reference (required)\n    supporting-file.*     # Only if needed\n```"
+      "zh-Hans": "```\nskills/\n  skill-name/\n    SKILL.md              # 主要参考文件（必需）\n    supporting-file.*     # 仅在需要时添加\n```"
     },
     {
       "en-US": "**Flat namespace** - all skills in one searchable namespace",
@@ -416,7 +416,7 @@
     },
     {
       "en-US": "```\ndefense-in-depth/\n  SKILL.md    # Everything inline\n```",
-      "zh-Hans": "```\ndefense-in-depth/\n  SKILL.md    # Everything inline\n```"
+      "zh-Hans": "```\ndefense-in-depth/\n  SKILL.md    # 所有内容均内联\n```"
     },
     {
       "en-US": "When: All content fits, no heavy reference needed",
@@ -428,7 +428,7 @@
     },
     {
       "en-US": "```\ncondition-based-waiting/\n  SKILL.md    # Overview + patterns\n  example.ts  # Working helpers to adapt\n```",
-      "zh-Hans": "```\ncondition-based-waiting/\n  SKILL.md    # Overview + patterns\n  example.ts  # Working helpers to adapt\n```"
+      "zh-Hans": "```\ncondition-based-waiting/\n  SKILL.md    # 概述 + 模式\n  example.ts  # 可用的辅助函数，供调整使用\n```"
     },
     {
       "en-US": "When: Tool is reusable code, not just narrative",
@@ -440,7 +440,7 @@
     },
     {
       "en-US": "```\npptx/\n  SKILL.md       # Overview + workflows\n  pptxgenjs.md   # 600 lines API reference\n  ooxml.md       # 500 lines XML structure\n  scripts/       # Executable tools\n```",
-      "zh-Hans": "```\npptx/\n  SKILL.md       # Overview + workflows\n  pptxgenjs.md   # 600 lines API reference\n  ooxml.md       # 500 lines XML structure\n  scripts/       # Executable tools\n```"
+      "zh-Hans": "```\npptx/\n  SKILL.md       # 概述 + 工作流程\n  pptxgenjs.md   # 600行 API 参考\n  ooxml.md       # 500行 XML 结构\n  scripts/       # 可执行工具\n```"
     },
     {
       "en-US": "When: Reference material too large for inline",
@@ -452,7 +452,7 @@
     },
     {
       "en-US": "```\nNO SKILL WITHOUT A FAILING TEST FIRST\n```",
-      "zh-Hans": "```\nNO SKILL WITHOUT A FAILING TEST FIRST\n```"
+      "zh-Hans": "```\n没有失败的测试，就没有技能。\n```"
     },
     {
       "en-US": "This applies to NEW skills AND EDITS to existing skills.",
@@ -612,7 +612,7 @@
     },
     {
       "en-US": "```\n</Good>\n\n### Address \"Spirit vs Letter\" Arguments\n\nAdd foundational principle early:\n\n```markdown\n**Violating the letter of the rules is violating the spirit of the rules.**\n```",
-      "zh-Hans": "````\n</Good>\n\n### Address \"Spirit vs Letter\" Arguments\n\nAdd foundational principle early:\n\n```markdown\n**Violating the letter of the rules is violating the spirit of the rules.**\n````"
+      "zh-Hans": "````\n</Good>\n\n### 处理“精神与字面”的争论\n\n尽早添加基本原则：\n\n```markdown\n**违反规则的字面意思就是违反规则的精神。**\n\n````"
     },
     {
       "en-US": "This cuts off entire class of \"I'm following the spirit\" rationalizations.",

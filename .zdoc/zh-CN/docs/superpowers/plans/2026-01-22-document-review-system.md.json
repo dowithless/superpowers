@@ -64,7 +64,7 @@
     },
     {
       "en-US": "```\n\n**Reviewer returns:** Status, Issues (if any), Recommendations\n```",
-      "zh-Hans": "```\n\n**Reviewer returns:** Status, Issues (if any), Recommendations\n```"
+      "zh-Hans": "```\n**审阅者返回：** 状态，问题（如有），建议\n```"
     },
     {
       "en-US": "- [ ] **Step 2:** Verify the file was created correctly",
@@ -168,7 +168,7 @@
     },
     {
       "en-US": "```\n\n**Reviewer returns:** Status, Issues (if any), Recommendations\n```",
-      "zh-Hans": "```\n\n**Reviewer returns:** Status, Issues (if any), Recommendations\n```"
+      "zh-Hans": "```\n**审阅者返回：** 状态，问题（如有），建议\n```"
     },
     {
       "en-US": "- [ ] **Step 2:** Verify the file was created",

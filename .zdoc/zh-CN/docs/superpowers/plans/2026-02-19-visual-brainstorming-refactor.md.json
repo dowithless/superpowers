@@ -544,7 +544,7 @@
     },
     {
       "en-US": "```\n\n- [ ] **Step 5: Update \"Writing Content Fragments\" description (line 65)**\n\nRemove \"feedback footer\" reference:\n\n```markdown\nWrite just the content that goes inside the page. The server wraps it in the frame template automatically (header, theme CSS, selection indicator, and all interactive infrastructure).\n```",
-      "zh-Hans": "````\n\n- [ ] **Step 5: Update \"Writing Content Fragments\" description (line 65)**\n\nRemove \"feedback footer\" reference:\n\n```markdown\nWrite just the content that goes inside the page. The server wraps it in the frame template automatically (header, theme CSS, selection indicator, and all interactive infrastructure).\n````"
+      "zh-Hans": "````\n- [ ] **Step 5: Update \"Writing Content Fragments\" description (line 65)**\n\n移除 \"feedback footer\" 引用：\n\n```markdown\nWrite just the content that goes inside the page. The server wraps it in the frame template automatically (header, theme CSS, selection indicator, and all interactive infrastructure).\n````"
     },
     {
       "en-US": "- [ ] **Step 6: Update Reference section (lines 200-203)**",

@@ -32,7 +32,7 @@
     },
     {
       "en-US": "```\n1. NEVER test mock behavior\n2. NEVER add test-only methods to production classes\n3. NEVER mock without understanding dependencies\n```",
-      "zh-Hans": "```\n1. NEVER test mock behavior\n2. NEVER add test-only methods to production classes\n3. NEVER mock without understanding dependencies\n```"
+      "zh-Hans": "```\n1. 永远不要测试模拟行为\n2. 永远不要向生产类添加仅用于测试的方法\n3. 永远不要在不理解依赖关系的情况下进行模拟\n```"
     },
     {
       "en-US": "## Anti-Pattern 1: Testing Mock Behavior",
@@ -72,7 +72,7 @@
     },
     {
       "en-US": "```\nBEFORE asserting on any mock element:\n  Ask: \"Am I testing real component behavior or just mock existence?\"\n\n  IF testing mock existence:\n    STOP - Delete the assertion or unmock the component\n\n  Test real behavior instead\n```",
-      "zh-Hans": "```\nBEFORE asserting on any mock element:\n  Ask: \"Am I testing real component behavior or just mock existence?\"\n\n  IF testing mock existence:\n    STOP - Delete the assertion or unmock the component\n\n  Test real behavior instead\n```"
+      "zh-Hans": "```\nBEFORE 对任何模拟元素进行断言时：\n  先问自己：\"我是在测试真实组件行为，还是仅仅在验证模拟是否存在？\"\n\n  如果只是验证模拟是否存在：\n    停止操作 - 删除该断言或取消对组件的模拟\n\n  应该测试真实行为\n```"
     },
     {
       "en-US": "## Anti-Pattern 2: Test-Only Methods in Production",
@@ -108,7 +108,7 @@
     },
     {
       "en-US": "```\nBEFORE adding any method to production class:\n  Ask: \"Is this only used by tests?\"\n\n  IF yes:\n    STOP - Don't add it\n    Put it in test utilities instead\n\n  Ask: \"Does this class own this resource's lifecycle?\"\n\n  IF no:\n    STOP - Wrong class for this method\n```",
-      "zh-Hans": "```\nBEFORE adding any method to production class:\n  Ask: \"Is this only used by tests?\"\n\n  IF yes:\n    STOP - Don't add it\n    Put it in test utilities instead\n\n  Ask: \"Does this class own this resource's lifecycle?\"\n\n  IF no:\n    STOP - Wrong class for this method\n```"
+      "zh-Hans": "```\nBEFORE adding any method to production class:\n  提问：\"这仅用于测试吗？\"\n\n  如果是：\n    停止 - 不要添加它\n    将其放入测试工具中\n\n  提问：\"这个类是否拥有此资源的生命周期？\"\n\n  如果否：\n    停止 - 此类不适合此方法\n```"
     },
     {
       "en-US": "## Anti-Pattern 3: Mocking Without Understanding",
@@ -144,7 +144,7 @@
     },
     {
       "en-US": "```\nBEFORE mocking any method:\n  STOP - Don't mock yet\n\n  1. Ask: \"What side effects does the real method have?\"\n  2. Ask: \"Does this test depend on any of those side effects?\"\n  3. Ask: \"Do I fully understand what this test needs?\"\n\n  IF depends on side effects:\n    Mock at lower level (the actual slow/external operation)\n    OR use test doubles that preserve necessary behavior\n    NOT the high-level method the test depends on\n\n  IF unsure what test depends on:\n    Run test with real implementation FIRST\n    Observe what actually needs to happen\n    THEN add minimal mocking at the right level\n\n  Red flags:\n    - \"I'll mock this to be safe\"\n    - \"This might be slow, better mock it\"\n    - Mocking without understanding the dependency chain\n```",
-      "zh-Hans": "```\nBEFORE mocking any method:\n  STOP - Don't mock yet\n\n  1. Ask: \"What side effects does the real method have?\"\n  2. Ask: \"Does this test depend on any of those side effects?\"\n  3. Ask: \"Do I fully understand what this test needs?\"\n\n  IF depends on side effects:\n    Mock at lower level (the actual slow/external operation)\n    OR use test doubles that preserve necessary behavior\n    NOT the high-level method the test depends on\n\n  IF unsure what test depends on:\n    Run test with real implementation FIRST\n    Observe what actually needs to happen\n    THEN add minimal mocking at the right level\n\n  Red flags:\n    - \"I'll mock this to be safe\"\n    - \"This might be slow, better mock it\"\n    - Mocking without understanding the dependency chain\n```"
+      "zh-Hans": "```\n在模拟任何方法之前：\n  停下——先别模拟\n\n  1. 问：\"真实方法有哪些副作用？\"\n  2. 问：\"这个测试是否依赖其中任何副作用？\"\n  3. 问：\"我是否完全理解这个测试需要什么？\"\n\n  如果依赖副作用：\n    在更低层级进行模拟（实际的缓慢/外部操作）\n    或者使用保留必要行为的测试替身\n    而非模拟测试所依赖的高层级方法\n\n  如果不确定测试依赖什么：\n    首先用真实实现运行测试\n    观察实际需要发生什么\n    然后在正确的层级添加最小化的模拟\n\n  危险信号：\n    - \"我会模拟这个以防万一\"\n    - \"这个可能很慢，最好模拟它\"\n    - 在不理解依赖链的情况下进行模拟\n```"
     },
     {
       "en-US": "## Anti-Pattern 4: Incomplete Mocks",
@@ -184,7 +184,7 @@
     },
     {
       "en-US": "```\nBEFORE creating mock responses:\n  Check: \"What fields does the real API response contain?\"\n\n  Actions:\n    1. Examine actual API response from docs/examples\n    2. Include ALL fields system might consume downstream\n    3. Verify mock matches real response schema completely\n\n  Critical:\n    If you're creating a mock, you must understand the ENTIRE structure\n    Partial mocks fail silently when code depends on omitted fields\n\n  If uncertain: Include all documented fields\n```",
-      "zh-Hans": "```\nBEFORE creating mock responses:\n  Check: \"What fields does the real API response contain?\"\n\n  Actions:\n    1. Examine actual API response from docs/examples\n    2. Include ALL fields system might consume downstream\n    3. Verify mock matches real response schema completely\n\n  Critical:\n    If you're creating a mock, you must understand the ENTIRE structure\n    Partial mocks fail silently when code depends on omitted fields\n\n  If uncertain: Include all documented fields\n```"
+      "zh-Hans": "```\n在创建模拟响应之前：\n  检查：\"真实的 API 响应包含哪些字段？\"\n\n  操作：\n    1. 检查文档/示例中的实际 API 响应\n    2. 包含系统下游可能使用的所有字段\n    3. 验证模拟是否完全匹配真实响应模式\n\n  关键点：\n    如果你正在创建模拟，你必须理解整个结构\n    部分模拟会在代码依赖被省略的字段时静默失败\n\n  如果不确定：包含所有已记录的字段\n```"
     },
     {
       "en-US": "## Anti-Pattern 5: Integration Tests as Afterthought",
@@ -196,7 +196,7 @@
     },
     {
       "en-US": "```\n✅ Implementation complete\n❌ No tests written\n\"Ready for testing\"\n```",
-      "zh-Hans": "```\n✅ Implementation complete\n❌ No tests written\n\"Ready for testing\"\n```"
+      "zh-Hans": "```\n✅ 实施完成\n❌ 未编写测试\n\"准备测试\"\n```"
     },
     {
       "en-US": "**Why this is wrong:**",
@@ -212,7 +212,7 @@
     },
     {
       "en-US": "```\nTDD cycle:\n1. Write failing test\n2. Implement to pass\n3. Refactor\n4. THEN claim complete\n```",
-      "zh-Hans": "```\nTDD cycle:\n1. Write failing test\n2. Implement to pass\n3. Refactor\n4. THEN claim complete\n```"
+      "zh-Hans": "```\nTDD 循环：\n1. 编写失败测试\n2. 实现通过测试\n3. 重构\n4. 然后宣称完成\n```"
     },
     {
       "en-US": "## When Mocks Become Too Complex",

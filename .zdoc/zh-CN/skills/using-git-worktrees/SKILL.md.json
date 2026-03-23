@@ -68,7 +68,7 @@
     },
     {
       "en-US": "```\nNo worktree directory found. Where should I create worktrees?\n\n1. .worktrees/ (project-local, hidden)\n2. ~/.config/superpowers/worktrees/<project-name>/ (global location)\n\nWhich would you prefer?\n```",
-      "zh-Hans": "```\nNo worktree directory found. Where should I create worktrees?\n\n1. .worktrees/ (project-local, hidden)\n2. ~/.config/superpowers/worktrees/<project-name>/ (global location)\n\nWhich would you prefer?\n```"
+      "zh-Hans": "```\n未找到工作树目录。我应该在哪里创建工作树？\n\n1. .worktrees/（项目本地，隐藏）\n2. ~/.config/superpowers/worktrees/<project-name>/（全局位置）\n\n您倾向于哪种选择？\n```"
     },
     {
       "en-US": "## Safety Verification",
@@ -168,7 +168,7 @@
     },
     {
       "en-US": "```\nWorktree ready at <full-path>\nTests passing (<N> tests, 0 failures)\nReady to implement <feature-name>\n```",
-      "zh-Hans": "```\nWorktree ready at <full-path>\nTests passing (<N> tests, 0 failures)\nReady to implement <feature-name>\n```"
+      "zh-Hans": "```\nWorktree 准备就绪于 <full-path>\n测试通过（<N> 项测试，0 失败）\n准备实施 <feature-name>\n```"
     },
     {
       "en-US": "## Quick Reference",
@@ -220,7 +220,7 @@
     },
     {
       "en-US": "```\nYou: I'm using the using-git-worktrees skill to set up an isolated workspace.\n\n[Check .worktrees/ - exists]\n[Verify ignored - git check-ignore confirms .worktrees/ is ignored]\n[Create worktree: git worktree add .worktrees/auth -b feature/auth]\n[Run npm install]\n[Run npm test - 47 passing]\n\nWorktree ready at /Users/jesse/myproject/.worktrees/auth\nTests passing (47 tests, 0 failures)\nReady to implement auth feature\n```",
-      "zh-Hans": "```\nYou: I'm using the using-git-worktrees skill to set up an isolated workspace.\n\n[Check .worktrees/ - exists]\n[Verify ignored - git check-ignore confirms .worktrees/ is ignored]\n[Create worktree: git worktree add .worktrees/auth -b feature/auth]\n[Run npm install]\n[Run npm test - 47 passing]\n\nWorktree ready at /Users/jesse/myproject/.worktrees/auth\nTests passing (47 tests, 0 failures)\nReady to implement auth feature\n```"
+      "zh-Hans": "```\nYou: 我正在使用 using-git-worktrees 技能来设置一个隔离的工作空间。\n\n[检查 .worktrees/ - 存在]\n[验证忽略 - git check-ignore 确认 .worktrees/ 被忽略]\n[创建工作树: git worktree add .worktrees/auth -b feature/auth]\n[运行 npm install]\n[运行 npm test - 47 通过]\n\n工作树准备就绪，位于 /Users/jesse/myproject/.worktrees/auth\n测试通过 (47 个测试，0 个失败)\n准备实现 auth 功能\n```"
     },
     {
       "en-US": "## Red Flags",

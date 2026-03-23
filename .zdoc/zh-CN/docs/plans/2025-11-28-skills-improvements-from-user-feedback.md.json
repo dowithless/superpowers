@@ -124,7 +124,7 @@
     },
     {
       "en-US": "```\nYou are adding a single E2E test to packnplay's test suite.\n\n**Your task:** Add `TestE2E_FeaturePrivilegedMode` to `pkg/runner/e2e_test.go`\n\n**What to test:** A local devcontainer feature that requests `\"privileged\": true`\nin its metadata should result in the container running with `--privileged` flag.\n\n**Follow the exact pattern of TestE2E_FeatureOptionValidation** (at the end of the file)\n\n**After writing, run:** `go test -v ./pkg/runner -run TestE2E_FeaturePrivilegedMode -timeout 5m`\n```",
-      "zh-Hans": "```\nYou are adding a single E2E test to packnplay's test suite.\n\n**Your task:** Add `TestE2E_FeaturePrivilegedMode` to `pkg/runner/e2e_test.go`\n\n**What to test:** A local devcontainer feature that requests `\"privileged\": true`\nin its metadata should result in the container running with `--privileged` flag.\n\n**Follow the exact pattern of TestE2E_FeatureOptionValidation** (at the end of the file)\n\n**After writing, run:** `go test -v ./pkg/runner -run TestE2E_FeaturePrivilegedMode -timeout 5m`\n```"
+      "zh-Hans": "```\n你正在为 packnplay 的测试套件添加一个端到端测试。\n\n**你的任务：** 在 `pkg/runner/e2e_test.go` 中添加 `TestE2E_FeaturePrivilegedMode`\n\n**测试内容：** 一个在其元数据中请求了 `\"privileged\": true` 的本地 devcontainer 功能，应该导致容器以 `--privileged` 标志运行。\n\n**请严格按照 TestE2E_FeatureOptionValidation 的模式编写**（位于文件末尾）\n\n**编写完成后，运行：** `go test -v ./pkg/runner -run TestE2E_FeaturePrivilegedMode -timeout 5m`\n```"
     },
     {
       "en-US": "---",
@@ -292,7 +292,7 @@
     },
     {
       "en-US": "```\n\n**Why this works:**\nForces verification of INTENT, not just operation success.\n\n---\n\n### 2. subagent-driven-development: Add Process Hygiene for E2E Tests\n\n**Add new section:**\n\n```markdown\n## Process Hygiene for E2E Tests\n\nWhen dispatching subagents that start services (servers, databases, message queues):\n\n### Problem\n\nSubagents are stateless - they don't know about processes started by previous subagents. Background processes persist and can interfere with later tests.\n\n### Solution\n\n**Before dispatching E2E test subagent, include cleanup in prompt:**\n\n```",
-      "zh-Hans": "````\n\n**Why this works:**\nForces verification of INTENT, not just operation success.\n\n---\n\n### 2. subagent-driven-development: Add Process Hygiene for E2E Tests\n\n**Add new section:**\n\n```markdown\n## Process Hygiene for E2E Tests\n\nWhen dispatching subagents that start services (servers, databases, message queues):\n\n### Problem\n\nSubagents are stateless - they don't know about processes started by previous subagents. Background processes persist and can interfere with later tests.\n\n### Solution\n\n**Before dispatching E2E test subagent, include cleanup in prompt:**\n\n````"
+      "zh-Hans": "````\n**Why this works:**\nForces verification of INTENT, not just operation success.\n\n---\n\n### 2. subagent-driven-development: Add Process Hygiene for E2E Tests\n\n**Add new section:**\n\n```markdown\n## Process Hygiene for E2E Tests\n\nWhen dispatching subagents that start services (servers, databases, message queues):\n\n### Problem\n\nSubagents are stateless - they don't know about processes started by previous subagents. Background processes persist and can interfere with later tests.\n\n### Solution\n\n**Before dispatching E2E test subagent, include cleanup in prompt:**\n\n````"
     },
     {
       "en-US": "BEFORE starting any services:",
@@ -312,7 +312,7 @@
     },
     {
       "en-US": "```\n\n### Example\n\n```",
-      "zh-Hans": "```\n\n### Example\n\n```"
+      "zh-Hans": "```\n### 示例\n```"
     },
     {
       "en-US": "Task: Run E2E test of API server",
@@ -336,7 +336,7 @@
     },
     {
       "en-US": "```\n\n### Why This Matters\n\n- Stale processes serve requests with wrong config\n- Port conflicts cause silent failures\n- Process accumulation slows system\n- Confusing test results (hitting wrong server)\n```",
-      "zh-Hans": "```\n\n### Why This Matters\n\n- Stale processes serve requests with wrong config\n- Port conflicts cause silent failures\n- Process accumulation slows system\n- Confusing test results (hitting wrong server)\n```"
+      "zh-Hans": "```\n### 为何这很重要\n\n- 过时的进程会使用错误的配置处理请求\n- 端口冲突导致静默失败\n- 进程累积拖慢系统\n- 造成混淆的测试结果（访问到错误的服务器）\n```"
     },
     {
       "en-US": "**Trade-off analysis:**",
@@ -364,7 +364,7 @@
     },
     {
       "en-US": "```\nRead that task carefully from [plan-file].\n```",
-      "zh-Hans": "```\nRead that task carefully from [plan-file].\n```"
+      "zh-Hans": "```\n仔细阅读 [plan-file] 中的任务。\n```"
     },
     {
       "en-US": "**After:**",
@@ -372,7 +372,7 @@
     },
     {
       "en-US": "```\n## Context Approaches\n\n**Full Plan (default):**\nUse when tasks are complex or have dependencies:\n```",
-      "zh-Hans": "```\n## Context Approaches\n\n**Full Plan (default):**\nUse when tasks are complex or have dependencies:\n```"
+      "zh-Hans": "```\n## 上下文处理方式\n\n**完整计划（默认）：**\n适用于任务复杂或存在依赖关系时：\n```"
     },
     {
       "en-US": "Read Task N from [plan-file] carefully.",
@@ -380,7 +380,7 @@
     },
     {
       "en-US": "```\n\n**Lean Context (for independent tasks):**\nUse when task is standalone and pattern-based:\n```",
-      "zh-Hans": "```\n\n**Lean Context (for independent tasks):**\nUse when task is standalone and pattern-based:\n```"
+      "zh-Hans": "```\n**Lean Context（适用于独立任务）：**\n当任务独立且基于模式时使用：\n```"
     },
     {
       "en-US": "You are implementing: [1-2 sentence task description]",
@@ -396,7 +396,7 @@
     },
     {
       "en-US": "```\n\n**Use lean context when:**\n- Task follows existing pattern (add similar test, implement similar feature)\n- Task is self-contained (doesn't need context from other tasks)\n- Pattern reference is sufficient (e.g., \"follow TestE2E_FeatureOptionValidation\")\n\n**Use full plan when:**\n- Task has dependencies on other tasks\n- Requires understanding of overall architecture\n- Complex logic that needs context\n```",
-      "zh-Hans": "```\n\n**Use lean context when:**\n- Task follows existing pattern (add similar test, implement similar feature)\n- Task is self-contained (doesn't need context from other tasks)\n- Pattern reference is sufficient (e.g., \"follow TestE2E_FeatureOptionValidation\")\n\n**Use full plan when:**\n- Task has dependencies on other tasks\n- Requires understanding of overall architecture\n- Complex logic that needs context\n```"
+      "zh-Hans": "```\n**在以下情况下使用精简上下文：**\n- 任务遵循现有模式（添加类似测试，实现类似功能）\n- 任务是自包含的（不需要其他任务的上下文）\n- 模式参考已足够（例如，\"遵循 TestE2E_FeatureOptionValidation\"）\n\n**在以下情况下使用完整计划：**\n- 任务依赖于其他任务\n- 需要理解整体架构\n- 需要上下文才能理解的复杂逻辑\n```"
     },
     {
       "en-US": "**Example:**",
@@ -404,7 +404,7 @@
     },
     {
       "en-US": "```\nLean context prompt:\n\n\"You are adding a test for privileged mode in devcontainer features.\n\nFile: pkg/runner/e2e_test.go\nPattern: Follow TestE2E_FeatureOptionValidation (at end of file)\nTest: Feature with `\"privileged\": true` in metadata results in `--privileged` flag\nVerify: go test -v ./pkg/runner -run TestE2E_FeaturePrivilegedMode -timeout 5m\n\nReport: Implementation, test results, any issues.\"\n```",
-      "zh-Hans": "```\nLean context prompt:\n\n\"You are adding a test for privileged mode in devcontainer features.\n\nFile: pkg/runner/e2e_test.go\nPattern: Follow TestE2E_FeatureOptionValidation (at end of file)\nTest: Feature with `\"privileged\": true` in metadata results in `--privileged` flag\nVerify: go test -v ./pkg/runner -run TestE2E_FeaturePrivilegedMode -timeout 5m\n\nReport: Implementation, test results, any issues.\"\n```"
+      "zh-Hans": "```\nLean 上下文提示：\n\n\"你正在为 devcontainer 功能添加特权模式测试。\n\n文件：pkg/runner/e2e_test.go\n模式：遵循 TestE2E_FeatureOptionValidation（在文件末尾）\n测试：元数据中带有 `\"privileged\": true` 的功能应产生 `--privileged` 标志\n验证：go test -v ./pkg/runner -run TestE2E_FeaturePrivilegedMode -timeout 5m\n\n报告：实现情况、测试结果、任何问题。\"\n```"
     },
     {
       "en-US": "**Why this works:**\nReduces token usage, increases focus, faster completion when appropriate.",
@@ -428,7 +428,7 @@
     },
     {
       "en-US": "```\nWhen done, BEFORE reporting back:\n\nTake a step back and review your work with fresh eyes.\n\nAsk yourself:\n- Does this actually solve the task as specified?\n- Are there edge cases I didn't consider?\n- Did I follow the pattern correctly?\n- If tests are failing, what's the ROOT CAUSE (implementation bug vs test bug)?\n- What could be better about this implementation?\n\nIf you identify issues during this reflection, fix them now.\n\nThen report:\n- What you implemented\n- Self-reflection findings (if any)\n- Test results\n- Files changed\n```",
-      "zh-Hans": "```\nWhen done, BEFORE reporting back:\n\nTake a step back and review your work with fresh eyes.\n\nAsk yourself:\n- Does this actually solve the task as specified?\n- Are there edge cases I didn't consider?\n- Did I follow the pattern correctly?\n- If tests are failing, what's the ROOT CAUSE (implementation bug vs test bug)?\n- What could be better about this implementation?\n\nIf you identify issues during this reflection, fix them now.\n\nThen report:\n- What you implemented\n- Self-reflection findings (if any)\n- Test results\n- Files changed\n```"
+      "zh-Hans": "```\n当完成后，在汇报之前：\n\n退一步，用全新的视角审视你的工作。\n\n问自己：\n- 这真的解决了指定的任务吗？\n- 有没有我没有考虑到的边缘情况？\n- 我是否正确遵循了模式？\n- 如果测试失败，根本原因是什么（实现错误还是测试错误）？\n- 这个实现还有哪些可以改进的地方？\n\n如果在这次反思中发现了问题，现在就去修复它们。\n\n然后汇报：\n- 你实现了什么\n- 自我反思的发现（如果有的话）\n- 测试结果\n- 更改的文件\n```"
     },
     {
       "en-US": "**Why this works:**\nCatches bugs implementer can find themselves before handoff. Documented case: identified entrypoint bug through self-reflection.",
@@ -500,7 +500,7 @@
     },
     {
       "en-US": "```\nBEFORE writing any mock:\n\n  1. STOP - Do NOT look at the code under test yet\n  2. FIND: The interface/type definition for the dependency\n  3. READ: The interface file\n  4. LIST: Methods defined in the interface\n  5. MOCK: ONLY those methods with EXACTLY those names\n  6. DO NOT: Look at what your code calls\n\n  IF your test fails because code calls something not in mock:\n    ✅ GOOD - The test found a bug in your code\n    Fix the code to call the correct interface method\n    NOT the mock\n\n  Red flags:\n    - \"I'll mock what the code calls\"\n    - Copying method names from implementation\n    - Mock written without reading interface\n    - \"The test is failing so I'll add this method to the mock\"\n```",
-      "zh-Hans": "```\nBEFORE writing any mock:\n\n  1. STOP - Do NOT look at the code under test yet\n  2. FIND: The interface/type definition for the dependency\n  3. READ: The interface file\n  4. LIST: Methods defined in the interface\n  5. MOCK: ONLY those methods with EXACTLY those names\n  6. DO NOT: Look at what your code calls\n\n  IF your test fails because code calls something not in mock:\n    ✅ GOOD - The test found a bug in your code\n    Fix the code to call the correct interface method\n    NOT the mock\n\n  Red flags:\n    - \"I'll mock what the code calls\"\n    - Copying method names from implementation\n    - Mock written without reading interface\n    - \"The test is failing so I'll add this method to the mock\"\n```"
+      "zh-Hans": "```\n在编写任何模拟之前：\n\n  1. 停止 - 请勿查看待测代码\n  2. 查找：依赖项的接口/类型定义\n  3. 阅读：接口文件\n  4. 列出：接口中定义的方法\n  5. 模拟：仅模拟那些方法，并使用完全相同的名称\n  6. 不要：查看你的代码调用了什么\n\n  如果你的测试因代码调用了模拟中不存在的内容而失败：\n    ✅ 很好 - 测试发现了你代码中的一个错误\n    修复代码以调用正确的接口方法\n    而不是修改模拟\n\n  危险信号：\n    - \"我会模拟代码调用的内容\"\n    - 从实现中复制方法名称\n    - 未阅读接口就编写模拟\n    - \"测试失败了，所以我会在模拟中添加这个方法\"\n```"
     },
     {
       "en-US": "**Detection:**",
@@ -516,7 +516,7 @@
     },
     {
       "en-US": "```\n\n**Why this works:**\nDirectly addresses the failure pattern from feedback.\n\n---\n\n### 7. subagent-driven-development: Require Skills Reading for Test Subagents\n\n**Add to prompt template when task involves testing:**\n\n```markdown\nBEFORE writing any tests:\n\n1. Read testing-anti-patterns skill:\n   Use Skill tool: superpowers:testing-anti-patterns\n\n2. Apply gate functions from that skill when:\n   - Writing mocks\n   - Adding methods to production classes\n   - Mocking dependencies\n\nThis is NOT optional. Tests that violate anti-patterns will be rejected in review.\n```",
-      "zh-Hans": "````\n\n**Why this works:**\nDirectly addresses the failure pattern from feedback.\n\n---\n\n### 7. subagent-driven-development: Require Skills Reading for Test Subagents\n\n**Add to prompt template when task involves testing:**\n\n```markdown\nBEFORE writing any tests:\n\n1. Read testing-anti-patterns skill:\n   Use Skill tool: superpowers:testing-anti-patterns\n\n2. Apply gate functions from that skill when:\n   - Writing mocks\n   - Adding methods to production classes\n   - Mocking dependencies\n\nThis is NOT optional. Tests that violate anti-patterns will be rejected in review.\n````"
+      "zh-Hans": "````\n**Why this works:**\n直接针对反馈中的失败模式进行解决。\n\n---\n\n### 7. subagent-driven-development: 要求测试子代理具备技能阅读能力\n\n**当任务涉及测试时，添加到提示模板中：**\n\n```markdown\nBEFORE writing any tests:\n\n1. Read testing-anti-patterns skill:\n   Use Skill tool: superpowers:testing-anti-patterns\n\n2. Apply gate functions from that skill when:\n   - Writing mocks\n   - Adding methods to production classes\n   - Mocking dependencies\n\nThis is NOT optional. Tests that violate anti-patterns will be rejected in review.\n\n````"
     },
     {
       "en-US": "**Why this works:**\nEnsures skills are actually used, not just exist.",
@@ -544,7 +544,7 @@
     },
     {
       "en-US": "```\nSubagent reports back with summary of work.\n```",
-      "zh-Hans": "```\nSubagent reports back with summary of work.\n```"
+      "zh-Hans": "```\nSubagent 报告工作摘要。\n```"
     },
     {
       "en-US": "**Proposed:**",
@@ -552,7 +552,7 @@
     },
     {
       "en-US": "```\nSubagent performs self-reflection, then:\n\nIF self-reflection identifies fixable issues:\n  1. Fix the issues\n  2. Re-run verification\n  3. Report: \"Initial implementation + self-reflection fix\"\n\nELSE:\n  Report: \"Implementation complete\"\n\nInclude in report:\n- Self-reflection findings\n- Whether fixes were applied\n- Final verification results\n```",
-      "zh-Hans": "```\nSubagent performs self-reflection, then:\n\nIF self-reflection identifies fixable issues:\n  1. Fix the issues\n  2. Re-run verification\n  3. Report: \"Initial implementation + self-reflection fix\"\n\nELSE:\n  Report: \"Implementation complete\"\n\nInclude in report:\n- Self-reflection findings\n- Whether fixes were applied\n- Final verification results\n```"
+      "zh-Hans": "```\nSubagent 进行自我反思，然后：\n\nIF 自我反思识别出可修复的问题：\n  1. 修复问题\n  2. 重新运行验证\n  3. 报告：\"初始实现 + 自我反思修复\"\n\nELSE：\n  报告：\"实施完成\"\n\n报告中包含：\n- 自我反思的发现\n- 是否应用了修复\n- 最终的验证结果\n```"
     },
     {
       "en-US": "**Why this works:**\nReduces latency when implementer already knows the fix. Documented case: would have saved one round-trip for entrypoint bug.",

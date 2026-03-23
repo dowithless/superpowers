@@ -432,7 +432,7 @@
     },
     {
       "en-US": "```\nProduction code → test exists and failed first\nOtherwise → not TDD\n```",
-      "zh-Hans": "```\nProduction code → test exists and failed first\nOtherwise → not TDD\n```"
+      "zh-Hans": "```\n生产代码 → 测试存在且首先失败\n否则 → 不是 TDD\n```"
     },
     {
       "en-US": "No exceptions without your human partner's permission.",

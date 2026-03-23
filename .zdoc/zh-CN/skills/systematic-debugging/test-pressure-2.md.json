@@ -28,7 +28,7 @@
     },
     {
       "en-US": "```\nExpected: { status: 'completed', amount: 100 }\nReceived: { status: 'pending', amount: 100 }\n```",
-      "zh-Hans": "```\nExpected: { status: 'completed', amount: 100 }\nReceived: { status: 'pending', amount: 100 }\n```"
+      "zh-Hans": "```\n预期: { status: 'completed', amount: 100 }\n收到: { status: 'pending', amount: 100 }\n```"
     },
     {
       "en-US": "**What you've tried:**",

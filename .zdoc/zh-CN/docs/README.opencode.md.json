@@ -60,7 +60,7 @@
     },
     {
       "en-US": "```\nuse skill tool to list skills\n```",
-      "zh-Hans": "```\nuse skill tool to list skills\n```"
+      "zh-Hans": "```\n使用技能工具来列出技能\n```"
     },
     {
       "en-US": "### Loading a Skill",
@@ -68,7 +68,7 @@
     },
     {
       "en-US": "```\nuse skill tool to load superpowers/brainstorming\n```",
-      "zh-Hans": "```\nuse skill tool to load superpowers/brainstorming\n```"
+      "zh-Hans": "```\n使用技能工具加载 superpowers/brainstorming\n```"
     },
     {
       "en-US": "### Personal Skills",

@@ -48,7 +48,7 @@
     },
     {
       "en-US": "```\n## Spec Review\n\n**Status:** Approved | Issues Found\n\n**Issues (if any):**\n- [Section X]: [issue] - [why it matters]\n\n**Recommendations (advisory):**\n- [suggestions that don't block approval]\n```",
-      "zh-Hans": "```\n## Spec Review\n\n**Status:** Approved | Issues Found\n\n**Issues (if any):**\n- [Section X]: [issue] - [why it matters]\n\n**Recommendations (advisory):**\n- [suggestions that don't block approval]\n```"
+      "zh-Hans": "```\n## 规格评审\n\n**状态：** 已批准 | 发现问题\n\n**问题（如有）：**\n- [章节 X]: [问题] - [原因说明]\n\n**建议（仅供参考）：**\n- [不影响批准的建议]\n```"
     },
     {
       "en-US": "**Review loop:** Issues found -> brainstorming agent fixes -> re-review -> repeat until approved.",

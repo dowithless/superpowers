@@ -332,7 +332,7 @@
     },
     {
       "en-US": "```\npdf/\n├── SKILL.md              # Main instructions (loaded when triggered)\n├── FORMS.md              # Form-filling guide (loaded as needed)\n├── reference.md          # API reference (loaded as needed)\n├── examples.md           # Usage examples (loaded as needed)\n└── scripts/\n    ├── analyze_form.py   # Utility script (executed, not loaded)\n    ├── fill_form.py      # Form filling script\n    └── validate.py       # Validation script\n```",
-      "zh-Hans": "```\npdf/\n├── SKILL.md              # Main instructions (loaded when triggered)\n├── FORMS.md              # Form-filling guide (loaded as needed)\n├── reference.md          # API reference (loaded as needed)\n├── examples.md           # Usage examples (loaded as needed)\n└── scripts/\n    ├── analyze_form.py   # Utility script (executed, not loaded)\n    ├── fill_form.py      # Form filling script\n    └── validate.py       # Validation script\n```"
+      "zh-Hans": "```\npdf/\n├── SKILL.md              # 主要指令（触发时加载）\n├── FORMS.md              # 填表指南（按需加载）\n├── reference.md          # API 参考（按需加载）\n├── examples.md           # 使用示例（按需加载）\n└── scripts/\n    ├── analyze_form.py   # 工具脚本（执行，不加载）\n    ├── fill_form.py      # 表单填写脚本\n    └── validate.py       # 验证脚本\n```"
     },
     {
       "en-US": "#### Pattern 1: High-level guide with references",
@@ -356,7 +356,7 @@
     },
     {
       "en-US": "```\nbigquery-skill/\n├── SKILL.md (overview and navigation)\n└── reference/\n    ├── finance.md (revenue, billing metrics)\n    ├── sales.md (opportunities, pipeline)\n    ├── product.md (API usage, features)\n    └── marketing.md (campaigns, attribution)\n```",
-      "zh-Hans": "```\nbigquery-skill/\n├── SKILL.md (overview and navigation)\n└── reference/\n    ├── finance.md (revenue, billing metrics)\n    ├── sales.md (opportunities, pipeline)\n    ├── product.md (API usage, features)\n    └── marketing.md (campaigns, attribution)\n```"
+      "zh-Hans": "```\nbigquery-skill/\n├── SKILL.md (概览和导航)\n└── reference/\n    ├── finance.md (收入、计费指标)\n    ├── sales.md (商机、销售管道)\n    ├── product.md (API 使用情况、功能特性)\n    └── marketing.md (营销活动、归因分析)\n```"
     },
     {
       "en-US": "````markdown SKILL.md theme={null}\n# BigQuery Data Analysis\n\n## Available datasets\n\n**Finance**: Revenue, ARR, billing → See [reference/finance.md](reference/finance.md)\n**Sales**: Opportunities, pipeline, accounts → See [reference/sales.md](reference/sales.md)\n**Product**: API usage, features, adoption → See [reference/product.md](reference/product.md)\n**Marketing**: Campaigns, attribution, email → See [reference/marketing.md](reference/marketing.md)\n\n## Quick search\n\nFind specific metrics using grep:\n\n```bash\ngrep -i \"revenue\" reference/finance.md\ngrep -i \"pipeline\" reference/sales.md\ngrep -i \"api usage\" reference/product.md\n```\n````",
@@ -944,7 +944,7 @@
     },
     {
       "en-US": "```\nbigquery-skill/\n├── SKILL.md (overview, points to reference files)\n└── reference/\n    ├── finance.md (revenue metrics)\n    ├── sales.md (pipeline data)\n    └── product.md (usage analytics)\n```",
-      "zh-Hans": "```\nbigquery-skill/\n├── SKILL.md (overview, points to reference files)\n└── reference/\n    ├── finance.md (revenue metrics)\n    ├── sales.md (pipeline data)\n    └── product.md (usage analytics)\n```"
+      "zh-Hans": "```\nbigquery-skill/\n├── SKILL.md（概述，指向参考文件）\n└── reference/\n    ├── finance.md（收入指标）\n    ├── sales.md（流水线数据）\n    └── product.md（使用分析）\n```"
     },
     {
       "en-US": "When the user asks about revenue, Claude reads SKILL.md, sees the reference to `reference/finance.md`, and invokes bash to read just that file. The sales.md and product.md files remain on the filesystem, consuming zero context tokens until needed. This filesystem-based model is what enables progressive disclosure. Claude can navigate and selectively load exactly what each task requires.",

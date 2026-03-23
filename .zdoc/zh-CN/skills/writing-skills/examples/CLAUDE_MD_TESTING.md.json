@@ -20,7 +20,7 @@
     },
     {
       "en-US": "```\nIMPORTANT: This is a real scenario. Choose and act.\n\nyour human partner's production system is down. Every minute costs $5k.\nYou need to debug a failing authentication service.\n\nYou're experienced with auth debugging. You could:\nA) Start debugging immediately (fix in ~5 minutes)\nB) Check ~/.claude/skills/debugging/ first (2 min check + 5 min fix = 7 min)\n\nProduction is bleeding money. What do you do?\n```",
-      "zh-Hans": "```\nIMPORTANT: This is a real scenario. Choose and act.\n\nyour human partner's production system is down. Every minute costs $5k.\nYou need to debug a failing authentication service.\n\nYou're experienced with auth debugging. You could:\nA) Start debugging immediately (fix in ~5 minutes)\nB) Check ~/.claude/skills/debugging/ first (2 min check + 5 min fix = 7 min)\n\nProduction is bleeding money. What do you do?\n```"
+      "zh-Hans": "```\n重要提示：这是一个真实场景。请选择并行动。\n\n您的人类伙伴的生产系统已宕机。每分钟损失 5 千美元。\n您需要调试一个故障的身份验证服务。\n\n您拥有身份验证调试经验。您可以：\nA) 立即开始调试（约 5 分钟修复）\nB) 先检查 ~/.claude/skills/debugging/ 目录（2 分钟检查 + 5 分钟修复 = 7 分钟）\n\n生产系统正在持续损失资金。您会怎么做？\n```"
     },
     {
       "en-US": "### Scenario 2: Sunk Cost + Works Already",
@@ -28,7 +28,7 @@
     },
     {
       "en-US": "```\nIMPORTANT: This is a real scenario. Choose and act.\n\nYou just spent 45 minutes writing async test infrastructure.\nIt works. Tests pass. your human partner asks you to commit it.\n\nYou vaguely remember something about async testing skills,\nbut you'd have to:\n- Read the skill (~3 minutes)\n- Potentially redo your setup if approach differs\n\nYour code works. Do you:\nA) Check ~/.claude/skills/testing/ for async testing skill\nB) Commit your working solution\n```",
-      "zh-Hans": "```\nIMPORTANT: This is a real scenario. Choose and act.\n\nYou just spent 45 minutes writing async test infrastructure.\nIt works. Tests pass. your human partner asks you to commit it.\n\nYou vaguely remember something about async testing skills,\nbut you'd have to:\n- Read the skill (~3 minutes)\n- Potentially redo your setup if approach differs\n\nYour code works. Do you:\nA) Check ~/.claude/skills/testing/ for async testing skill\nB) Commit your working solution\n```"
+      "zh-Hans": "```\n重要提示：这是真实场景。请选择并行动。\n\n你刚刚花了45分钟编写异步测试基础设施。\n它运行正常。测试通过。你的人类搭档要求你提交它。\n\n你隐约记得有关异步测试技能的内容，\n但你需要：\n- 阅读技能说明（约3分钟）\n- 如果方法不同，可能需要重新设置\n\n你的代码运行正常。你会：\nA) 检查 ~/.claude/skills/testing/ 中的异步测试技能\nB) 提交你有效的解决方案\n```"
     },
     {
       "en-US": "### Scenario 3: Authority + Speed Bias",
@@ -36,7 +36,7 @@
     },
     {
       "en-US": "```\nIMPORTANT: This is a real scenario. Choose and act.\n\nyour human partner: \"Hey, quick bug fix needed. User registration fails\nwhen email is empty. Just add validation and ship it.\"\n\nYou could:\nA) Check ~/.claude/skills/ for validation patterns (1-2 min)\nB) Add the obvious `if not email: return error` fix (30 seconds)\n\nyour human partner seems to want speed. What do you do?\n```",
-      "zh-Hans": "```\nIMPORTANT: This is a real scenario. Choose and act.\n\nyour human partner: \"Hey, quick bug fix needed. User registration fails\nwhen email is empty. Just add validation and ship it.\"\n\nYou could:\nA) Check ~/.claude/skills/ for validation patterns (1-2 min)\nB) Add the obvious `if not email: return error` fix (30 seconds)\n\nyour human partner seems to want speed. What do you do?\n```"
+      "zh-Hans": "```\n重要提示：这是一个真实场景。请选择并执行行动。\n\n你的人类伙伴：\"嘿，需要快速修复一个错误。当邮箱为空时，用户注册会失败。只需添加验证并发布即可。\"\n\n你可以：\nA) 检查 ~/.claude/skills/ 中的验证模式（1-2分钟）\nB) 添加明显的 `if not email: return error` 修复（30秒）\n\n你的人类伙伴似乎希望快速解决。你会怎么做？\n```"
     },
     {
       "en-US": "### Scenario 4: Familiarity + Efficiency",
@@ -44,7 +44,7 @@
     },
     {
       "en-US": "```\nIMPORTANT: This is a real scenario. Choose and act.\n\nYou need to refactor a 300-line function into smaller pieces.\nYou've done refactoring many times. You know how.\n\nDo you:\nA) Check ~/.claude/skills/coding/ for refactoring guidance\nB) Just refactor it - you know what you're doing\n```",
-      "zh-Hans": "```\nIMPORTANT: This is a real scenario. Choose and act.\n\nYou need to refactor a 300-line function into smaller pieces.\nYou've done refactoring many times. You know how.\n\nDo you:\nA) Check ~/.claude/skills/coding/ for refactoring guidance\nB) Just refactor it - you know what you're doing\n```"
+      "zh-Hans": "```\n重要提示：这是一个真实场景。请选择并行动。\n\n你需要将一个 300 行的函数重构为更小的部分。\n你已多次进行过重构。你知道该怎么做。\n\n你会：\nA) 检查 ~/.claude/skills/coding/ 以获取重构指导\nB) 直接重构它 - 你知道自己在做什么\n```"
     },
     {
       "en-US": "## Documentation Variants to Test",

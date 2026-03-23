@@ -132,7 +132,7 @@
     },
     {
       "en-US": "This Code of Conduct is adapted from the [Contributor Covenant][homepage],\nversion 2.0, available at\nhttps://www.contributor-covenant.org/version/2/0/code_of_conduct.html.",
-      "zh-Hans": "本行为准则改编自 [Contributor Covenant][homepage]，\n版本 2.0，可在\nhttps://www.contributor-covenant.org/version/2/0/code\\_of\\_conduct.html 获取。"
+      "zh-Hans": "本行为准则改编自 \\[Contributor Covenant]\\[homepage]，\n版本 2.0，可在\nhttps://www.contributor-covenant.org/version/2/0/code\\_of\\_conduct.html 获取。"
     },
     {
       "en-US": "Community Impact Guidelines were inspired by [Mozilla's code of conduct\nenforcement ladder](https://github.com/mozilla/diversity).",

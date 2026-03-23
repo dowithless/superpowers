@@ -28,7 +28,7 @@
     },
     {
       "en-US": "```\n┌─────────────────────────────────────────┐\n│  Svelte Todos                           │\n├─────────────────────────────────────────┤\n│  [________________________] [Add]       │\n├─────────────────────────────────────────┤\n│  [ ] Buy groceries                  [x] │\n│  [✓] Walk the dog                   [x] │\n│  [ ] Write code                     [x] │\n├─────────────────────────────────────────┤\n│  2 items left                           │\n│  [All] [Active] [Completed]  [Clear ✓]  │\n└─────────────────────────────────────────┘\n```",
-      "zh-Hans": "```\n┌─────────────────────────────────────────┐\n│  Svelte Todos                           │\n├─────────────────────────────────────────┤\n│  [________________________] [Add]       │\n├─────────────────────────────────────────┤\n│  [ ] Buy groceries                  [x] │\n│  [✓] Walk the dog                   [x] │\n│  [ ] Write code                     [x] │\n├─────────────────────────────────────────┤\n│  2 items left                           │\n│  [All] [Active] [Completed]  [Clear ✓]  │\n└─────────────────────────────────────────┘\n```"
+      "zh-Hans": "```\n┌─────────────────────────────────────────┐\n│  Svelte Todos                           │\n├─────────────────────────────────────────┤\n│  [________________________] [添加]       │\n├─────────────────────────────────────────┤\n│  [ ] 购买食品杂货                  [x] │\n│  [✓] 遛狗                         [x] │\n│  [ ] 编写代码                      [x] │\n├─────────────────────────────────────────┤\n│  剩余 2 项                               │\n│  [全部] [待办] [已完成]  [清除 ✓]        │\n└─────────────────────────────────────────┘\n```"
     },
     {
       "en-US": "## Components",
@@ -36,7 +36,7 @@
     },
     {
       "en-US": "```\nsrc/\n  App.svelte           # Main app, state management\n  lib/\n    TodoInput.svelte   # Text input + Add button\n    TodoList.svelte    # List container\n    TodoItem.svelte    # Single todo with checkbox, text, delete\n    FilterBar.svelte   # Filter buttons + clear completed\n    store.ts           # Svelte store for todos\n    storage.ts         # localStorage persistence\n```",
-      "zh-Hans": "```\nsrc/\n  App.svelte           # Main app, state management\n  lib/\n    TodoInput.svelte   # Text input + Add button\n    TodoList.svelte    # List container\n    TodoItem.svelte    # Single todo with checkbox, text, delete\n    FilterBar.svelte   # Filter buttons + clear completed\n    store.ts           # Svelte store for todos\n    storage.ts         # localStorage persistence\n```"
+      "zh-Hans": "```\nsrc/\n  App.svelte           # 主应用，状态管理\n  lib/\n    TodoInput.svelte   # 文本输入 + 添加按钮\n    TodoList.svelte    # 列表容器\n    TodoItem.svelte    # 单个待办事项（含复选框、文本、删除）\n    FilterBar.svelte   # 筛选按钮 + 清除已完成\n    store.ts           # Svelte store 用于待办事项\n    storage.ts         # localStorage 持久化\n```"
     },
     {
       "en-US": "## Data Model",

@@ -20,7 +20,7 @@
     },
     {
       "en-US": "```\nTask tool (superpowers:code-reviewer):\n  Use template at requesting-code-review/code-reviewer.md\n\n  WHAT_WAS_IMPLEMENTED: [from implementer's report]\n  PLAN_OR_REQUIREMENTS: Task N from [plan-file]\n  BASE_SHA: [commit before task]\n  HEAD_SHA: [current commit]\n  DESCRIPTION: [task summary]\n```",
-      "zh-Hans": "```\nTask tool (superpowers:code-reviewer):\n  Use template at requesting-code-review/code-reviewer.md\n\n  WHAT_WAS_IMPLEMENTED: [from implementer's report]\n  PLAN_OR_REQUIREMENTS: Task N from [plan-file]\n  BASE_SHA: [commit before task]\n  HEAD_SHA: [current commit]\n  DESCRIPTION: [task summary]\n```"
+      "zh-Hans": "```\nTask tool (superpowers:code-reviewer):\n  使用 requesting-code-review/code-reviewer.md 中的模板\n\n  WHAT_WAS_IMPLEMENTED: [来自实施者的报告]\n  PLAN_OR_REQUIREMENTS: Task N from [plan-file]\n  BASE_SHA: [任务前的提交]\n  HEAD_SHA: [当前提交]\n  DESCRIPTION: [任务摘要]\n```"
     },
     {
       "en-US": "**In addition to standard code quality concerns, the reviewer should check:**",
