@@ -2,7 +2,7 @@
   {
     "source_language": "en-US",
     "target_languages": ["zh-Hans"],
-    "include": ["**/*.md"],
+    "include": ["commands/brainstorm.md"],
     "ignore": ["zh-CN"],
     "translation_store": {
       "dir": ".zdoc/zh-CN"
@@ -55,6 +55,6 @@
       }
     },
     "update_local_file_references": true,
-    "terms": ["Superpowers"]
+    "terms": ["Superpowers", "brainstorming"]
   }
 ]
