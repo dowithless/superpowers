@@ -143,6 +143,14 @@
       "zh-Hans": "**详细文档：** [docs/README.opencode.md](docs/README.opencode.md)"
     },
     {
+      "en-US": "### GitHub Copilot CLI",
+      "zh-Hans": "### GitHub Copilot CLI"
+    },
+    {
+      "en-US": "```bash\ncopilot plugin marketplace add obra/superpowers-marketplace\ncopilot plugin install superpowers@superpowers-marketplace\n```",
+      "zh-Hans": "```bash\ncopilot plugin marketplace add obra/superpowers-marketplace\ncopilot plugin install superpowers@superpowers-marketplace\n```"
+    },
+    {
       "en-US": "### Gemini CLI",
       "zh-Hans": "### Gemini CLI"
     },
@@ -275,16 +283,8 @@
       "zh-Hans": "Superpowers 由 [Jesse Vincent](https://blog.fsck.com) 和 [Prime Radiant](https://primeradiant.com) 的其他成员共同构建。"
     },
     {
-      "en-US": "For community support, questions, and sharing what you're building with Superpowers, join us on [Discord](https://discord.gg/Jd8Vphy9jq).",
-      "zh-Hans": "如需社区支持、问题咨询，或分享您使用 Superpowers 构建的项目，欢迎加入我们的 [Discord](https://discord.gg/Jd8Vphy9jq)。"
-    },
-    {
-      "en-US": "## Support",
-      "zh-Hans": "## 支持"
-    },
-    {
-      "en-US": "- **Discord**: [Join us on Discord](https://discord.gg/Jd8Vphy9jq)\n- **Issues**: https://github.com/obra/superpowers/issues\n- **Marketplace**: https://github.com/obra/superpowers-marketplace",
-      "zh-Hans": "* **Discord**：[加入我们的 Discord](https://discord.gg/Jd8Vphy9jq)\n* **问题反馈**：https://github.com/obra/superpowers/issues\n* **市场**：https://github.com/obra/superpowers-marketplace"
+      "en-US": "- **Discord**: [Join us](https://discord.gg/35wsABTejz) for community support, questions, and sharing what you're building with Superpowers\n- **Issues**: https://github.com/obra/superpowers/issues\n- **Release announcements**: [Sign up](https://primeradiant.com/superpowers/) to get notified about new versions",
+      "zh-Hans": "* **Discord**: [加入我们](https://discord.gg/35wsABTejz)获取社区支持、提问以及分享你使用 Superpowers 构建的项目\n* **Issues**: https://github.com/obra/superpowers/issues\n* **发布公告**: [注册](https://primeradiant.com/superpowers/)以获取新版本通知"
     }
   ]
 }

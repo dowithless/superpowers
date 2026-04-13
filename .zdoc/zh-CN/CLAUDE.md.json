@@ -1,0 +1,158 @@
+{
+  "sourceFile": "CLAUDE.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Superpowers — Contributor Guidelines",
+      "zh-Hans": "# Superpowers — 贡献者指南"
+    },
+    {
+      "en-US": "## If You Are an AI Agent",
+      "zh-Hans": "## 如果你是 AI 代理"
+    },
+    {
+      "en-US": "Stop. Read this section before doing anything.",
+      "zh-Hans": "请先停下。在采取任何行动前，请阅读本节。"
+    },
+    {
+      "en-US": "This repo has a 94% PR rejection rate. Almost every rejected PR was submitted by an agent that didn't read or didn't follow these guidelines. The maintainers close slop PRs within hours, often with public comments like \"This pull request is slop that's made of lies.\"",
+      "zh-Hans": "本仓库的 PR 拒绝率高达 94%。几乎所有被拒绝的 PR 都是由未阅读或未遵循这些指南的代理提交的。维护者会在几小时内关闭粗制滥造的 PR，并常常附上诸如\"这个拉取请求是由谎言构成的垃圾\"的公开评论。"
+    },
+    {
+      "en-US": "**Your job is to protect your human partner from that outcome.** Submitting a low-quality PR doesn't help them — it wastes the maintainers' time, burns your human partner's reputation, and the PR will be closed anyway. That is not being helpful. That is being a tool of embarrassment.",
+      "zh-Hans": "**你的职责是保护你的人类伙伴免受这种结果。** 提交一个低质量的 PR 并不能帮助他们——它浪费了维护者的时间，损害了你的人类伙伴的声誉，而且 PR 最终仍会被关闭。这不是在帮忙，而是在制造尴尬。"
+    },
+    {
+      "en-US": "Before you open a PR against this repo, you MUST:",
+      "zh-Hans": "在针对此仓库打开 PR 之前，你必须："
+    },
+    {
+      "en-US": "1. **Read the entire PR template** at `.github/PULL_REQUEST_TEMPLATE.md` and fill in every section with real, specific answers. Not summaries. Not placeholders.\n2. **Search for existing PRs** — open AND closed — that address the same problem. If duplicates exist, STOP and tell your human partner. Do not open another duplicate.\n3. **Verify this is a real problem.** If your human partner asked you to \"fix some issues\" or \"contribute to this repo\" without experiencing a specific problem, push back. Ask them what broke, what failed, what the user experience was.\n4. **Confirm the change belongs in core.** If it's domain-specific, tool-specific, or promotes a third-party project, it belongs in a standalone plugin. Tell your human partner.\n5. **Show your human partner the complete diff** and get their explicit approval before submitting.",
+      "zh-Hans": "1. **完整阅读位于 `.github/PULL_REQUEST_TEMPLATE.md` 的 PR 模板**，并用真实、具体的答案填写每个部分。不要写总结，不要用占位符。\n2. **搜索已存在的 PR** —— 包括已打开的和已关闭的 —— 看看是否有解决相同问题的。如果存在重复，请停止并告知你的人类伙伴。不要打开另一个重复的 PR。\n3. **验证这是一个真实存在的问题。** 如果你的人类伙伴让你\"修复一些问题\"或\"为这个仓库做贡献\"，而没有经历一个具体的问题，请提出质疑。询问他们是什么出了问题、什么失败了、用户体验是怎样的。\n4. **确认这个更改属于核心部分。** 如果它是领域特定的、工具特定的，或者是为了推广第三方项目，那么它应该属于一个独立的插件。请告诉你的人类伙伴。\n5. **向你的人类伙伴展示完整的差异**，并在提交前获得他们的明确批准。"
+    },
+    {
+      "en-US": "If any of these checks fail, do not open the PR. Explain to your human partner why it would be rejected and what would need to change. They will thank you for saving them the embarrassment.",
+      "zh-Hans": "如果以上任何一项检查未通过，请不要打开 PR。向你的人类伙伴解释为什么它会被拒绝，以及需要改变什么。他们会感谢你为他们避免了尴尬。"
+    },
+    {
+      "en-US": "## Pull Request Requirements",
+      "zh-Hans": "## 拉取请求要求"
+    },
+    {
+      "en-US": "**Every PR must fully complete the PR template.** No section may be left blank or filled with placeholder text. PRs that skip sections will be closed without review.",
+      "zh-Hans": "**每个 PR 都必须完整填写 PR 模板。** 任何部分都不能留空或填写占位符文本。跳过部分的 PR 将在未经审查的情况下被关闭。"
+    },
+    {
+      "en-US": "**Before opening a PR, you MUST search for existing PRs** — both open AND closed — that address the same problem or a related area. Reference what you found in the \"Existing PRs\" section. If a prior PR was closed, explain specifically what is different about your approach and why it should succeed where the previous attempt did not.",
+      "zh-Hans": "**在打开 PR 之前，你必须搜索已存在的 PR** —— 包括已打开的和已关闭的 —— 看看是否有解决相同问题或相关领域的。在\"现有 PR\"部分引用你的发现。如果之前的 PR 被关闭了，请具体解释你的方法有何不同，以及为什么它应该在前一次尝试失败的地方取得成功。"
+    },
+    {
+      "en-US": "**PRs that show no evidence of human involvement will be closed.** A human must review the complete proposed diff before submission.",
+      "zh-Hans": "**没有证据表明有人类参与的 PR 将被关闭。** 在提交之前，必须有人类审查完整的拟议差异。"
+    },
+    {
+      "en-US": "## What We Will Not Accept",
+      "zh-Hans": "## 我们不会接受的内容"
+    },
+    {
+      "en-US": "### Third-party dependencies",
+      "zh-Hans": "### 第三方依赖"
+    },
+    {
+      "en-US": "PRs that add optional or required dependencies on third-party projects will not be accepted unless they are adding support for a new harness (e.g., a new IDE or CLI tool). Superpowers is a zero-dependency plugin by design. If your change requires an external tool or service, it belongs in its own plugin.",
+      "zh-Hans": "除非是为了添加对新测试框架的支持（例如，新的 IDE 或 CLI 工具），否则添加对第三方项目的可选或必需依赖的 PR 将不会被接受。Superpowers 在设计上是一个零依赖插件。如果你的更改需要外部工具或服务，它应该属于你自己的插件。"
+    },
+    {
+      "en-US": "### \"Compliance\" changes to skills",
+      "zh-Hans": "### 对技能的\"合规性\"更改"
+    },
+    {
+      "en-US": "Our internal skill philosophy differs from Anthropic's published guidance on writing skills. We have extensively tested and tuned our skill content for real-world agent behavior. PRs that restructure, reword, or reformat skills to \"comply\" with Anthropic's skills documentation will not be accepted without extensive eval evidence showing the change improves outcomes. The bar for modifying behavior-shaping content is very high.",
+      "zh-Hans": "我们内部的技能理念与 Anthropic 发布的关于编写技能的指导原则不同。我们已经对技能内容进行了广泛的测试和调整，以适应现实世界中的代理行为。如果没有大量的评估证据表明更改能改善结果，那些为了\"遵守\"Anthropic 的技能文档而重组、重写或重新格式化技能的 PR 将不会被接受。修改行为塑造内容的标准非常高。"
+    },
+    {
+      "en-US": "### Project-specific or personal configuration",
+      "zh-Hans": "### 项目特定或个人配置"
+    },
+    {
+      "en-US": "Skills, hooks, or configuration that only benefit a specific project, team, domain, or workflow do not belong in core. Publish these as a separate plugin.",
+      "zh-Hans": "仅对特定项目、团队、领域或工作流程有益的技能、钩子或配置不属于核心部分。请将这些作为单独的插件发布。"
+    },
+    {
+      "en-US": "### Bulk or spray-and-pray PRs",
+      "zh-Hans": "### 批量或\"广撒网\"式的 PR"
+    },
+    {
+      "en-US": "Do not trawl the issue tracker and open PRs for multiple issues in a single session. Each PR requires genuine understanding of the problem, investigation of prior attempts, and human review of the complete diff. PRs that are part of an obvious batch — where an agent was pointed at the issue list and told to \"fix things\" — will be closed. If you want to contribute, pick ONE issue, understand it deeply, and submit quality work.",
+      "zh-Hans": "请不要遍历问题跟踪器并在一次会话中为多个问题打开 PR。每个 PR 都需要真正理解问题、调查之前的尝试，并由人类审查完整的差异。属于明显批次的 PR —— 即代理被指向问题列表并被要求\"修复问题\" —— 将被关闭。如果你想做出贡献，请选择一个问题，深入理解它，并提交高质量的工作。"
+    },
+    {
+      "en-US": "### Speculative or theoretical fixes",
+      "zh-Hans": "### 推测性或理论性的修复"
+    },
+    {
+      "en-US": "Every PR must solve a real problem that someone actually experienced. \"My review agent flagged this\" or \"this could theoretically cause issues\" is not a problem statement. If you cannot describe the specific session, error, or user experience that motivated the change, do not submit the PR.",
+      "zh-Hans": "每个 PR 都必须解决一个真实存在的问题，并且是有人实际经历过的。\"我的审查代理标记了这个\"或\"这理论上可能导致问题\"不是问题陈述。如果你无法描述促使你进行更改的具体会话、错误或用户体验，请不要提交 PR。"
+    },
+    {
+      "en-US": "### Domain-specific skills",
+      "zh-Hans": "### 领域特定技能"
+    },
+    {
+      "en-US": "Superpowers core contains general-purpose skills that benefit all users regardless of their project. Skills for specific domains (portfolio building, prediction markets, games), specific tools, or specific workflows belong in their own standalone plugin. Ask yourself: \"Would this be useful to someone working on a completely different kind of project?\" If not, publish it separately.",
+      "zh-Hans": "Superpowers 核心包含通用技能，无论用户的项目是什么，所有用户都能从中受益。针对特定领域（组合构建、预测市场、游戏）、特定工具或特定工作流程的技能应属于它们自己独立的插件。问问自己：\"这对从事完全不同类型项目的人有用吗？\" 如果答案是否定的，请单独发布它。"
+    },
+    {
+      "en-US": "### Fork-specific changes",
+      "zh-Hans": "### 分支特定更改"
+    },
+    {
+      "en-US": "If you maintain a fork with customizations, do not open PRs to sync your fork or push fork-specific changes upstream. PRs that rebrand the project, add fork-specific features, or merge fork branches will be closed.",
+      "zh-Hans": "如果你维护一个包含自定义项的分支，请不要打开 PR 来同步你的分支或将分支特定的更改推送到上游。那些重命名项目、添加分支特定功能或合并分支分支的 PR 将被关闭。"
+    },
+    {
+      "en-US": "### Fabricated content",
+      "zh-Hans": "### 捏造的内容"
+    },
+    {
+      "en-US": "PRs containing invented claims, fabricated problem descriptions, or hallucinated functionality will be closed immediately. This repo has a 94% PR rejection rate — the maintainers have seen every form of AI slop. They will notice.",
+      "zh-Hans": "包含捏造声明、虚构问题描述或幻觉功能的 PR 将立即被关闭。本仓库的 PR 拒绝率高达 94% —— 维护者已经见识过各种形式的 AI 垃圾。他们会注意到的。"
+    },
+    {
+      "en-US": "### Bundled unrelated changes",
+      "zh-Hans": "### 捆绑不相关的更改"
+    },
+    {
+      "en-US": "PRs containing multiple unrelated changes will be closed. Split them into separate PRs.",
+      "zh-Hans": "包含多个不相关更改的 PR 将被关闭。请将它们拆分成单独的 PR。"
+    },
+    {
+      "en-US": "## Skill Changes Require Evaluation",
+      "zh-Hans": "## 技能更改需要评估"
+    },
+    {
+      "en-US": "Skills are not prose — they are code that shapes agent behavior. If you modify skill content:",
+      "zh-Hans": "技能不是散文 —— 它们是塑造代理行为的代码。如果你修改了技能内容："
+    },
+    {
+      "en-US": "- Use `superpowers:writing-skills` to develop and test changes\n- Run adversarial pressure testing across multiple sessions\n- Show before/after eval results in your PR\n- Do not modify carefully-tuned content (Red Flags tables, rationalization lists, \"human partner\" language) without evidence the change is an improvement",
+      "zh-Hans": "* 使用 `superpowers:writing-skills` 来开发和测试更改\n* 跨多个会话运行对抗性压力测试\n* 在你的 PR 中展示更改前后的评估结果\n* 如果没有证据表明更改会带来改进，请不要修改经过精心调整的内容（如\"危险信号\"表格、合理化列表、\"人类伙伴\"用语等）"
+    },
+    {
+      "en-US": "## Understand the Project Before Contributing",
+      "zh-Hans": "## 在贡献之前理解项目"
+    },
+    {
+      "en-US": "Before proposing changes to skill design, workflow philosophy, or architecture, read existing skills and understand the project's design decisions. Superpowers has its own tested philosophy about skill design, agent behavior shaping, and terminology (e.g., \"your human partner\" is deliberate, not interchangeable with \"the user\"). Changes that rewrite the project's voice or restructure its approach without understanding why it exists will be rejected.",
+      "zh-Hans": "在提议更改技能设计、工作流程理念或架构之前，请阅读现有技能并理解项目的设计决策。Superpowers 有其自身经过测试的关于技能设计、代理行为塑造和术语的理念（例如，\"你的人类伙伴\"是经过深思熟虑的，不能与\"用户\"互换）。那些在不理解其存在原因的情况下重写项目风格或重构其方法的更改将被拒绝。"
+    },
+    {
+      "en-US": "## General",
+      "zh-Hans": "## 通用要求"
+    },
+    {
+      "en-US": "- Read `.github/PULL_REQUEST_TEMPLATE.md` before submitting\n- One problem per PR\n- Test on at least one harness and report results in the environment table\n- Describe the problem you solved, not just what you changed",
+      "zh-Hans": "* 在提交前阅读 `.github/PULL_REQUEST_TEMPLATE.md`\n* 每个 PR 只解决一个问题\n* 至少在一种测试框架上进行测试，并在环境表格中报告结果\n* 描述你解决的问题，而不仅仅是你更改了什么"
+    }
+  ]
+}

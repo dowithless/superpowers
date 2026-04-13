@@ -95,32 +95,48 @@
       "zh-Hans": "````markdown\n### 任务 N: [组件名称]\n\n**文件：**\n- 创建：`exact/path/to/file.py`\n- 修改：`exact/path/to/existing.py:123-145`\n- 测试：`tests/exact/path/to/test.py`\n\n- [ ] **步骤 1：编写失败测试**\n\n```python\ndef test_specific_behavior():\n    result = function(input)\n    assert result == expected\n```\n\n- [ ] **步骤 2：运行测试以确认其失败**\n\n运行：`pytest tests/path/test.py::test_name -v`\n预期：失败，提示\"函数未定义\"\n\n- [ ] **步骤 3：编写最小实现**\n\n```python\ndef function(input):\n    return expected\n```\n\n- [ ] **步骤 4：运行测试以确认其通过**\n\n运行：`pytest tests/path/test.py::test_name -v`\n预期：通过\n\n- [ ] **步骤 5：提交**\n\n```bash\ngit add tests/path/test.py src/path/file.py\ngit commit -m \"feat: add specific feature\"\n```\n````"
     },
     {
+      "en-US": "## No Placeholders",
+      "zh-Hans": "## 无占位符"
+    },
+    {
+      "en-US": "Every step must contain the actual content an engineer needs. These are **plan failures** — never write them:",
+      "zh-Hans": "每个步骤都必须包含工程师所需的实际内容。以下是**计划失败**的情况——切勿编写："
+    },
+    {
+      "en-US": "- \"TBD\", \"TODO\", \"implement later\", \"fill in details\"\n- \"Add appropriate error handling\" / \"add validation\" / \"handle edge cases\"\n- \"Write tests for the above\" (without actual test code)\n- \"Similar to Task N\" (repeat the code — the engineer may be reading tasks out of order)\n- Steps that describe what to do without showing how (code blocks required for code steps)\n- References to types, functions, or methods not defined in any task",
+      "zh-Hans": "* \"待定\"、\"待办\"、\"稍后实现\"、\"填写细节\"\n* \"添加适当的错误处理\" / \"添加验证\" / \"处理边缘情况\"\n* \"为上述内容编写测试\"（没有实际测试代码）\n* \"类似于任务 N\"（重复代码——工程师可能不按顺序阅读任务）\n* 描述做什么但不展示如何做的步骤（代码步骤需要代码块）\n* 引用任何任务中未定义的类型、函数或方法"
+    },
+    {
       "en-US": "## Remember",
       "zh-Hans": "## 记住"
     },
     {
-      "en-US": "- Exact file paths always\n- Complete code in plan (not \"add validation\")\n- Exact commands with expected output\n- Reference relevant skills with @ syntax\n- DRY, YAGNI, TDD, frequent commits",
-      "zh-Hans": "* 始终使用精确的文件路径\n* 计划中包含完整的代码（而不是\"添加验证\"）\n* 使用精确的命令和预期输出\n* 使用 @ 语法引用相关技能\n* DRY, YAGNI, TDD, 频繁提交"
+      "en-US": "- Exact file paths always\n- Complete code in every step — if a step changes code, show the code\n- Exact commands with expected output\n- DRY, YAGNI, TDD, frequent commits",
+      "zh-Hans": "* 始终使用确切的文件路径\n* 每个步骤都有完整的代码——如果步骤更改代码，请展示代码\n* 确切的命令及预期输出\n* DRY、YAGNI、TDD、频繁提交"
     },
     {
-      "en-US": "## Plan Review Loop",
-      "zh-Hans": "## 计划审查循环"
+      "en-US": "## Self-Review",
+      "zh-Hans": "## 自我审查"
     },
     {
-      "en-US": "After writing the complete plan:",
-      "zh-Hans": "完成计划编写后："
+      "en-US": "After writing the complete plan, look at the spec with fresh eyes and check the plan against it. This is a checklist you run yourself — not a subagent dispatch.",
+      "zh-Hans": "在编写完整计划后，以全新的视角查看规范，并根据规范检查计划。这是您自己运行的清单——不是子代理调度。"
     },
     {
-      "en-US": "1. Dispatch a single plan-document-reviewer subagent (see plan-document-reviewer-prompt.md) with precisely crafted review context — never your session history. This keeps the reviewer focused on the plan, not your thought process.\n   - Provide: path to the plan document, path to spec document\n2. If ❌ Issues Found: fix the issues, re-dispatch reviewer for the whole plan\n3. If ✅ Approved: proceed to execution handoff",
-      "zh-Hans": "1. 派遣一个计划文档评审子代理（参见 plan-document-reviewer-prompt.md），并提供精心构建的评审上下文——切勿使用您的会话历史。这使评审员专注于计划本身，而非您的思考过程。\n   * 提供：计划文档路径、规格文档路径\n2. 如果 ❌ 发现问题：修复问题，并重新派遣评审员评审整个计划\n3. 如果 ✅ 获得批准：继续执行交接"
+      "en-US": "**1. Spec coverage:** Skim each section/requirement in the spec. Can you point to a task that implements it? List any gaps.",
+      "zh-Hans": "**1. 规范覆盖范围：** 浏览规范中的每个部分/要求。您能指出实现它的任务吗？列出任何遗漏。"
     },
     {
-      "en-US": "**Review loop guidance:**",
-      "zh-Hans": "**审查循环指南：**"
+      "en-US": "**2. Placeholder scan:** Search your plan for red flags — any of the patterns from the \"No Placeholders\" section above. Fix them.",
+      "zh-Hans": "**2. 占位符扫描：** 在计划中搜索危险信号——上述\"无占位符\"部分中的任何模式。修复它们。"
     },
     {
-      "en-US": "- Same agent that wrote the plan fixes it (preserves context)\n- If loop exceeds 3 iterations, surface to human for guidance\n- Reviewers are advisory — explain disagreements if you believe feedback is incorrect",
-      "zh-Hans": "* 由编写计划的同一代理进行修复（保持上下文）\n* 如果循环超过3次，则向人类寻求指导\n* 评审员仅提供建议——如果您认为反馈不正确，请解释分歧"
+      "en-US": "**3. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.",
+      "zh-Hans": "**3. 类型一致性：** 您在后续任务中使用的类型、方法签名和属性名称是否与早期任务中定义的一致？在任务 3 中调用的函数 `clearLayers()` 但在任务 7 中变为 `clearFullLayers()` 就是一个错误。"
+    },
+    {
+      "en-US": "If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.",
+      "zh-Hans": "如果发现问题，请直接修复。无需重新审查——只需修复并继续。如果发现没有任务对应的规范要求，请添加任务。"
     },
     {
       "en-US": "## Execution Handoff",

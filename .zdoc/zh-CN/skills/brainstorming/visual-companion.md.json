@@ -43,8 +43,8 @@
       "zh-Hans": "## 工作原理"
     },
     {
-      "en-US": "The server watches a directory for HTML files and serves the newest one to the browser. You write HTML content, the user sees it in their browser and can click to select options. Selections are recorded to a `.events` file that you read on your next turn.",
-      "zh-Hans": "服务器监视一个目录中的 HTML 文件，并将最新的文件提供给浏览器。您编写 HTML 内容，用户在浏览器中查看并可以点击选择选项。选择记录到 `.events` 文件中，您在下一轮可以读取。"
+      "en-US": "The server watches a directory for HTML files and serves the newest one to the browser. You write HTML content to `screen_dir`, the user sees it in their browser and can click to select options. Selections are recorded to `state_dir/events` that you read on your next turn.",
+      "zh-Hans": "服务器监视一个目录中的 HTML 文件，并将最新的一个提供给浏览器。你将 HTML 内容写入 `screen_dir`，用户即可在浏览器中查看并点击选择选项。选择记录会被保存到 `state_dir/events`，你可以在下一轮读取。"
     },
     {
       "en-US": "**Content fragments vs full documents:** If your HTML file starts with `<!DOCTYPE` or `<html`, the server serves it as-is (just injects the helper script). Otherwise, the server automatically wraps your content in the frame template — adding the header, CSS theme, selection indicator, and all interactive infrastructure. **Write content fragments by default.** Only write full documents when you need complete control over the page.",
@@ -55,16 +55,16 @@
       "zh-Hans": "## 启动会话"
     },
     {
-      "en-US": "```bash\n# Start server with persistence (mockups saved to project)\nscripts/start-server.sh --project-dir /path/to/project\n\n# Returns: {\"type\":\"server-started\",\"port\":52341,\"url\":\"http://localhost:52341\",\n#           \"screen_dir\":\"/path/to/project/.superpowers/brainstorm/12345-1706000000\"}\n```",
-      "zh-Hans": "```bash\n# Start server with persistence (mockups saved to project)\nscripts/start-server.sh --project-dir /path/to/project\n\n# Returns: {\"type\":\"server-started\",\"port\":52341,\"url\":\"http://localhost:52341\",\n#           \"screen_dir\":\"/path/to/project/.superpowers/brainstorm/12345-1706000000\"}\n```"
+      "en-US": "```bash\n# Start server with persistence (mockups saved to project)\nscripts/start-server.sh --project-dir /path/to/project\n\n# Returns: {\"type\":\"server-started\",\"port\":52341,\"url\":\"http://localhost:52341\",\n#           \"screen_dir\":\"/path/to/project/.superpowers/brainstorm/12345-1706000000/content\",\n#           \"state_dir\":\"/path/to/project/.superpowers/brainstorm/12345-1706000000/state\"}\n```",
+      "zh-Hans": "```bash\n# Start server with persistence (mockups saved to project)\nscripts/start-server.sh --project-dir /path/to/project\n\n# Returns: {\"type\":\"server-started\",\"port\":52341,\"url\":\"http://localhost:52341\",\n#           \"screen_dir\":\"/path/to/project/.superpowers/brainstorm/12345-1706000000/content\",\n#           \"state_dir\":\"/path/to/project/.superpowers/brainstorm/12345-1706000000/state\"}\n```"
     },
     {
-      "en-US": "Save `screen_dir` from the response. Tell user to open the URL.",
-      "zh-Hans": "从响应中保存 `screen_dir`。告诉用户打开 URL。"
+      "en-US": "Save `screen_dir` and `state_dir` from the response. Tell user to open the URL.",
+      "zh-Hans": "从响应中保存 `screen_dir` 和 `state_dir`。告知用户打开 URL。"
     },
     {
-      "en-US": "**Finding connection info:** The server writes its startup JSON to `$SCREEN_DIR/.server-info`. If you launched the server in the background and didn't capture stdout, read that file to get the URL and port. When using `--project-dir`, check `<project>/.superpowers/brainstorm/` for the session directory.",
-      "zh-Hans": "**查找连接信息：** 服务器将其启动 JSON 写入 `$SCREEN_DIR/.server-info`。如果您在后台启动了服务器且未捕获 stdout，请读取该文件以获取 URL 和端口。使用 `--project-dir` 时，检查 `<project>/.superpowers/brainstorm/` 以获取会话目录。"
+      "en-US": "**Finding connection info:** The server writes its startup JSON to `$STATE_DIR/server-info`. If you launched the server in the background and didn't capture stdout, read that file to get the URL and port. When using `--project-dir`, check `<project>/.superpowers/brainstorm/` for the session directory.",
+      "zh-Hans": "**查找连接信息：** 服务器会将其启动 JSON 写入 `$STATE_DIR/server-info`。如果你在后台启动了服务器且未捕获标准输出，请读取该文件以获取 URL 和端口。使用 `--project-dir` 时，请检查 `<project>/.superpowers/brainstorm/` 以找到会话目录。"
     },
     {
       "en-US": "**Note:** Pass the project root as `--project-dir` so mockups persist in `.superpowers/brainstorm/` and survive server restarts. Without it, files go to `/tmp` and get cleaned up. Remind the user to add `.superpowers/` to `.gitignore` if it's not already there.",
@@ -91,8 +91,8 @@
       "zh-Hans": "```bash\n# Windows auto-detects and uses foreground mode, which blocks the tool call.\n# Use run_in_background: true on the Bash tool call so the server survives\n# across conversation turns.\nscripts/start-server.sh --project-dir /path/to/project\n```"
     },
     {
-      "en-US": "When calling this via the Bash tool, set `run_in_background: true`. Then read `$SCREEN_DIR/.server-info` on the next turn to get the URL and port.",
-      "zh-Hans": "通过 Bash 工具调用时，请设置 `run_in_background: true`。然后在下一轮读取 `$SCREEN_DIR/.server-info` 以获取 URL 和端口。"
+      "en-US": "When calling this via the Bash tool, set `run_in_background: true`. Then read `$STATE_DIR/server-info` on the next turn to get the URL and port.",
+      "zh-Hans": "通过 Bash 工具调用此功能时，请设置 `run_in_background: true`。然后在下一轮读取 `$STATE_DIR/server-info` 以获取 URL 和端口。"
     },
     {
       "en-US": "**Codex:**",
@@ -131,8 +131,8 @@
       "zh-Hans": "## 循环流程"
     },
     {
-      "en-US": "1. **Check server is alive**, then **write HTML** to a new file in `screen_dir`:\n   - Before each write, check that `$SCREEN_DIR/.server-info` exists. If it doesn't (or `.server-stopped` exists), the server has shut down — restart it with `start-server.sh` before continuing. The server auto-exits after 30 minutes of inactivity.\n   - Use semantic filenames: `platform.html`, `visual-style.html`, `layout.html`\n   - **Never reuse filenames** — each screen gets a fresh file\n   - Use Write tool — **never use cat/heredoc** (dumps noise into terminal)\n   - Server automatically serves the newest file\n\n2. **Tell user what to expect and end your turn:**\n   - Remind them of the URL (every step, not just first)\n   - Give a brief text summary of what's on screen (e.g., \"Showing 3 layout options for the homepage\")\n   - Ask them to respond in the terminal: \"Take a look and let me know what you think. Click to select an option if you'd like.\"\n\n3. **On your next turn** — after the user responds in the terminal:\n   - Read `$SCREEN_DIR/.events` if it exists — this contains the user's browser interactions (clicks, selections) as JSON lines\n   - Merge with the user's terminal text to get the full picture\n   - The terminal message is the primary feedback; `.events` provides structured interaction data\n\n4. **Iterate or advance** — if feedback changes current screen, write a new file (e.g., `layout-v2.html`). Only move to the next question when the current step is validated.\n\n5. **Unload when returning to terminal** — when the next step doesn't need the browser (e.g., a clarifying question, a tradeoff discussion), push a waiting screen to clear the stale content:\n\n   ```html\n   <!-- filename: waiting.html (or waiting-2.html, etc.) -->\n   <div style=\"display:flex;align-items:center;justify-content:center;min-height:60vh\">\n     <p class=\"subtitle\">Continuing in terminal...</p>\n   </div>\n   ```\n\n   This prevents the user from staring at a resolved choice while the conversation has moved on. When the next visual question comes up, push a new content file as usual.\n\n6. Repeat until done.",
-      "zh-Hans": "1. **检查服务器是否存活**，然后**将 HTML 写入** `screen_dir` 中的新文件：\n   * 每次写入前，检查 `$SCREEN_DIR/.server-info` 是否存在。如果不存在（或 `.server-stopped` 存在），则服务器已关闭——在继续之前使用 `start-server.sh` 重新启动它。服务器在 30 分钟不活动后自动退出。\n   * 使用语义化文件名：`platform.html`、`visual-style.html`、`layout.html`\n   * **切勿重复使用文件名**——每个屏幕使用一个新文件\n   * 使用 Write 工具——**切勿使用 cat/heredoc**（会在终端中产生噪音）\n   * 服务器自动提供最新的文件\n\n2. **告诉用户预期结果并结束您的回合：**\n   * 提醒他们 URL（每一步都要提醒，不仅仅是第一步）\n   * 简要总结屏幕上的内容（例如，“显示首页的 3 种布局选项”）\n   * 要求他们在终端中回复：“看一下，告诉我你的想法。如果愿意，请点击选择一个选项。”\n\n3. **在您的下一回合**——用户在终端中回复后：\n   * 如果存在，读取 `$SCREEN_DIR/.events`——这包含用户的浏览器交互（点击、选择）作为 JSON 行\n   * 与用户的终端文本合并，以获得完整情况\n   * 终端消息是主要反馈；`.events` 提供结构化的交互数据\n\n4. **迭代或推进**——如果反馈改变了当前屏幕，则写入一个新文件（例如 `layout-v2.html`）。仅当当前步骤得到验证后才进入下一个问题。\n\n5. **返回终端时卸载**——当下一步不需要浏览器时（例如，澄清性问题、权衡讨论），推送一个等待屏幕以清除陈旧内容：\n\n   ```html\n   <!-- filename: waiting.html (或 waiting-2.html 等) -->\n   <div style=\"display:flex;align-items:center;justify-content:center;min-height:60vh\">\n     <p class=\"subtitle\">继续在终端中...</p>\n   </div>\n   ```\n\n   这可以防止用户在对话已继续进行时盯着已解决的选项。当下一个视觉问题出现时，照常推送新的内容文件。\n\n6. 重复直到完成。"
+      "en-US": "1. **Check server is alive**, then **write HTML** to a new file in `screen_dir`:\n   - Before each write, check that `$STATE_DIR/server-info` exists. If it doesn't (or `$STATE_DIR/server-stopped` exists), the server has shut down — restart it with `start-server.sh` before continuing. The server auto-exits after 30 minutes of inactivity.\n   - Use semantic filenames: `platform.html`, `visual-style.html`, `layout.html`\n   - **Never reuse filenames** — each screen gets a fresh file\n   - Use Write tool — **never use cat/heredoc** (dumps noise into terminal)\n   - Server automatically serves the newest file\n\n2. **Tell user what to expect and end your turn:**\n   - Remind them of the URL (every step, not just first)\n   - Give a brief text summary of what's on screen (e.g., \"Showing 3 layout options for the homepage\")\n   - Ask them to respond in the terminal: \"Take a look and let me know what you think. Click to select an option if you'd like.\"\n\n3. **On your next turn** — after the user responds in the terminal:\n   - Read `$STATE_DIR/events` if it exists — this contains the user's browser interactions (clicks, selections) as JSON lines\n   - Merge with the user's terminal text to get the full picture\n   - The terminal message is the primary feedback; `state_dir/events` provides structured interaction data\n\n4. **Iterate or advance** — if feedback changes current screen, write a new file (e.g., `layout-v2.html`). Only move to the next question when the current step is validated.\n\n5. **Unload when returning to terminal** — when the next step doesn't need the browser (e.g., a clarifying question, a tradeoff discussion), push a waiting screen to clear the stale content:\n\n   ```html\n   <!-- filename: waiting.html (or waiting-2.html, etc.) -->\n   <div style=\"display:flex;align-items:center;justify-content:center;min-height:60vh\">\n     <p class=\"subtitle\">Continuing in terminal...</p>\n   </div>\n   ```\n\n   This prevents the user from staring at a resolved choice while the conversation has moved on. When the next visual question comes up, push a new content file as usual.\n\n6. Repeat until done.",
+      "zh-Hans": "1. **检查服务器是否存活**，然后**将 HTML 写入** `screen_dir` 中的一个新文件：\n   * 每次写入前，检查 `$STATE_DIR/server-info` 是否存在。如果不存在（或存在 `$STATE_DIR/server-stopped`），则表示服务器已关闭——请使用 `start-server.sh` 重新启动它，然后再继续。服务器在 30 分钟无活动后会自动退出。\n   * 使用语义化的文件名：`platform.html`、`visual-style.html`、`layout.html`\n   * **切勿重复使用文件名**——每个界面都应使用一个新文件\n   * 使用 Write 工具——**切勿使用 cat/heredoc**（会在终端中输出冗余信息）\n   * 服务器会自动提供最新的文件\n\n2. **告知用户预期内容并结束你的回合：**\n   * 提醒他们 URL（每一步都要提醒，不仅仅是第一步）\n   * 简要总结屏幕上的内容（例如：“为主页展示了 3 种布局选项”）\n   * 请他们在终端中回应：“看一下并告诉我你的想法。如果愿意，可以点击选择一个选项。”\n\n3. **在你的下一轮**——用户在终端中回应后：\n   * 如果 `$STATE_DIR/events` 存在，请读取它——该文件包含用户的浏览器交互（点击、选择），格式为 JSON 行\n   * 将其与用户的终端文本合并，以获取完整情况\n   * 终端消息是主要反馈；`state_dir/events` 提供结构化的交互数据\n\n4. **迭代或推进**——如果反馈改变了当前界面，请写入一个新文件（例如 `layout-v2.html`）。只有在当前步骤得到确认后，才进入下一个问题。\n\n5. **返回终端时卸载**——当下一步不需要浏览器时（例如澄清问题、权衡讨论），推送一个等待界面以清除过时内容：\n\n   ```html\n   <!-- filename: waiting.html (或 waiting-2.html 等) -->\n   <div style=\"display:flex;align-items:center;justify-content:center;min-height:60vh\">\n     <p class=\"subtitle\">正在切换至终端...</p>\n   </div>\n   ```\n\n   这可以避免用户在对话已推进时仍盯着已解决的选项。当下一个视觉问题出现时，照常推送新的内容文件。\n\n6. 重复直到完成。"
     },
     {
       "en-US": "## Writing Content Fragments",
@@ -231,8 +231,8 @@
       "zh-Hans": "## 浏览器事件格式"
     },
     {
-      "en-US": "When the user clicks options in the browser, their interactions are recorded to `$SCREEN_DIR/.events` (one JSON object per line). The file is cleared automatically when you push a new screen.",
-      "zh-Hans": "当用户在浏览器中点击选项时，他们的交互记录到 `$SCREEN_DIR/.events`（每行一个 JSON 对象）。当您推送新屏幕时，该文件会自动清除。"
+      "en-US": "When the user clicks options in the browser, their interactions are recorded to `$STATE_DIR/events` (one JSON object per line). The file is cleared automatically when you push a new screen.",
+      "zh-Hans": "当用户在浏览器中点击选项时，他们的交互会被记录到 `$STATE_DIR/events`（每行一个 JSON 对象）。当你推送新界面时，该文件会自动清空。"
     },
     {
       "en-US": "```jsonl\n{\"type\":\"click\",\"choice\":\"a\",\"text\":\"Option A - Simple Layout\",\"timestamp\":1706000101}\n{\"type\":\"click\",\"choice\":\"c\",\"text\":\"Option C - Complex Grid\",\"timestamp\":1706000108}\n{\"type\":\"click\",\"choice\":\"b\",\"text\":\"Option B - Hybrid\",\"timestamp\":1706000115}\n```",
@@ -243,8 +243,8 @@
       "zh-Hans": "完整的事件流显示了用户的探索路径——他们可能在确定前点击了多个选项。最后的 `choice` 事件通常是最终选择，但点击模式可能揭示值得询问的犹豫或偏好。"
     },
     {
-      "en-US": "If `.events` doesn't exist, the user didn't interact with the browser — use only their terminal text.",
-      "zh-Hans": "如果 `.events` 不存在，则用户没有与浏览器交互——仅使用他们的终端文本。"
+      "en-US": "If `$STATE_DIR/events` doesn't exist, the user didn't interact with the browser — use only their terminal text.",
+      "zh-Hans": "如果 `$STATE_DIR/events` 不存在，则表示用户未与浏览器交互——请仅使用他们的终端文本。"
     },
     {
       "en-US": "## Design Tips",
@@ -267,8 +267,8 @@
       "zh-Hans": "## 清理"
     },
     {
-      "en-US": "```bash\nscripts/stop-server.sh $SCREEN_DIR\n```",
-      "zh-Hans": "```bash\nscripts/stop-server.sh $SCREEN_DIR\n```"
+      "en-US": "```bash\nscripts/stop-server.sh $SESSION_DIR\n```",
+      "zh-Hans": "```bash\nscripts/stop-server.sh $SESSION_DIR\n```"
     },
     {
       "en-US": "If the session used `--project-dir`, mockup files persist in `.superpowers/brainstorm/` for later reference. Only `/tmp` sessions get deleted on stop.",

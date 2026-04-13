@@ -1,0 +1,534 @@
+{
+  "sourceFile": "docs/superpowers/plans/2026-03-23-codex-app-compatibility.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Codex App Compatibility Implementation Plan",
+      "zh-Hans": "# Codex 应用兼容性实现方案"
+    },
+    {
+      "en-US": "> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.",
+      "zh-Hans": "> **面向智能体工作者：** 必需子技能：使用 superpowers:subagent-driven-development（推荐）或 superpowers:executing-plans 来逐项任务实现此方案。步骤使用复选框（`- [ ]`）语法进行跟踪。"
+    },
+    {
+      "en-US": "**Goal:** Make `using-git-worktrees`, `finishing-a-development-branch`, and related skills work in the Codex App's sandboxed worktree environment without breaking existing behavior.",
+      "zh-Hans": "**目标：** 使 `using-git-worktrees`、`finishing-a-development-branch` 及相关技能能在 Codex 应用的沙盒化工作树环境中工作，且不破坏现有行为。"
+    },
+    {
+      "en-US": "**Architecture:** Read-only environment detection (`git-dir` vs `git-common-dir`) at the start of two skills. If already in a linked worktree, skip creation. If on detached HEAD, emit a handoff payload instead of the 4-option menu. Sandbox fallback catches permission errors during worktree creation.",
+      "zh-Hans": "**架构：** 在两项技能开始时进行只读环境检测（`git-dir` 与 `git-common-dir`）。如果已处于链接的工作树中，则跳过创建。如果处于分离的 HEAD 状态，则发出一个交接负载，而不是显示 4 选项菜单。沙盒回退机制会在工作树创建期间捕获权限错误。"
+    },
+    {
+      "en-US": "**Tech Stack:** Git, Markdown (skill files are instruction documents, not executable code)",
+      "zh-Hans": "**技术栈：** Git，Markdown（技能文件是指令文档，非可执行代码）"
+    },
+    {
+      "en-US": "**Spec:** `docs/superpowers/specs/2026-03-23-codex-app-compatibility-design.md`",
+      "zh-Hans": "**规格说明：** `docs/superpowers/specs/2026-03-23-codex-app-compatibility-design.md`"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "## File Structure",
+      "zh-Hans": "## 文件结构"
+    },
+    {
+      "en-US": "| File | Responsibility | Action |\n|---|---|---|\n| `skills/using-git-worktrees/SKILL.md` | Worktree creation + isolation | Add Step 0 detection + sandbox fallback |\n| `skills/finishing-a-development-branch/SKILL.md` | Branch finishing workflow | Add Step 1.5 detection + cleanup guard |\n| `skills/subagent-driven-development/SKILL.md` | Plan execution with subagents | Update Integration description |\n| `skills/executing-plans/SKILL.md` | Plan execution inline | Update Integration description |\n| `skills/using-superpowers/references/codex-tools.md` | Codex platform reference | Add detection + finishing docs |",
+      "zh-Hans": "| 文件 | 职责 | 操作 |\n|---|---|---|\n| `skills/using-git-worktrees/SKILL.md` | 工作树创建 + 隔离 | 添加步骤 0 检测 + 沙盒回退 |\n| `skills/finishing-a-development-branch/SKILL.md` | 分支完成工作流 | 添加步骤 1.5 检测 + 清理防护 |\n| `skills/subagent-driven-development/SKILL.md` | 使用子智能体执行方案 | 更新集成描述 |\n| `skills/executing-plans/SKILL.md` | 内联执行方案 | 更新集成描述 |\n| `skills/using-superpowers/references/codex-tools.md` | Codex 平台参考 | 添加检测 + 完成文档 |"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 1: Add Step 0 to `using-git-worktrees`",
+      "zh-Hans": "### 任务 1：添加步骤 0 到 `using-git-worktrees`"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `skills/using-git-worktrees/SKILL.md:14-15` (insert after Overview, before Directory Selection Process)\n\n- [ ] **Step 1: Read the current skill file**",
+      "zh-Hans": "* 修改：`skills/using-git-worktrees/SKILL.md:14-15`（在概述之后、目录选择过程之前插入）\n\n* \\[ ] **步骤 1：读取当前技能文件**"
+    },
+    {
+      "en-US": "Read `skills/using-git-worktrees/SKILL.md` in full. Identify the exact insertion point: after the \"Announce at start\" line (line 14) and before \"## Directory Selection Process\" (line 16).",
+      "zh-Hans": "完整读取 `skills/using-git-worktrees/SKILL.md`。确定确切的插入点：在“开始宣布”行（第 14 行）之后，“## 目录选择过程”（第 16 行）之前。"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Insert Step 0 section**",
+      "zh-Hans": "* \\[ ] **步骤 2：插入步骤 0 部分**"
+    },
+    {
+      "en-US": "Insert the following between the Overview section and \"## Directory Selection Process\":",
+      "zh-Hans": "在概述部分和“## 目录选择过程”之间插入以下内容："
+    },
+    {
+      "en-US": "```markdown\n## Step 0: Check if Already in an Isolated Workspace\n\nBefore creating a worktree, check if one already exists:\n\n```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\nBRANCH=$(git branch --show-current)\n```",
+      "zh-Hans": "````markdown\n## 步骤 0: 检查是否已处于独立工作区\n\n在创建工作树之前，检查是否已存在一个：\n\n```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\nBRANCH=$(git branch --show-current)\n\n````"
+    },
+    {
+      "en-US": "**If `GIT_DIR` differs from `GIT_COMMON`:** You are already inside a linked worktree (created by the Codex App, Claude Code's Agent tool, a previous skill run, or the user). Do NOT create another worktree. Instead:",
+      "zh-Hans": "**如果 `GIT_DIR` 与 `GIT_COMMON` 不同：** 您已处于一个链接的工作树中（由 Codex 应用、Claude Code 的 Agent 工具、之前的技能运行或用户创建）。请勿再创建一个工作树。而是："
+    },
+    {
+      "en-US": "1. Run project setup (auto-detect package manager as in \"Run Project Setup\" below)\n2. Verify clean baseline (run tests as in \"Verify Clean Baseline\" below)\n3. Report with branch state:\n   - On a branch: \"Already in an isolated workspace at `<path>` on branch `<name>`. Tests passing. Ready to implement.\"\n   - Detached HEAD: \"Already in an isolated workspace at `<path>` (detached HEAD, externally managed). Tests passing. Note: branch creation needed at finish time. Ready to implement.\"",
+      "zh-Hans": "1. 运行项目设置（自动检测包管理器，如下方“运行项目设置”所述）\n2. 验证干净基线（如下方“验证干净基线”所述运行测试）\n3. 报告分支状态：\n   * 在分支上：“已在 `<path>` 的隔离工作空间中，位于分支 `<name>`。测试通过。准备实施。”\n   * 分离的 HEAD：“已在 `<path>` 的隔离工作空间中（分离的 HEAD，外部管理）。测试通过。注意：完成时需要创建分支。准备实施。”"
+    },
+    {
+      "en-US": "After reporting, STOP. Do not continue to Directory Selection or Creation Steps.",
+      "zh-Hans": "报告后，停止。不要继续到目录选择或创建步骤。"
+    },
+    {
+      "en-US": "**If `GIT_DIR` equals `GIT_COMMON`:** Proceed with the full worktree creation flow below.",
+      "zh-Hans": "**如果 `GIT_DIR` 等于 `GIT_COMMON`：** 继续下面的完整工作树创建流程。"
+    },
+    {
+      "en-US": "**Sandbox fallback:** If you proceed to Creation Steps but `git worktree add -b` fails with a permission error (e.g., \"Operation not permitted\"), treat this as a late-detected restricted environment. Fall back to the behavior above — run setup and baseline tests in the current directory, report accordingly, and STOP.",
+      "zh-Hans": "**沙盒回退：** 如果您继续到创建步骤但 `git worktree add -b` 因权限错误（例如，“Operation not permitted”）而失败，则将此视为检测到受限环境。回退到上述行为——在当前目录中运行设置和基线测试，相应报告，然后停止。"
+    },
+    {
+      "en-US": "```\n\n- [ ] **Step 3: Verify the insertion**\n\nRead the file again. Confirm:\n- Step 0 appears between Overview and Directory Selection Process\n- The rest of the file (Directory Selection, Safety Verification, Creation Steps, etc.) is unchanged\n- No duplicate sections or broken markdown\n\n- [ ] **Step 4: Commit**\n\n```bash\ngit add skills/using-git-worktrees/SKILL.md\ngit commit -m \"feat(using-git-worktrees): add Step 0 environment detection (PRI-823)\n\nSkip worktree creation when already in a linked worktree. Includes\nsandbox fallback for permission errors on git worktree add.\"\n```",
+      "zh-Hans": "````\n\n- [ ] **步骤 3: 验证插入内容**\n\n再次读取文件。确认：\n- 步骤 0 出现在\"概述\"和\"目录选择流程\"之间\n- 文件的其余部分（目录选择、安全验证、创建步骤等）保持不变\n- 没有重复的章节或损坏的 Markdown\n\n- [ ] **步骤 4: 提交**\n\n```bash\ngit add skills/using-git-worktrees/SKILL.md\ngit commit -m \"feat(using-git-worktrees): add Step 0 environment detection (PRI-823)\n\nSkip worktree creation when already in a linked worktree. Includes\nsandbox fallback for permission errors on git worktree add.\"\n````"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 2: Update `using-git-worktrees` Integration section",
+      "zh-Hans": "### 任务 2：更新 `using-git-worktrees` 集成部分"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `skills/using-git-worktrees/SKILL.md:211-215` (Integration > Called by)\n\n- [ ] **Step 1: Update the three \"Called by\" entries**",
+      "zh-Hans": "* 修改：`skills/using-git-worktrees/SKILL.md:211-215`（集成 > 调用者）\n\n* \\[ ] **步骤 1：更新三个“调用者”条目**"
+    },
+    {
+      "en-US": "Change lines 212-214 from:",
+      "zh-Hans": "将第 212-214 行从："
+    },
+    {
+      "en-US": "```markdown\n- **brainstorming** (Phase 4) - REQUIRED when design is approved and implementation follows\n- **subagent-driven-development** - REQUIRED before executing any tasks\n- **executing-plans** - REQUIRED before executing any tasks\n```",
+      "zh-Hans": "```markdown\n- **头脑风暴**（第四阶段）- 设计方案获批且即将实施时 **必须执行**\n- **子代理驱动开发** - 执行任何任务前 **必须执行**\n- **执行计划** - 执行任何任务前 **必须执行**\n```"
+    },
+    {
+      "en-US": "To:",
+      "zh-Hans": "更改为："
+    },
+    {
+      "en-US": "```markdown\n- **brainstorming** - REQUIRED: Ensures isolated workspace (creates one or verifies existing)\n- **subagent-driven-development** - REQUIRED: Ensures isolated workspace (creates one or verifies existing)\n- **executing-plans** - REQUIRED: Ensures isolated workspace (creates one or verifies existing)\n```",
+      "zh-Hans": "```markdown\n- **头脑风暴** - 必需：确保隔离的工作空间（创建一个或验证现有空间）\n- **子代理驱动开发** - 必需：确保隔离的工作空间（创建一个或验证现有空间）\n- **执行计划** - 必需：确保隔离的工作空间（创建一个或验证现有空间）\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Verify the Integration section**",
+      "zh-Hans": "* \\[ ] **步骤 2：验证集成部分**"
+    },
+    {
+      "en-US": "Read the Integration section. Confirm all three entries are updated, \"Pairs with\" is unchanged.",
+      "zh-Hans": "阅读集成部分。确认所有三个条目都已更新，“配对使用”部分保持不变。"
+    },
+    {
+      "en-US": "- [ ] **Step 3: Commit**",
+      "zh-Hans": "* \\[ ] **步骤 3：提交**"
+    },
+    {
+      "en-US": "```bash\ngit add skills/using-git-worktrees/SKILL.md\ngit commit -m \"docs(using-git-worktrees): update Integration descriptions (PRI-823)\n\nClarify that skill ensures a workspace exists, not that it always creates one.\"\n```",
+      "zh-Hans": "```bash\ngit add skills/using-git-worktrees/SKILL.md\ngit commit -m \"docs(using-git-worktrees): update Integration descriptions (PRI-823)\n\nClarify that skill ensures a workspace exists, not that it always creates one.\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 3: Add Step 1.5 to `finishing-a-development-branch`",
+      "zh-Hans": "### 任务 3：添加步骤 1.5 到 `finishing-a-development-branch`"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `skills/finishing-a-development-branch/SKILL.md:38` (insert after Step 1, before Step 2)\n\n- [ ] **Step 1: Read the current skill file**",
+      "zh-Hans": "* 修改：`skills/finishing-a-development-branch/SKILL.md:38`（在步骤 1 之后、步骤 2 之前插入）\n\n* \\[ ] **步骤 1：读取当前技能文件**"
+    },
+    {
+      "en-US": "Read `skills/finishing-a-development-branch/SKILL.md` in full. Identify the insertion point: after \"**If tests pass:** Continue to Step 2.\" (line 38) and before \"### Step 2: Determine Base Branch\" (line 40).",
+      "zh-Hans": "完整读取 `skills/finishing-a-development-branch/SKILL.md`。确定插入点：在“**如果测试通过：** 继续步骤 2。”（第 38 行）之后，“### 步骤 2：确定基础分支”（第 40 行）之前。"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Insert Step 1.5 section**",
+      "zh-Hans": "* \\[ ] **步骤 2：插入步骤 1.5 部分**"
+    },
+    {
+      "en-US": "Insert the following between Step 1 and Step 2:",
+      "zh-Hans": "在步骤 1 和步骤 2 之间插入以下内容："
+    },
+    {
+      "en-US": "```markdown\n### Step 1.5: Detect Environment\n\n```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\nBRANCH=$(git branch --show-current)\n```",
+      "zh-Hans": "````markdown\n### 步骤 1.5: 检测环境\n\n```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\nBRANCH=$(git branch --show-current)\n````"
+    },
+    {
+      "en-US": "**Path A — `GIT_DIR` differs from `GIT_COMMON` AND `BRANCH` is empty (externally managed worktree, detached HEAD):**",
+      "zh-Hans": "**路径 A — `GIT_DIR` 与 `GIT_COMMON` 不同 且 `BRANCH` 为空（外部管理工作树，分离的 HEAD）：**"
+    },
+    {
+      "en-US": "First, ensure all work is staged and committed (`git add` + `git commit`).",
+      "zh-Hans": "首先，确保所有工作都已暂存并提交（`git add` + `git commit`）。"
+    },
+    {
+      "en-US": "Then present this to the user (do NOT present the 4-option menu):",
+      "zh-Hans": "然后向用户展示以下内容（请勿展示 4 选项菜单）："
+    },
+    {
+      "en-US": "```\nImplementation complete. All tests passing.\nCurrent HEAD: <full-commit-sha>\n\nThis workspace is externally managed (detached HEAD).\nI cannot create branches, push, or open PRs from here.\n\n⚠ These commits are on a detached HEAD. If you do not create a branch,\nthey may be lost when this workspace is cleaned up.\n\nIf your host application provides these controls:\n- \"Create branch\" — to name a branch, then commit/push/PR\n- \"Hand off to local\" — to move changes to your local checkout\n\nSuggested branch name: <ticket-id/short-description>\nSuggested commit message: <summary-of-work>\n```",
+      "zh-Hans": "```\n实施完成。所有测试通过。\n当前 HEAD：<完整提交哈希>\n\n此工作空间为外部管理（分离的 HEAD）。\n我无法在此处创建分支、推送或打开 PR。\n\n⚠ 这些提交位于分离的 HEAD 上。如果不创建分支，\n当此工作空间被清理时，它们可能会丢失。\n\n如果您的宿主应用程序提供以下控制：\n- \"创建分支\" — 命名分支，然后提交/推送/PR\n- \"移交至本地\" — 将更改移动到您的本地检出\n\n建议的分支名称：<工单ID/简短描述>\n建议的提交消息：<工作摘要>\n```"
+    },
+    {
+      "en-US": "Branch name: use ticket ID if available (e.g., `pri-823/codex-compat`), otherwise slugify the first 5 words of the plan title, otherwise omit. Avoid sensitive content in branch names.",
+      "zh-Hans": "分支名称：如果可用则使用工单 ID（例如 `pri-823/codex-compat`），否则将方案标题的前 5 个单词转换为短横线分隔格式，否则省略。避免在分支名称中包含敏感内容。"
+    },
+    {
+      "en-US": "Skip to Step 5 (cleanup is a no-op — see guard below).",
+      "zh-Hans": "跳转到步骤 5（清理操作无效——参见下面的防护）。"
+    },
+    {
+      "en-US": "**Path B — `GIT_DIR` differs from `GIT_COMMON` AND `BRANCH` exists (externally managed worktree, named branch):**",
+      "zh-Hans": "**路径 B — `GIT_DIR` 与 `GIT_COMMON` 不同 且 `BRANCH` 存在（外部管理工作树，命名分支）：**"
+    },
+    {
+      "en-US": "Proceed to Step 2 and present the 4-option menu as normal.",
+      "zh-Hans": "继续到步骤 2 并正常展示 4 选项菜单。"
+    },
+    {
+      "en-US": "**Path C — `GIT_DIR` equals `GIT_COMMON` (normal environment):**",
+      "zh-Hans": "**路径 C — `GIT_DIR` 等于 `GIT_COMMON`（正常环境）：**"
+    },
+    {
+      "en-US": "Proceed to Step 2 and present the 4-option menu as normal.",
+      "zh-Hans": "继续到步骤 2 并正常展示 4 选项菜单。"
+    },
+    {
+      "en-US": "```\n\n- [ ] **Step 3: Verify the insertion**\n\nRead the file again. Confirm:\n- Step 1.5 appears between Step 1 and Step 2\n- Steps 2-5 are unchanged\n- Path A handoff includes commit SHA and data loss warning\n- Paths B and C proceed to Step 2 normally\n\n- [ ] **Step 4: Commit**\n\n```bash\ngit add skills/finishing-a-development-branch/SKILL.md\ngit commit -m \"feat(finishing-a-development-branch): add Step 1.5 environment detection (PRI-823)\n\nDetect externally managed worktrees with detached HEAD and emit handoff\npayload instead of 4-option menu. Includes commit SHA and data loss warning.\"\n```",
+      "zh-Hans": "````\n\n- [ ] **步骤 3：验证插入内容**\n\n再次读取文件。确认：\n- 步骤 1.5 出现在步骤 1 和步骤 2 之间\n- 步骤 2-5 保持不变\n- 路径 A 移交包含提交 SHA 和数据丢失警告\n- 路径 B 和 C 正常进行到步骤 2\n\n- [ ] **步骤 4：提交**\n\n```bash\ngit add skills/finishing-a-development-branch/SKILL.md\ngit commit -m \"feat(finishing-a-development-branch): add Step 1.5 environment detection (PRI-823)\n\nDetect externally managed worktrees with detached HEAD and emit handoff\npayload instead of 4-option menu. Includes commit SHA and data loss warning.\"\n````"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 4: Add Step 5 cleanup guard to `finishing-a-development-branch`",
+      "zh-Hans": "### 任务 4：添加步骤 5 清理防护到 `finishing-a-development-branch`"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `skills/finishing-a-development-branch/SKILL.md` (Step 5: Cleanup Worktree — find by section heading, line numbers will have shifted after Task 3)\n\n- [ ] **Step 1: Read the current Step 5 section**",
+      "zh-Hans": "* 修改：`skills/finishing-a-development-branch/SKILL.md`（步骤 5：清理工作树——通过章节标题查找，在任务 3 之后行号可能已改变）\n\n* \\[ ] **步骤 1：读取当前步骤 5 部分**"
+    },
+    {
+      "en-US": "Find the \"### Step 5: Cleanup Worktree\" section in `skills/finishing-a-development-branch/SKILL.md` (line numbers will have shifted after Task 3's insertion). The current Step 5 is:",
+      "zh-Hans": "在 `skills/finishing-a-development-branch/SKILL.md` 中找到“### 步骤 5：清理工作树”部分（在任务 3 插入后行号可能已改变）。当前步骤 5 是："
+    },
+    {
+      "en-US": "```markdown\n### Step 5: Cleanup Worktree\n\n**For Options 1, 2, 4:**\n\nCheck if in worktree:\n```bash\ngit worktree list | grep $(git branch --show-current)\n```",
+      "zh-Hans": "````markdown\n### 步骤 5：清理工作树\n\n**对于选项 1、2、4：**\n\n检查是否在工作树中：\n```bash\ngit worktree list | grep $(git branch --show-current)\n````"
+    },
+    {
+      "en-US": "If yes:",
+      "zh-Hans": "如果是："
+    },
+    {
+      "en-US": "```bash\ngit worktree remove <worktree-path>\n```",
+      "zh-Hans": "```bash\ngit worktree remove <worktree-path>\n```"
+    },
+    {
+      "en-US": "**For Option 3:** Keep worktree.",
+      "zh-Hans": "**对于选项 3：** 保留工作树。"
+    },
+    {
+      "en-US": "```\n\n- [ ] **Step 2: Add the cleanup guard before existing logic**\n\nReplace the Step 5 section with:\n\n```markdown\n### Step 5: Cleanup Worktree\n\n**First, check if worktree is externally managed:**\n\n```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\n```",
+      "zh-Hans": "````\n\n- [ ] **Step 2: Add the cleanup guard before existing logic**\n\nReplace the Step 5 section with:\n\n```markdown\n### Step 5: Cleanup Worktree\n\n**First, check if worktree is externally managed:**\n\n```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\n````"
+    },
+    {
+      "en-US": "If `GIT_DIR` differs from `GIT_COMMON`: skip worktree removal — the host environment owns this workspace.",
+      "zh-Hans": "如果 `GIT_DIR` 与 `GIT_COMMON` 不同：跳过工作树移除——主机环境拥有此工作空间。"
+    },
+    {
+      "en-US": "**Otherwise, for Options 1 and 4:**",
+      "zh-Hans": "**否则，对于选项 1 和 4：**"
+    },
+    {
+      "en-US": "Check if in worktree:",
+      "zh-Hans": "检查是否在工作树中："
+    },
+    {
+      "en-US": "```bash\ngit worktree list | grep $(git branch --show-current)\n```",
+      "zh-Hans": "```bash\ngit worktree list | grep $(git branch --show-current)\n```"
+    },
+    {
+      "en-US": "If yes:",
+      "zh-Hans": "如果是："
+    },
+    {
+      "en-US": "```bash\ngit worktree remove <worktree-path>\n```",
+      "zh-Hans": "```bash\ngit worktree remove <worktree-path>\n```"
+    },
+    {
+      "en-US": "**For Option 3:** Keep worktree.",
+      "zh-Hans": "**对于选项 3：** 保留工作树。"
+    },
+    {
+      "en-US": "```\n\nNote: the original text said \"For Options 1, 2, 4\" but the Quick Reference table and Common Mistakes section say \"Options 1 & 4 only.\" This edit aligns Step 5 with those sections.\n\n- [ ] **Step 3: Verify the replacement**\n\nRead Step 5. Confirm:\n- Cleanup guard (re-detection) appears first\n- Existing removal logic preserved for non-externally-managed worktrees\n- \"Options 1 and 4\" (not \"1, 2, 4\") matches Quick Reference and Common Mistakes\n\n- [ ] **Step 4: Commit**\n\n```bash\ngit add skills/finishing-a-development-branch/SKILL.md\ngit commit -m \"feat(finishing-a-development-branch): add Step 5 cleanup guard (PRI-823)\n\nRe-detect externally managed worktree at cleanup time and skip removal.\nAlso fixes pre-existing inconsistency: cleanup now correctly says\nOptions 1 and 4 only, matching Quick Reference and Common Mistakes.\"\n```",
+      "zh-Hans": "````\n\n注意：原始文本写的是“对于选项 1、2、4”，但快速参考表和常见错误部分写的是“仅选项 1 和 4”。此编辑使步骤 5 与这些部分保持一致。\n\n- [ ] **步骤 3：验证替换内容**\n\n阅读步骤 5。确认：\n- 清理守卫（重新检测）首先出现\n- 为非外部管理的工作树保留现有的移除逻辑\n- “选项 1 和 4”（而不是“1、2、4”）与快速参考和常见错误部分一致\n\n- [ ] **步骤 4：提交**\n\n```bash\ngit add skills/finishing-a-development-branch/SKILL.md\ngit commit -m \"feat(finishing-a-development-branch): add Step 5 cleanup guard (PRI-823)\n\nRe-detect externally managed worktree at cleanup time and skip removal.\nAlso fixes pre-existing inconsistency: cleanup now correctly says\nOptions 1 and 4 only, matching Quick Reference and Common Mistakes.\"\n````"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 5: Update Integration lines in `subagent-driven-development` and `executing-plans`",
+      "zh-Hans": "### 任务 5：更新 `subagent-driven-development` 和 `executing-plans` 中的集成行"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `skills/subagent-driven-development/SKILL.md:268`\n- Modify: `skills/executing-plans/SKILL.md:68`\n\n- [ ] **Step 1: Update `subagent-driven-development`**",
+      "zh-Hans": "* 修改：`skills/subagent-driven-development/SKILL.md:268`\n\n* 修改：`skills/executing-plans/SKILL.md:68`\n\n* \\[ ] **步骤 1：更新 `subagent-driven-development`**"
+    },
+    {
+      "en-US": "Change line 268 from:",
+      "zh-Hans": "将第 268 行从："
+    },
+    {
+      "en-US": "```\n- **superpowers:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting\n```",
+      "zh-Hans": "```\n- **superpowers:using-git-worktrees** - REQUIRED: 在开始前设置隔离工作空间\n```"
+    },
+    {
+      "en-US": "To:",
+      "zh-Hans": "更改为："
+    },
+    {
+      "en-US": "```\n- **superpowers:using-git-worktrees** - REQUIRED: Ensures isolated workspace (creates one or verifies existing)\n```",
+      "zh-Hans": "```\n- **superpowers:using-git-worktrees** - 必需：确保隔离的工作区（创建一个或验证现有）\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Update `executing-plans`**",
+      "zh-Hans": "* \\[ ] **步骤 2：更新 `executing-plans`**"
+    },
+    {
+      "en-US": "Change line 68 from:",
+      "zh-Hans": "将第 68 行从："
+    },
+    {
+      "en-US": "```\n- **superpowers:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting\n```",
+      "zh-Hans": "```\n- **superpowers:using-git-worktrees** - REQUIRED: 在开始前设置隔离工作空间\n```"
+    },
+    {
+      "en-US": "To:",
+      "zh-Hans": "更改为："
+    },
+    {
+      "en-US": "```\n- **superpowers:using-git-worktrees** - REQUIRED: Ensures isolated workspace (creates one or verifies existing)\n```",
+      "zh-Hans": "```\n- **superpowers:using-git-worktrees** - 必需：确保隔离的工作区（创建一个或验证现有）\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 3: Verify both files**",
+      "zh-Hans": "* \\[ ] **步骤 3：验证两个文件**"
+    },
+    {
+      "en-US": "Read line 268 of `skills/subagent-driven-development/SKILL.md` and line 68 of `skills/executing-plans/SKILL.md`. Confirm both say \"Ensures isolated workspace (creates one or verifies existing)\".",
+      "zh-Hans": "读取 `skills/subagent-driven-development/SKILL.md` 的第 268 行和 `skills/executing-plans/SKILL.md` 的第 68 行。确认两者都写着“确保隔离的工作空间（创建一个或验证现有的）”。"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Commit**",
+      "zh-Hans": "* \\[ ] **步骤 4：提交**"
+    },
+    {
+      "en-US": "```bash\ngit add skills/subagent-driven-development/SKILL.md skills/executing-plans/SKILL.md\ngit commit -m \"docs(sdd, executing-plans): update worktree Integration descriptions (PRI-823)\n\nClarify that using-git-worktrees ensures a workspace exists rather than\nalways creating one.\"\n```",
+      "zh-Hans": "```bash\ngit add skills/subagent-driven-development/SKILL.md skills/executing-plans/SKILL.md\ngit commit -m \"docs(sdd, executing-plans): update worktree Integration descriptions (PRI-823)\n\nClarify that using-git-worktrees ensures a workspace exists rather than\nalways creating one.\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 6: Add environment detection docs to `codex-tools.md`",
+      "zh-Hans": "### 任务 6：添加环境检测文档到 `codex-tools.md`"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `skills/using-superpowers/references/codex-tools.md:25` (append at end)\n\n- [ ] **Step 1: Read the current file**",
+      "zh-Hans": "* 修改：`skills/using-superpowers/references/codex-tools.md:25`（在末尾追加）\n\n* \\[ ] **步骤 1：读取当前文件**"
+    },
+    {
+      "en-US": "Read `skills/using-superpowers/references/codex-tools.md` in full. Confirm it ends at line 25-26 after the multi_agent section.",
+      "zh-Hans": "完整读取 `skills/using-superpowers/references/codex-tools.md`。确认其在 multi\\_agent 部分之后结束于第 25-26 行。"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Append two new sections**",
+      "zh-Hans": "* \\[ ] **步骤 2：追加两个新部分**"
+    },
+    {
+      "en-US": "Add at the end of the file:",
+      "zh-Hans": "在文件末尾添加："
+    },
+    {
+      "en-US": "```markdown\n\n## Environment Detection\n\nSkills that create worktrees or finish branches should detect their\nenvironment with read-only git commands before proceeding:\n\n```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\nBRANCH=$(git branch --show-current)\n```",
+      "zh-Hans": "````markdown\n## 环境检测\n\n在创建 worktree 或结束分支前，技能应使用只读 git 命令检测其环境：\n\n```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\nBRANCH=$(git branch --show-current)\n\n````"
+    },
+    {
+      "en-US": "- `GIT_DIR != GIT_COMMON` → already in a linked worktree (skip creation)\n- `BRANCH` empty → detached HEAD (cannot branch/push/PR from sandbox)",
+      "zh-Hans": "* `GIT_DIR != GIT_COMMON` → 已处于链接的工作树中（跳过创建）\n* `BRANCH` 为空 → 分离的 HEAD（无法从沙盒创建分支/推送/PR）"
+    },
+    {
+      "en-US": "See `using-git-worktrees` Step 0 and `finishing-a-development-branch`\nStep 1.5 for how each skill uses these signals.",
+      "zh-Hans": "有关每个技能如何使用这些信号的详细信息，请参阅 `using-git-worktrees` 步骤 0 和 `finishing-a-development-branch` 步骤 1.5。"
+    },
+    {
+      "en-US": "## Codex App Finishing",
+      "zh-Hans": "## Codex 应用完成"
+    },
+    {
+      "en-US": "When the sandbox blocks branch/push operations (detached HEAD in an\nexternally managed worktree), the agent commits all work and informs\nthe user to use the App's native controls:",
+      "zh-Hans": "当沙盒阻止分支/推送操作时（在外部管理工作树中处于分离的 HEAD 状态），智能体提交所有工作并通知用户使用应用的原生控件："
+    },
+    {
+      "en-US": "- **\"Create branch\"** — names the branch, then commit/push/PR via App UI\n- **\"Hand off to local\"** — transfers work to the user's local checkout",
+      "zh-Hans": "* **“创建分支”** —— 命名分支，然后通过应用 UI 提交/推送/PR\n* **“交接至本地”** —— 将工作转移到用户的本地检出"
+    },
+    {
+      "en-US": "The agent can still run tests, stage files, and output suggested branch\nnames, commit messages, and PR descriptions for the user to copy.",
+      "zh-Hans": "智能体仍可以运行测试、暂存文件，并输出建议的分支名称、提交消息和 PR 描述供用户复制。"
+    },
+    {
+      "en-US": "```\n\n- [ ] **Step 3: Verify the additions**\n\nRead the full file. Confirm:\n- Two new sections appear after the existing content\n- Bash code block renders correctly (not escaped)\n- Cross-references to Step 0 and Step 1.5 are present\n\n- [ ] **Step 4: Commit**\n\n```bash\ngit add skills/using-superpowers/references/codex-tools.md\ngit commit -m \"docs(codex-tools): add environment detection and App finishing docs (PRI-823)\n\nDocument the git-dir vs git-common-dir detection pattern and the Codex\nApp's native finishing flow for skills that need to adapt.\"\n```",
+      "zh-Hans": "````\n\n- [ ] **Step 3: 验证添加的内容**\n\n阅读完整文件。确认：\n- 两个新章节出现在现有内容之后\n- Bash 代码块渲染正确（未被转义）\n- 存在指向 Step 0 和 Step 1.5 的交叉引用\n\n- [ ] **Step 4: 提交**\n\n```bash\ngit add skills/using-superpowers/references/codex-tools.md\ngit commit -m \"docs(codex-tools): add environment detection and App finishing docs (PRI-823)\n\nDocument the git-dir vs git-common-dir detection pattern and the Codex\nApp's native finishing flow for skills that need to adapt.\"\n````"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 7: Automated test — environment detection",
+      "zh-Hans": "### 任务 7：自动化测试——环境检测"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Create: `tests/codex-app-compat/test-environment-detection.sh`\n\n- [ ] **Step 1: Create test directory**",
+      "zh-Hans": "* 创建：`tests/codex-app-compat/test-environment-detection.sh`\n\n* \\[ ] **步骤 1：创建测试目录**"
+    },
+    {
+      "en-US": "```bash\nmkdir -p tests/codex-app-compat\n```",
+      "zh-Hans": "```bash\nmkdir -p tests/codex-app-compat\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Write the detection test script**",
+      "zh-Hans": "* \\[ ] **步骤 2：编写检测测试脚本**"
+    },
+    {
+      "en-US": "Create `tests/codex-app-compat/test-environment-detection.sh`:",
+      "zh-Hans": "创建 `tests/codex-app-compat/test-environment-detection.sh`："
+    },
+    {
+      "en-US": "```bash\n#!/usr/bin/env bash\nset -euo pipefail\n\n# Test environment detection logic from PRI-823\n# Tests the git-dir vs git-common-dir comparison used by\n# using-git-worktrees Step 0 and finishing-a-development-branch Step 1.5\n\nPASS=0\nFAIL=0\nTEMP_DIR=$(mktemp -d)\ntrap \"rm -rf $TEMP_DIR\" EXIT\n\nlog_pass() { echo \"  PASS: $1\"; PASS=$((PASS + 1)); }\nlog_fail() { echo \"  FAIL: $1\"; FAIL=$((FAIL + 1)); }\n\n# Helper: run detection and return \"linked\" or \"normal\"\ndetect_worktree() {\n  local git_dir git_common\n  git_dir=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\n  git_common=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\n  if [ \"$git_dir\" != \"$git_common\" ]; then\n    echo \"linked\"\n  else\n    echo \"normal\"\n  fi\n}\n\necho \"=== Test 1: Normal repo detection ===\"\ncd \"$TEMP_DIR\"\ngit init test-repo > /dev/null 2>&1\ncd test-repo\ngit commit --allow-empty -m \"init\" > /dev/null 2>&1\nresult=$(detect_worktree)\nif [ \"$result\" = \"normal\" ]; then\n  log_pass \"Normal repo detected as normal\"\nelse\n  log_fail \"Normal repo detected as '$result' (expected 'normal')\"\nfi\n\necho \"=== Test 2: Linked worktree detection ===\"\ngit worktree add \"$TEMP_DIR/test-wt\" -b test-branch > /dev/null 2>&1\ncd \"$TEMP_DIR/test-wt\"\nresult=$(detect_worktree)\nif [ \"$result\" = \"linked\" ]; then\n  log_pass \"Linked worktree detected as linked\"\nelse\n  log_fail \"Linked worktree detected as '$result' (expected 'linked')\"\nfi\n\necho \"=== Test 3: Detached HEAD detection ===\"\ngit checkout --detach HEAD > /dev/null 2>&1\nbranch=$(git branch --show-current)\nif [ -z \"$branch\" ]; then\n  log_pass \"Detached HEAD: branch is empty\"\nelse\n  log_fail \"Detached HEAD: branch is '$branch' (expected empty)\"\nfi\n\necho \"=== Test 4: Linked worktree + detached HEAD (Codex App simulation) ===\"\nresult=$(detect_worktree)\nbranch=$(git branch --show-current)\nif [ \"$result\" = \"linked\" ] && [ -z \"$branch\" ]; then\n  log_pass \"Codex App simulation: linked + detached HEAD\"\nelse\n  log_fail \"Codex App simulation: result='$result', branch='$branch'\"\nfi\n\necho \"=== Test 5: Cleanup guard — linked worktree should NOT remove ===\"\ncd \"$TEMP_DIR/test-wt\"\nresult=$(detect_worktree)\nif [ \"$result\" = \"linked\" ]; then\n  log_pass \"Cleanup guard: linked worktree correctly detected (would skip removal)\"\nelse\n  log_fail \"Cleanup guard: expected 'linked', got '$result'\"\nfi\n\necho \"=== Test 6: Cleanup guard — main repo SHOULD remove ===\"\ncd \"$TEMP_DIR/test-repo\"\nresult=$(detect_worktree)\nif [ \"$result\" = \"normal\" ]; then\n  log_pass \"Cleanup guard: main repo correctly detected (would proceed with removal)\"\nelse\n  log_fail \"Cleanup guard: expected 'normal', got '$result'\"\nfi\n\n# Cleanup worktree before temp dir removal\ncd \"$TEMP_DIR/test-repo\"\ngit worktree remove \"$TEMP_DIR/test-wt\" > /dev/null 2>&1 || true\n\necho \"\"\necho \"=== Results: $PASS passed, $FAIL failed ===\"\nif [ \"$FAIL\" -gt 0 ]; then\n  exit 1\nfi\n```",
+      "zh-Hans": "```bash\n#!/usr/bin/env bash\nset -euo pipefail\n\n# Test environment detection logic from PRI-823\n# Tests the git-dir vs git-common-dir comparison used by\n# using-git-worktrees Step 0 and finishing-a-development-branch Step 1.5\n\nPASS=0\nFAIL=0\nTEMP_DIR=$(mktemp -d)\ntrap \"rm -rf $TEMP_DIR\" EXIT\n\nlog_pass() { echo \"  PASS: $1\"; PASS=$((PASS + 1)); }\nlog_fail() { echo \"  FAIL: $1\"; FAIL=$((FAIL + 1)); }\n\n# Helper: run detection and return \"linked\" or \"normal\"\ndetect_worktree() {\n  local git_dir git_common\n  git_dir=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\n  git_common=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\n  if [ \"$git_dir\" != \"$git_common\" ]; then\n    echo \"linked\"\n  else\n    echo \"normal\"\n  fi\n}\n\necho \"=== Test 1: Normal repo detection ===\"\ncd \"$TEMP_DIR\"\ngit init test-repo > /dev/null 2>&1\ncd test-repo\ngit commit --allow-empty -m \"init\" > /dev/null 2>&1\nresult=$(detect_worktree)\nif [ \"$result\" = \"normal\" ]; then\n  log_pass \"Normal repo detected as normal\"\nelse\n  log_fail \"Normal repo detected as '$result' (expected 'normal')\"\nfi\n\necho \"=== Test 2: Linked worktree detection ===\"\ngit worktree add \"$TEMP_DIR/test-wt\" -b test-branch > /dev/null 2>&1\ncd \"$TEMP_DIR/test-wt\"\nresult=$(detect_worktree)\nif [ \"$result\" = \"linked\" ]; then\n  log_pass \"Linked worktree detected as linked\"\nelse\n  log_fail \"Linked worktree detected as '$result' (expected 'linked')\"\nfi\n\necho \"=== Test 3: Detached HEAD detection ===\"\ngit checkout --detach HEAD > /dev/null 2>&1\nbranch=$(git branch --show-current)\nif [ -z \"$branch\" ]; then\n  log_pass \"Detached HEAD: branch is empty\"\nelse\n  log_fail \"Detached HEAD: branch is '$branch' (expected empty)\"\nfi\n\necho \"=== Test 4: Linked worktree + detached HEAD (Codex App simulation) ===\"\nresult=$(detect_worktree)\nbranch=$(git branch --show-current)\nif [ \"$result\" = \"linked\" ] && [ -z \"$branch\" ]; then\n  log_pass \"Codex App simulation: linked + detached HEAD\"\nelse\n  log_fail \"Codex App simulation: result='$result', branch='$branch'\"\nfi\n\necho \"=== Test 5: Cleanup guard — linked worktree should NOT remove ===\"\ncd \"$TEMP_DIR/test-wt\"\nresult=$(detect_worktree)\nif [ \"$result\" = \"linked\" ]; then\n  log_pass \"Cleanup guard: linked worktree correctly detected (would skip removal)\"\nelse\n  log_fail \"Cleanup guard: expected 'linked', got '$result'\"\nfi\n\necho \"=== Test 6: Cleanup guard — main repo SHOULD remove ===\"\ncd \"$TEMP_DIR/test-repo\"\nresult=$(detect_worktree)\nif [ \"$result\" = \"normal\" ]; then\n  log_pass \"Cleanup guard: main repo correctly detected (would proceed with removal)\"\nelse\n  log_fail \"Cleanup guard: expected 'normal', got '$result'\"\nfi\n\n# Cleanup worktree before temp dir removal\ncd \"$TEMP_DIR/test-repo\"\ngit worktree remove \"$TEMP_DIR/test-wt\" > /dev/null 2>&1 || true\n\necho \"\"\necho \"=== Results: $PASS passed, $FAIL failed ===\"\nif [ \"$FAIL\" -gt 0 ]; then\n  exit 1\nfi\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 3: Make it executable and run it**",
+      "zh-Hans": "* \\[ ] **步骤 3：使其可执行并运行它**"
+    },
+    {
+      "en-US": "```bash\nchmod +x tests/codex-app-compat/test-environment-detection.sh\n./tests/codex-app-compat/test-environment-detection.sh\n```",
+      "zh-Hans": "```bash\nchmod +x tests/codex-app-compat/test-environment-detection.sh\n./tests/codex-app-compat/test-environment-detection.sh\n```"
+    },
+    {
+      "en-US": "Expected output: 6 passed, 0 failed.",
+      "zh-Hans": "预期输出：6 项通过，0 项失败。"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Commit**",
+      "zh-Hans": "* \\[ ] **步骤 4：提交**"
+    },
+    {
+      "en-US": "```bash\ngit add tests/codex-app-compat/test-environment-detection.sh\ngit commit -m \"test: add environment detection tests for Codex App compat (PRI-823)\n\nTests git-dir vs git-common-dir comparison in normal repo, linked\nworktree, detached HEAD, and cleanup guard scenarios.\"\n```",
+      "zh-Hans": "```bash\ngit add tests/codex-app-compat/test-environment-detection.sh\ngit commit -m \"test: add environment detection tests for Codex App compat (PRI-823)\n\nTests git-dir vs git-common-dir comparison in normal repo, linked\nworktree, detached HEAD, and cleanup guard scenarios.\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 8: Final verification",
+      "zh-Hans": "### 任务 8：最终验证"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Read: all 5 modified skill files\n\n- [ ] **Step 1: Run the automated detection tests**",
+      "zh-Hans": "* 读取：所有 5 个修改后的技能文件\n\n* \\[ ] **步骤 1：运行自动化检测测试**"
+    },
+    {
+      "en-US": "```bash\n./tests/codex-app-compat/test-environment-detection.sh\n```",
+      "zh-Hans": "```bash\n./tests/codex-app-compat/test-environment-detection.sh\n```"
+    },
+    {
+      "en-US": "Expected: 6 passed, 0 failed.",
+      "zh-Hans": "预期：6 项通过，0 项失败。"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Read each modified file and verify changes**",
+      "zh-Hans": "* \\[ ] **步骤 2：读取每个修改后的文件并验证更改**"
+    },
+    {
+      "en-US": "Read each file end-to-end:",
+      "zh-Hans": "端到端读取每个文件："
+    },
+    {
+      "en-US": "- `skills/using-git-worktrees/SKILL.md` — Step 0 present, rest unchanged\n- `skills/finishing-a-development-branch/SKILL.md` — Step 1.5 present, cleanup guard present, rest unchanged\n- `skills/subagent-driven-development/SKILL.md` — line 268 updated\n- `skills/executing-plans/SKILL.md` — line 68 updated\n- `skills/using-superpowers/references/codex-tools.md` — two new sections at end\n\n- [ ] **Step 3: Verify no unintended changes**",
+      "zh-Hans": "* `skills/using-git-worktrees/SKILL.md` —— 步骤 0 存在，其余未更改\n\n* `skills/finishing-a-development-branch/SKILL.md` —— 步骤 1.5 存在，清理防护存在，其余未更改\n\n* `skills/subagent-driven-development/SKILL.md` —— 第 268 行已更新\n\n* `skills/executing-plans/SKILL.md` —— 第 68 行已更新\n\n* `skills/using-superpowers/references/codex-tools.md` —— 末尾有两个新部分\n\n* \\[ ] **步骤 3：验证无意外更改**"
+    },
+    {
+      "en-US": "```bash\ngit diff --stat HEAD~7\n```",
+      "zh-Hans": "```bash\ngit diff --stat HEAD~7\n```"
+    },
+    {
+      "en-US": "Should show exactly 6 files changed (5 skill files + 1 test file). No other files modified.",
+      "zh-Hans": "应恰好显示 6 个文件已更改（5 个技能文件 + 1 个测试文件）。没有其他文件被修改。"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Run existing test suite**",
+      "zh-Hans": "* \\[ ] **步骤 4：运行现有测试套件**"
+    },
+    {
+      "en-US": "If test runner exists:",
+      "zh-Hans": "如果存在测试运行器："
+    },
+    {
+      "en-US": "```bash\n# Run skill-triggering tests\n./tests/skill-triggering/run-all.sh 2>/dev/null || echo \"Skill triggering tests not available in this environment\"\n\n# Run SDD integration test\n./tests/claude-code/test-subagent-driven-development-integration.sh 2>/dev/null || echo \"SDD integration test not available in this environment\"\n```",
+      "zh-Hans": "```bash\n# Run skill-triggering tests\n./tests/skill-triggering/run-all.sh 2>/dev/null || echo \"Skill triggering tests not available in this environment\"\n\n# Run SDD integration test\n./tests/claude-code/test-subagent-driven-development-integration.sh 2>/dev/null || echo \"SDD integration test not available in this environment\"\n```"
+    },
+    {
+      "en-US": "Note: these tests require Claude Code with `--dangerously-skip-permissions`. If not available, document that regression tests should be run manually.",
+      "zh-Hans": "注意：这些测试需要带有 `--dangerously-skip-permissions` 的 Claude Code。如果不可用，请记录应手动运行回归测试。"
+    }
+  ]
+}

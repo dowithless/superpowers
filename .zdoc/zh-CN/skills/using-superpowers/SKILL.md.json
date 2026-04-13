@@ -47,6 +47,10 @@
       "zh-Hans": "**在 Claude Code 中：** 使用 `Skill` 工具。当你调用技能时，其内容会被加载并呈现给你——直接遵循它。切勿对技能文件使用 Read 工具。"
     },
     {
+      "en-US": "**In Copilot CLI:** Use the `skill` tool. Skills are auto-discovered from installed plugins. The `skill` tool works the same as Claude Code's `Skill` tool.",
+      "zh-Hans": "**在 Copilot CLI 中：** 使用 `skill` 工具。技能会自动从已安装的插件中检测发现。`skill` 工具与 Claude Code 的 `Skill` 工具工作方式相同。"
+    },
+    {
       "en-US": "**In Gemini CLI:** Skills activate via the `activate_skill` tool. Gemini loads skill metadata at session start and activates the full content on demand.",
       "zh-Hans": "**在 Gemini CLI 中：** 技能通过 `activate_skill` 工具激活。Gemini 在会话开始时加载技能元数据，并根据需要激活完整内容。"
     },
@@ -59,8 +63,8 @@
       "zh-Hans": "## 平台适配"
     },
     {
-      "en-US": "Skills use Claude Code tool names. Non-CC platforms: see `references/codex-tools.md` (Codex) for tool equivalents. Gemini CLI users get the tool mapping loaded automatically via GEMINI.md.",
-      "zh-Hans": "技能使用 Claude Code 工具名称。非 CC 平台：请参阅 `references/codex-tools.md` (Codex) 以获取工具等效项。Gemini CLI 用户通过 GEMINI.md 自动加载工具映射。"
+      "en-US": "Skills use Claude Code tool names. Non-CC platforms: see `references/copilot-tools.md` (Copilot CLI), `references/codex-tools.md` (Codex) for tool equivalents. Gemini CLI users get the tool mapping loaded automatically via GEMINI.md.",
+      "zh-Hans": "技能使用 Claude Code 工具名称。非 CC 平台：请参阅 `references/copilot-tools.md` (Copilot CLI)、`references/codex-tools.md` (Codex) 以获取等效工具。Gemini CLI 用户会通过 GEMINI.md 自动加载工具映射。"
     },
     {
       "en-US": "# Using Skills",
