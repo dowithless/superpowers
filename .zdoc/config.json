@@ -2,7 +2,7 @@
   {
     "source_language": "en-US",
     "target_languages": ["zh-Hans"],
-    "include": ["commands/brainstorm.md"],
+    "include": ["**/*.md"],
     "ignore": ["zh-CN"],
     "translation_store": {
       "dir": ".zdoc/zh-CN"
