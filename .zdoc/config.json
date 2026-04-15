@@ -52,6 +52,15 @@
           "link",
           "linkReference"
         ]
+      },
+      "code_generic": {
+        "enabled": true
+      },
+      "mdx": {
+        "enabled": false,
+        "translatable_attrs": {},
+        "mask_inline_code": true,
+        "mask_links": true
       }
     },
     "update_local_file_references": true,
