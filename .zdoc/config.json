@@ -13,6 +13,9 @@
         "mode": "original"
       }
     },
+    "parallel": 10,
+    "terms": ["Superpowers", "brainstorming"],
+    "update_local_file_references": true,
     "translator": {
       "model": "deepseek-chat",
       "base_url": "https://api.deepseek.com",
@@ -54,7 +57,8 @@
         ]
       },
       "code_generic": {
-        "enabled": true
+        "enabled": true,
+        "langs": ["plain", "text", "plaintext", "dot"]
       },
       "mdx": {
         "enabled": false,
@@ -62,8 +66,6 @@
         "mask_inline_code": true,
         "mask_links": true
       }
-    },
-    "update_local_file_references": true,
-    "terms": ["Superpowers", "brainstorming"]
+    }
   }
 ]

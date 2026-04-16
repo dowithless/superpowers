@@ -31,10 +31,6 @@
       "zh-Hans": "## 何时使用"
     },
     {
-      "en-US": "```dot\ndigraph when_to_use {\n    \"Multiple failures?\" [shape=diamond];\n    \"Are they independent?\" [shape=diamond];\n    \"Single agent investigates all\" [shape=box];\n    \"One agent per problem domain\" [shape=box];\n    \"Can they work in parallel?\" [shape=diamond];\n    \"Sequential agents\" [shape=box];\n    \"Parallel dispatch\" [shape=box];\n\n    \"Multiple failures?\" -> \"Are they independent?\" [label=\"yes\"];\n    \"Are they independent?\" -> \"Single agent investigates all\" [label=\"no - related\"];\n    \"Are they independent?\" -> \"Can they work in parallel?\" [label=\"yes\"];\n    \"Can they work in parallel?\" -> \"Parallel dispatch\" [label=\"yes\"];\n    \"Can they work in parallel?\" -> \"Sequential agents\" [label=\"no - shared state\"];\n}\n```",
-      "zh-Hans": "```dot\ndigraph when_to_use {\n    \"Multiple failures?\" [shape=diamond];\n    \"Are they independent?\" [shape=diamond];\n    \"Single agent investigates all\" [shape=box];\n    \"One agent per problem domain\" [shape=box];\n    \"Can they work in parallel?\" [shape=diamond];\n    \"Sequential agents\" [shape=box];\n    \"Parallel dispatch\" [shape=box];\n\n    \"Multiple failures?\" -> \"Are they independent?\" [label=\"yes\"];\n    \"Are they independent?\" -> \"Single agent investigates all\" [label=\"no - related\"];\n    \"Are they independent?\" -> \"Can they work in parallel?\" [label=\"yes\"];\n    \"Can they work in parallel?\" -> \"Parallel dispatch\" [label=\"yes\"];\n    \"Can they work in parallel?\" -> \"Sequential agents\" [label=\"no - shared state\"];\n}\n```"
-    },
-    {
       "en-US": "**Use when:**",
       "zh-Hans": "**在以下情况使用：**"
     },

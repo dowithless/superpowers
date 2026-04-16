@@ -24,7 +24,7 @@
     },
     {
       "en-US": "```dot\ndigraph when_to_use {\n    \"Test uses setTimeout/sleep?\" [shape=diamond];\n    \"Testing timing behavior?\" [shape=diamond];\n    \"Document WHY timeout needed\" [shape=box];\n    \"Use condition-based waiting\" [shape=box];\n\n    \"Test uses setTimeout/sleep?\" -> \"Testing timing behavior?\" [label=\"yes\"];\n    \"Testing timing behavior?\" -> \"Document WHY timeout needed\" [label=\"yes\"];\n    \"Testing timing behavior?\" -> \"Use condition-based waiting\" [label=\"no\"];\n}\n```",
-      "zh-Hans": "```dot\ndigraph when_to_use {\n    \"Test uses setTimeout/sleep?\" [shape=diamond];\n    \"Testing timing behavior?\" [shape=diamond];\n    \"Document WHY timeout needed\" [shape=box];\n    \"Use condition-based waiting\" [shape=box];\n\n    \"Test uses setTimeout/sleep?\" -> \"Testing timing behavior?\" [label=\"yes\"];\n    \"Testing timing behavior?\" -> \"Document WHY timeout needed\" [label=\"yes\"];\n    \"Testing timing behavior?\" -> \"Use condition-based waiting\" [label=\"no\"];\n}\n```"
+      "zh-Hans": "```dot\ndigraph when_to_use {\n    \"测试是否使用 setTimeout/sleep?\" [shape=diamond];\n    \"测试计时行为?\" [shape=diamond];\n    \"记录 WHY 需要超时\" [shape=box];\n    \"使用基于条件的等待\" [shape=box];\n\n    \"测试是否使用 setTimeout/sleep?\" -> \"测试计时行为?\" [label=\"yes\"];\n    \"测试计时行为?\" -> \"记录 WHY 需要超时\" [label=\"yes\"];\n    \"测试计时行为?\" -> \"使用基于条件的等待\" [label=\"no\"];\n}\n```"
     },
     {
       "en-US": "**Use when:**",
