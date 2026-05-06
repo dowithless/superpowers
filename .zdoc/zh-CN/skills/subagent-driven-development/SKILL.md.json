@@ -23,6 +23,10 @@
       "zh-Hans": "**核心原则：** 每个任务使用新的子代理 + 两阶段评审（先规范后质量）= 高质量、快速迭代"
     },
     {
+      "en-US": "**Continuous execution:** Do not pause to check in with your human partner between tasks. Execute all tasks from the plan without stopping. The only reasons to stop are: BLOCKED status you cannot resolve, ambiguity that genuinely prevents progress, or all tasks complete. \"Should I continue?\" prompts and progress summaries waste their time — they asked you to execute the plan, so execute it.",
+      "zh-Hans": "**持续执行：** 不要在任务之间暂停与您的搭档验证。不间断地执行计划中的所有任务。唯一的暂停理由有：无法解决的**已阻塞**状态、确实阻碍进展的不明确之处，或所有任务完成。“我应该继续吗？”的提示和进度总结只会浪费他们的时间——他们要求您执行计划，所以执行它。"
+    },
+    {
       "en-US": "## When to Use",
       "zh-Hans": "## 何时使用"
     },
@@ -211,8 +215,8 @@
       "zh-Hans": "**必需的工作流技能：**"
     },
     {
-      "en-US": "- **superpowers:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting\n- **superpowers:writing-plans** - Creates the plan this skill executes\n- **superpowers:requesting-code-review** - Code review template for reviewer subagents\n- **superpowers:finishing-a-development-branch** - Complete development after all tasks",
-      "zh-Hans": "* **superpowers:using-git-worktrees** - **必需**：在开始前设置独立的工作空间\n* **superpowers:writing-plans** - 创建此技能执行的计划\n* **superpowers:requesting-code-review** - 用于评审者子代理的代码评审模板\n* **superpowers:finishing-a-development-branch** - 在所有任务完成后完成开发"
+      "en-US": "- **superpowers:using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)\n- **superpowers:writing-plans** - Creates the plan this skill executes\n- **superpowers:requesting-code-review** - Code review template for reviewer subagents\n- **superpowers:finishing-a-development-branch** - Complete development after all tasks",
+      "zh-Hans": "* **superpowers:using-git-worktrees** - 确保隔离工作区（创建新工作区或检查现有工作区）\n* **superpowers:writing-plans** - 创建此技能执行的计划\n* **superpowers:requesting-code-review** - 给审核助手的代码审核模板\n* **superpowers:finishing-a-development-branch** - 完成所有任务后完成开发流程"
     },
     {
       "en-US": "**Subagents should use:**",

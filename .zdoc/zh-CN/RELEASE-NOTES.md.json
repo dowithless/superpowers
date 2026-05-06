@@ -7,6 +7,122 @@
       "zh-Hans": "# Superpowers 发布说明"
     },
     {
+      "en-US": "## v5.1.0 (2026-04-30)",
+      "zh-Hans": "## v5.1.0 (2026-04-30)"
+    },
+    {
+      "en-US": "### Removals",
+      "zh-Hans": "### 移除"
+    },
+    {
+      "en-US": "- **Legacy slash commands removed** — `/brainstorm`, `/execute-plan`, and `/write-plan` are gone. They were deprecated stubs that did nothing but tell the user to invoke the corresponding skill. Invoke `superpowers:brainstorming`, `superpowers:executing-plans`, and `superpowers:writing-plans` directly instead. (#1188)\n- **`superpowers:code-reviewer` named agent removed** — the agent was the plugin's only named agent and was used by exactly two skills, while every other reviewer/implementer subagent in the repo dispatches `general-purpose` with a prompt template alongside its skill. The agent's persona and checklist have been merged into `skills/requesting-code-review/code-reviewer.md` as a self-contained Task-dispatch template. Anyone dispatching `Task (superpowers:code-reviewer)` should switch to `Task (general-purpose)` with the prompt template instead. (PR #1299)\n- **Integration sections removed from skills** — these were a legacy of the time before agents had native skills systems and didn't help with steering.",
+      "zh-Hans": "* **移除了旧版斜杠命令** — `/brainstorm`、`/execute-plan` 和 `/write-plan` 已被移除。它们是已弃用的存根，除了告知用户调用相应技能外不做任何事。请直接调用 `superpowers:brainstorming`、`superpowers:executing-plans` 和 `superpowers:writing-plans`。（#1188）\n* **移除 `superpowers:code-reviewer` 命名代理** — 该代理是该插件唯一的命名代理，仅由两个技能使用，而仓库中所有其他审核/实施子代理在其技能旁使用 `general-purpose` 加提示模板进行分发。该代理的个性与检查清单已作为独立的任务分发模板合并到 `skills/requesting-code-review/code-reviewer.md`。正在分发 `Task (superpowers:code-reviewer)` 的用户应切换到使用提示模板的 `Task (general-purpose)`。(PR #1299)\n* **移除了技能中的集成章节** — 这些是代理拥有原生技能系统之前的遗留产物，且不利于引导。"
+    },
+    {
+      "en-US": "### Worktree Skills Rewrite",
+      "zh-Hans": "### 工作目录技能重写"
+    },
+    {
+      "en-US": "`using-git-worktrees` and `finishing-a-development-branch` now detect when the agent is already running inside an isolated worktree and prefer the harness's native worktree controls before falling back to `git worktree`. Behavior was TDD-validated and cross-platform-checked across five harnesses. (PRI-974, PR #1121)",
+      "zh-Hans": "`using-git-worktrees` 和 `finishing-a-development-branch` 现在可以检测代理是否已在隔离的工作目录中运行，并在回退到 `git worktree` 之前优先使用辅助程序的原生工作目录控制。该行为已通过 TDD 验证，并在五个辅助程序上进行了跨平台检查。(PRI-974, PR #1121)"
+    },
+    {
+      "en-US": "- **Environment detection** — both skills check `GIT_DIR != GIT_COMMON` before doing anything; if already in a linked worktree, creation is skipped entirely. A submodule guard prevents false detection.\n- **Consent before creating worktrees** — `using-git-worktrees` no longer creates worktrees implicitly; the skill asks the user first. Fixes #991 (subagent-driven-development was auto-creating worktrees without consent).\n- **Native tool preference (Step 1a)** — when the harness exposes its own worktree tool (e.g. Codex), the skill defers to it. The user's stated preference is respected when expressed.\n- **Provenance-based cleanup** — `finishing-a-development-branch` only cleans up worktrees inside `.worktrees/` (created by superpowers); anything outside is left alone. Fixes #940 (Option 2 was incorrectly cleaning up worktrees), #999 (merge-then-remove ordering), and #238 (`cd` to repo root before `git worktree remove`).\n- **Detached HEAD handling** — the finishing menu collapses to two options when there is no branch to merge from.\n- **Hardcoded `/Users/jesse` paths** in skill examples replaced with generic placeholders. (#858, PR #1122)",
+      "zh-Hans": "* **环境检测** — 两个技能在执行任何操作前都会检查 `GIT_DIR != GIT_COMMON`；如果已处于关联的工作目录中，则完全跳过创建工作。带有子模块防护，防止误检测。\n* \\*\\*创建前征询同意 \\*\\* — `using-git-worktrees` 不再隐式创建工作目录；技能会先询问用户。修复 #991（子代理驱动开发曾未经同意自动创建工作目录）。\n* **原生工具优先（步骤 1a）** — 当辅助程序暴露其自身的工作目录工具（例如 Codex）时，技能会优先使用该工具。用户的明确偏好将得到尊重。\n* **基于来源的清理** — `finishing-a-development-branch` 仅清理 `.worktrees/` 内部（由 superpowers 创建）的工作目录；外部的不会被处理。修复 #940（选项 2 错误地清理了工作目录）、#999（合并然后移除的顺序问题）以及 #238（在 `git worktree remove` 之前 `cd` 到仓库根目录）。\n* **分离头指针处理** — 当没有可分 支合并时，完成菜单将简化为两个选项。\n* **技能示例中的硬编码 `/Users/jesse` 路径** 已替换为通用占位符。(#858, PR #1122)"
+    },
+    {
+      "en-US": "### Contributor Guidelines for AI Agents",
+      "zh-Hans": "### 面向 AI 代理的贡献者指南"
+    },
+    {
+      "en-US": "Two new sections at the top of `CLAUDE.md` (symlinked to `AGENTS.md`) speak directly to AI agents. An audit of the last 100 closed PRs against this repo showed a 94% rejection rate driven by AI-generated slop: agents that didn't read the PR template, opened duplicates, fabricated problem descriptions, or pushed fork- or domain-specific changes upstream.",
+      "zh-Hans": "`CLAUDE.md`（符号链接到 `AGENTS.md`）顶部增加了两个新章节，直接针对 AI 代理。对该仓库最近 100 个已关闭 PR 的审计显示，94% 的被拒率是由 AI 生成的低质量内容导致的：这些代理未曾阅读 PR 模板，提交重复内容，虚构问题描述，或向上游推送了完全针对分支或专有领域的更改。"
+    },
+    {
+      "en-US": "- **Pre-submission checklist** — read the PR template, search for existing PRs, verify a real problem exists, confirm the change belongs in core, and show the human partner the complete diff before submitting.\n- **What we will not accept** — third-party dependencies, \"compliance\" rewrites of skill content, project-specific configuration, bulk PRs, speculative fixes, domain-specific skills, fork-specific changes, fabricated content, and bundled unrelated changes.\n- **New harness PRs require a session transcript** — most past new-harness integrations copied skill files or wrapped with `npx skills` instead of loading the `using-superpowers` bootstrap at session start. The acceptance test (\"Let's make a react todo list\" must auto-trigger `brainstorming` in a clean session) and a complete transcript are now required.",
+      "zh-Hans": "* **提交前检查清单** — 阅读 PR 模板，搜索现有 PR，核实问题真实存在，确认更改属于核心功能，并在提交前向人类伙伴展示完整的差异。\n* **我们不会接受的内容** — 第三方依赖项、对技能内容的“合规性”重写、特定项目配置、批量 PR、推测性修复、特定领域技能、按分支的特定更改、虚构内容以及捆绑的非相关更改。\n* **新的辅助程序 PR 需要会话记录** — 过去大多数新的辅助程序都是直接复制技能文件或使用 `npx skills` 进行包装，而非在会话开始时加载 `using-superpowers` 引导程序。现在需要验收测试（“让我们创建一个 React 待办事项列表”必须在干净的会话中自动触发 `brainstorming`）和完整的会话记录。"
+    },
+    {
+      "en-US": "### Codex Plugin Mirror Tooling",
+      "zh-Hans": "### Codex 插件镜像工具"
+    },
+    {
+      "en-US": "New `sync-to-codex-plugin` script mirrors superpowers into the OpenAI Codex plugin marketplace as `prime-radiant-inc/openai-codex-plugins`. Path/user-agnostic so any team member can run it. (PR #1165)",
+      "zh-Hans": "新增 `sync-to-codex-plugin` 脚本可将 superpowers 镜像至 OpenAI Codex 插件市场，命名为 `prime-radiant-inc/openai-codex-plugins`。该脚本对路径和用户无感，团队中的任何成员均可运行它。(PR #1165)"
+    },
+    {
+      "en-US": "- Clones the fork fresh into a temp directory per run, regenerates overlays inline, and opens a PR; auto-detects upstream from the script's own location and preflights `rsync`/`git`/`gh auth`/`python3`.\n- `--bootstrap` flag for first-time setup; `EXCLUDES` patterns anchored to source root; `assets/` excluded.\n- Mirrors `CODE_OF_CONDUCT.md`; drops the `agents/openai.yaml` overlay.\n- Seeds `interface.defaultPrompt` in the mirrored `plugin.json`. (PR #1180 by @arittr)\n- Codex plugin files are committed to the source repo so the sync script uses canonical versions; Codex marketplace metadata is preserved.",
+      "zh-Hans": "* 每次运行时，从全新克隆的临时 Fork 仓库开始，即时重新生成叠加层，并打开一个 PR；自动从脚本自身位置检测上游，并预检 `rsync`/`git`/`gh auth`/`python3`。\n* 首次设置时使用 `--bootstrap` 标志；`EXCLUDES` 模式锚定在源根目录；`assets/` 被排除。\n* 镜像 `CODE_OF_CONDUCT.md`；移除 `agents/openai.yaml` 叠加层。\n* 在镜像的 `plugin.json` 中植入 `interface.defaultPrompt`。(PR #1180 by @arittr)\n* Codex 插件文件被提交到源仓库，以便同步脚本使用规范版本。Codex 市场的元数据得以保留。"
+    },
+    {
+      "en-US": "### OpenCode",
+      "zh-Hans": "### OpenCode"
+    },
+    {
+      "en-US": "- **Bootstrap content cached at module level** — `getBootstrapContent()` was calling `fs.existsSync` + `fs.readFileSync` + frontmatter regex on every agent step (the `experimental.chat.messages.transform` hook fires on every step in OpenCode's agent loop). Now read once, cached for the session lifetime, with a null sentinel for the missing-file case. 15 regression tests cover cache behavior, fs call counts, the injection guard, the missing-file sentinel, and cache reset. (Fixes #1202)\n- **Integration tests modernized**.\n- **Install caveats clarified** in the README.",
+      "zh-Hans": "* **引导内容缓存在模块级别** — `getBootstrapContent()` 会在每个代理步骤调用 `fs.existsSync` + `fs.readFileSync` + 前置元数据正则表达式（`experimental.chat.messages.transform` 钩子在 OpenCode 代理循环的每个步骤都会触发）。现在只读取一次，在会话生命周期内缓存，对于文件缺失的情况使用空值标记。15 个回归测试涵盖了缓存行为、文件系统调用次数、注入防护、文件缺失标记和缓存重置。（修复 #1202）\n* **集成测试现代化改造**。\n* **README 中的安装注意事项** 已澄清。"
+    },
+    {
+      "en-US": "### Code Review Consolidation",
+      "zh-Hans": "### 代码审查整合"
+    },
+    {
+      "en-US": "`requesting-code-review` is now self-contained: the persona, checklist, and dispatch template live in `skills/requesting-code-review/code-reviewer.md` and the skill dispatches `Task (general-purpose)` directly. (PR #1299)",
+      "zh-Hans": "`requesting-code-review` 现在是一个独立的模块：个性、检查清单和分发模板都位于 `skills/requesting-code-review/code-reviewer.md` 中，并且技能直接分发 `Task (general-purpose)`。(PR #1299)"
+    },
+    {
+      "en-US": "- **Single source of truth** — the persona/checklist that previously lived in both `agents/code-reviewer.md` and the skill's placeholder template (and drifted independently) is now one file.\n- **`subagent-driven-development` follows suit** — its `code-quality-reviewer-prompt.md` now dispatches `Task (general-purpose)` instead of the named agent.\n- **Behavioral test added** — `tests/claude-code/test-requesting-code-review.sh` plants real bugs (SQL injection, plaintext password handling, credential logging) into a tiny project and asserts the dispatched reviewer flags every planted issue at Critical/Important severity and refuses to approve the diff.\n- **Codex and Copilot workaround docs trimmed** — the \"Named agent dispatch\" sections in `references/codex-tools.md` and `references/copilot-tools.md` documented how to flatten a named agent into a generic dispatch. With no named agents shipping, the workaround is unnecessary; both sections were dropped.",
+      "zh-Hans": "* **单一事实来源** — 之前同时存在于 `agents/code-reviewer.md` 和该技能的占位模板中（且二者相互偏离）的个性/检查清单现在统一为一个文件。\n* **`subagent-driven-development`** 也已跟上 — 它的 `code-quality-reviewer-prompt.md` 现在分发 `Task (general-purpose)`，而不是命名代理。\n* **新增行为测试** — `tests/claude-code/test-requesting-code-review.sh` 在一个小型项目中植入真正的漏洞（SQL 注入、明文密码处理、凭证记录），并断言分发的审核员会标记所有植入了严重/重要级别的安全问题，并拒绝对差异进行批准。\n* **Codex 和 Copilot 工作区文档** 被精简 — `references/codex-tools.md` 和 `references/copilot-tools.md` 中的“命名代理分发”章节记录了如何将命名代理展平为通用分发。由于移除了所有命名代理，该解决方案不再必要，这两个章节均已删除。"
+    },
+    {
+      "en-US": "### Subagent-Driven Development",
+      "zh-Hans": "### 子代理驱动开发"
+    },
+    {
+      "en-US": "- **No more pause every 3 tasks** — the \"review after each batch (3 tasks)\" cadence in `requesting-code-review` (originally for `executing-plans`) was leaking into `subagent-driven-development`. Replaced with \"each task or at natural checkpoints\" plus an explicit continuous-execution directive.\n- **SDD integration test now runs its assertions** — three independent bugs caused the test to silently bail before printing any verification results: an unresolved `..` segment in the working-dir path, a `set -euo pipefail` interaction with `find | sort | head -1` (SIGPIPE on the producer killed the script), and a missing `--plugin-dir` on the `claude -p` invocation that caused the test to load the installed plugin instead of the working tree. All three fixed; six verification tests now actually run against a real end-to-end SDD run.",
+      "zh-Hans": "* **不再每 3 个任务暂停一次** — `requesting-code-review` 中的“每批次（3 个任务）后审核”节奏（最初针对 `executing-plans`），现会泄漏到 `subagent-driven-development`。已替换为“每个任务或自然检查点”，并加入了明确的持续执行指令。\n* **SDD 集成测试现已运行其断言** — 三个独立的错误导致测试在输出任何验证结果前静默退出：工作目录路径中一个未处理的 `..` 段、`@@README:String:S8A:REPLACE@@` 与 `@@README:String:S8A:REPLACE@@` 交互（生产者进程的 SIGPIPE 信号导致脚本终止）、以及在 `claude -p` 调用上缺失的 `--plugin-dir`，导致测试加载的是已安装的插件而非工作树状态。所有三个问题均已修复；六个验证测试现在真的会在实际的端到端 SDD 运行过程中执行。"
+    },
+    {
+      "en-US": "### Cursor",
+      "zh-Hans": "### Cursor"
+    },
+    {
+      "en-US": "- **Windows SessionStart hook** routed through `run-hook.cmd` instead of invoking the extensionless `session-start` script directly. Fixes Windows opening the file in an editor instead of running it. Also removed an accidental UTF-8 BOM from `hooks-cursor.json`.",
+      "zh-Hans": "* **Windows SessionStart 钩子** 现在通过 `run-hook.cmd` 路由，而不是直接调用无扩展名的 `session-start` 脚本。修复了 Windows 系统在编辑器中打开该文件而非正确执行的问题。同时移除了 `hooks-cursor.json` 中意外包含的 UTF-8 BOM。"
+    },
+    {
+      "en-US": "### Gemini CLI",
+      "zh-Hans": "### Gemini CLI"
+    },
+    {
+      "en-US": "- **Subagent dispatch mapping** — Gemini's `Task` dispatch now maps to `@agent-name` / `@generalist`, with parallel subagent dispatch documented for independent tasks.",
+      "zh-Hans": "* **子代理分派映射** — Gemini 的 `@@ODE:STRING_S5L_I1@@` 分派现已映射到 `@@ODE:STRING_S5L_I1@@` / `@@ODE@@INLINE:WORD:I1DE2_ONEDOT@@:DOT_NAME@@:DISPATCH@@`，并且记录了并行子代理分派以用于独立任务。"
+    },
+    {
+      "en-US": "### Skills",
+      "zh-Hans": "### 技能"
+    },
+    {
+      "en-US": "- **Terminology cleanups** across skill content.",
+      "zh-Hans": "* **技能内容中的术语清理**。"
+    },
+    {
+      "en-US": "### Documentation & Install",
+      "zh-Hans": "### 文档与安装"
+    },
+    {
+      "en-US": "- **Factory Droid installation instructions** added to README.\n- **Quickstart install links** in README. (PR #1293 by @arittr)\n- **Codex plugin install guidance** updated. (PR #1288 by @arittr)\n- **Codex `wait` mapping corrected** to `wait_agent` in the tools reference.\n- **Install order reorganized**; Codex install instructions cleaned up.\n- **Removed vestigial `CHANGELOG.md`** in favor of `RELEASE-NOTES.md` as the single source. (PR #1163 by @shaanmajid)\n- **Discord invite link** fixed; release announcements link and a detailed Discord description added to the Community section.",
+      "zh-Hans": "* README 中新增了 **Factory Droid 安装指南**。\n* 在 README 中添加了 **快速开始安装链接**。(PR #1293 by @arittr)\n* **更新了 Codex 插件安装指南**。(PR #1288 by @arittr)\n* **修复了 Codex `wait` 的映射**，在工具参考中更正为 `wait_agent`。\n* **重新组织了安装顺序**；清理了 Codex 安装说明。\n* **移除了残留的 `CHANGELOG.md`**，改用 `RELEASE-NOTES.md` 作为唯一来源。(PR #1163 by @shaanmajid)\n* **修复了 Discord 邀请链接**；新增了发布公告链接，并在社区部分添加了详细的 Discord 描述。"
+    },
+    {
+      "en-US": "### Community",
+      "zh-Hans": "### 社区"
+    },
+    {
+      "en-US": "- @shaanmajid — vestigial `CHANGELOG.md` removal (PR #1163)\n- @arittr — README quickstart install links (#1293), Codex plugin install guidance (#1288), `sync-to-codex-plugin` `interface.defaultPrompt` seed (#1180)",
+      "zh-Hans": "* @shaanmajid — 移除了残留的 `CHANGELOG.md` (PR #1163)\n* @arittr — README 中的快速开始安装链接 (#1293)，Codex 插件安装指南 (#1288)，以及 `sync-to-codex-plugin` `interface.defaultPrompt` 植入 (#1180)"
+    },
+    {
       "en-US": "## v5.0.7 (2026-03-31)",
       "zh-Hans": "## v5.0.7 (2026-03-31)"
     },

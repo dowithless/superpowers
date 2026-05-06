@@ -35,7 +35,7 @@ digraph when_to_use {
 ### 1. 观察症状
 
 ```
-错误：在 /Users/jesse/project/packages/core 中执行 git init 失败
+错误：在 ~/project/packages/core 中 git init 失败
 ```
 
 ### 2. 找到直接原因

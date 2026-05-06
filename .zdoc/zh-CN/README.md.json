@@ -7,8 +7,16 @@
       "zh-Hans": "# Superpowers"
     },
     {
-      "en-US": "Superpowers is a complete software development workflow for your coding agents, built on top of a set of composable \"skills\" and some initial instructions that make sure your agent uses them.",
-      "zh-Hans": "Superpowers 是一个为您的编程智能体构建的完整软件开发工作流，它建立在一组可组合的“技能”和一些初始指令之上，确保您的智能体能够正确使用它们。"
+      "en-US": "Superpowers is a complete software development methodology for your coding agents, built on top of a set of composable skills and some initial instructions that make sure your agent uses them.",
+      "zh-Hans": "Superpowers 是一套针对编码代理的完整软件开发方法论，构建于一组可组合技能和确保代理使用这些技能的初始指令之上。"
+    },
+    {
+      "en-US": "## Quickstart",
+      "zh-Hans": "## 快速上手"
+    },
+    {
+      "en-US": "Give your agent Superpowers: [Claude Code](#claude-code), [Codex CLI](#codex-cli), [Codex App](#codex-app), [Factory Droid](#factory-droid), [Gemini CLI](#gemini-cli), [OpenCode](#opencode), [Cursor](#cursor), [GitHub Copilot CLI](#github-copilot-cli).",
+      "zh-Hans": "为你的代理安装 Superpowers：[Claude Code](#claude-code)、[Codex CLI](#codex-cli)、[Codex App](#codex-app)、[Factory Droid](#factory-droid)、[Gemini CLI](#gemini-cli)、[OpenCode](#opencode)、[Cursor](#cursor)、[GitHub Copilot CLI](#github-copilot-cli)。"
     },
     {
       "en-US": "## How it works",
@@ -55,124 +63,104 @@
       "zh-Hans": "## 安装"
     },
     {
-      "en-US": "**Note:** Installation differs by platform. Claude Code or Cursor have built-in plugin marketplaces. Codex and OpenCode require manual setup.",
-      "zh-Hans": "**注意：** 安装方式因平台而异。Claude Code 或 Cursor 有内置的插件市场。Codex 和 OpenCode 需要手动设置。"
+      "en-US": "Installation differs by harness. If you use more than one, install Superpowers separately for each one.",
+      "zh-Hans": "不同工具的安装方式各有差异。如果使用多个工具，请为每个工具分别安装 Superpowers。"
     },
     {
-      "en-US": "### Claude Code Official Marketplace",
-      "zh-Hans": "### Claude Code 官方市场"
+      "en-US": "### Claude Code",
+      "zh-Hans": "### Claude Code"
     },
     {
       "en-US": "Superpowers is available via the [official Claude plugin marketplace](https://claude.com/plugins/superpowers)",
       "zh-Hans": "Superpowers 可通过[官方 Claude 插件市场](https://claude.com/plugins/superpowers)获取"
     },
     {
-      "en-US": "Install the plugin from Claude marketplace:",
-      "zh-Hans": "从 Claude 市场安装插件："
+      "en-US": "#### Official Marketplace",
+      "zh-Hans": "#### 官方市场"
     },
     {
-      "en-US": "```bash\n/plugin install superpowers@claude-plugins-official\n```",
-      "zh-Hans": "```bash\n/plugin install superpowers@claude-plugins-official\n```"
+      "en-US": "- Install the plugin from Anthropic's official marketplace:\n\n  ```bash\n  /plugin install superpowers@claude-plugins-official\n  ```",
+      "zh-Hans": "* 通过 Anthropic 官方市场安装插件：\n\n  ```bash\n  /plugin install superpowers@claude-plugins-official\n  ```"
     },
     {
-      "en-US": "### Claude Code (via Plugin Marketplace)",
-      "zh-Hans": "### Claude Code（通过插件市场）"
+      "en-US": "#### Superpowers Marketplace",
+      "zh-Hans": "#### Superpowers 市场"
     },
     {
-      "en-US": "In Claude Code, register the marketplace first:",
-      "zh-Hans": "在 Claude Code 中，首先注册市场："
+      "en-US": "The Superpowers marketplace provides Superpowers and some other related plugins for Claude Code.",
+      "zh-Hans": "Superpowers 市场提供 Superpowers 及其他一些与 Claude Code 相关的插件。"
     },
     {
-      "en-US": "```bash\n/plugin marketplace add obra/superpowers-marketplace\n```",
-      "zh-Hans": "```bash\n/plugin marketplace add obra/superpowers-marketplace\n```"
+      "en-US": "- Register the marketplace:\n\n  ```bash\n  /plugin marketplace add obra/superpowers-marketplace\n  ```\n\n- Install the plugin from this marketplace:\n\n  ```bash\n  /plugin install superpowers@superpowers-marketplace\n  ```",
+      "zh-Hans": "* 注册市场：\n\n  ```bash\n  /plugin marketplace add obra/superpowers-marketplace\n  ```\n\n* 从该市场安装插件：\n\n  ```bash\n  /plugin install superpowers@superpowers-marketplace\n  ```"
     },
     {
-      "en-US": "Then install the plugin from this marketplace:",
-      "zh-Hans": "然后从此市场安装插件："
+      "en-US": "### Codex CLI",
+      "zh-Hans": "### Codex CLI"
     },
     {
-      "en-US": "```bash\n/plugin install superpowers@superpowers-marketplace\n```",
-      "zh-Hans": "```bash\n/plugin install superpowers@superpowers-marketplace\n```"
+      "en-US": "Superpowers is available via the [official Codex plugin marketplace](https://github.com/openai/plugins).",
+      "zh-Hans": "Superpowers 可通过 [官方 Codex 插件市场](https://github.com/openai/plugins) 获取。"
     },
     {
-      "en-US": "### Cursor (via Plugin Marketplace)",
-      "zh-Hans": "### Cursor（通过插件市场）"
+      "en-US": "- Open the plugin search interface:\n\n  ```bash\n  /plugins\n  ```\n\n- Search for Superpowers:\n\n  ```bash\n  superpowers\n  ```\n\n- Select `Install Plugin`.",
+      "zh-Hans": "* 打开插件搜索界面：\n\n  ```bash\n  /plugins\n  ```\n\n* 搜索 Superpowers：\n\n  ```bash\n  superpowers\n  ```\n\n* 选择 `Install Plugin`。"
     },
     {
-      "en-US": "In Cursor Agent chat, install from marketplace:",
-      "zh-Hans": "在 Cursor Agent 聊天中，从市场安装："
+      "en-US": "### Codex App",
+      "zh-Hans": "### Codex App"
     },
     {
-      "en-US": "```text\n/add-plugin superpowers\n```",
-      "zh-Hans": "```text\n/add-plugin superpowers\n```"
+      "en-US": "Superpowers is available via the [official Codex plugin marketplace](https://github.com/openai/plugins).",
+      "zh-Hans": "Superpowers 可通过 [官方 Codex 插件市场](https://github.com/openai/plugins) 获取。"
     },
     {
-      "en-US": "or search for \"superpowers\" in the plugin marketplace.",
-      "zh-Hans": "或在插件市场中搜索“superpowers”。"
+      "en-US": "- In the Codex app, click on Plugins in the sidebar.\n- You should see `Superpowers` in the Coding section.\n- Click the `+` next to Superpowers and follow the prompts.",
+      "zh-Hans": "* 在 Codex 应用中，点击侧边栏的\"插件\"。\n* 你应在\"编码\"部分看到 `Superpowers`。\n* 点击 Superpowers 旁的 `+`，然后按照提示操作。"
     },
     {
-      "en-US": "### Codex",
-      "zh-Hans": "### Codex"
+      "en-US": "### Factory Droid",
+      "zh-Hans": "### Factory Droid"
     },
     {
-      "en-US": "Tell Codex:",
-      "zh-Hans": "告诉 Codex："
-    },
-    {
-      "en-US": "```\nFetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.codex/INSTALL.md\n```",
-      "zh-Hans": "```\n从 https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.codex/INSTALL.md 获取并遵循说明。\n```"
-    },
-    {
-      "en-US": "**Detailed docs:** [docs/README.codex.md](docs/README.codex.md)",
-      "zh-Hans": "**详细文档：** [docs/README.codex.md](docs/README.codex.md)"
-    },
-    {
-      "en-US": "### OpenCode",
-      "zh-Hans": "### OpenCode"
-    },
-    {
-      "en-US": "Tell OpenCode:",
-      "zh-Hans": "告诉 OpenCode："
-    },
-    {
-      "en-US": "```\nFetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md\n```",
-      "zh-Hans": "```\n从 https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md 获取并遵循说明。\n```"
-    },
-    {
-      "en-US": "**Detailed docs:** [docs/README.opencode.md](docs/README.opencode.md)",
-      "zh-Hans": "**详细文档：** [docs/README.opencode.md](docs/README.opencode.md)"
-    },
-    {
-      "en-US": "### GitHub Copilot CLI",
-      "zh-Hans": "### GitHub Copilot CLI"
-    },
-    {
-      "en-US": "```bash\ncopilot plugin marketplace add obra/superpowers-marketplace\ncopilot plugin install superpowers@superpowers-marketplace\n```",
-      "zh-Hans": "```bash\ncopilot plugin marketplace add obra/superpowers-marketplace\ncopilot plugin install superpowers@superpowers-marketplace\n```"
+      "en-US": "- Register the marketplace:\n\n  ```bash\n  droid plugin marketplace add https://github.com/obra/superpowers\n  ```\n\n- Install the plugin:\n\n  ```bash\n  droid plugin install superpowers@superpowers\n  ```",
+      "zh-Hans": "* 注册市场：\n\n  ```bash\n  droid plugin marketplace add https://github.com/obra/superpowers\n  ```\n\n* 安装插件：\n\n  ```bash\n  droid plugin install superpowers@superpowers\n  ```"
     },
     {
       "en-US": "### Gemini CLI",
       "zh-Hans": "### Gemini CLI"
     },
     {
-      "en-US": "```bash\ngemini extensions install https://github.com/obra/superpowers\n```",
-      "zh-Hans": "```bash\ngemini extensions install https://github.com/obra/superpowers\n```"
+      "en-US": "- Install the extension:\n\n  ```bash\n  gemini extensions install https://github.com/obra/superpowers\n  ```\n\n- Update later:\n\n  ```bash\n  gemini extensions update superpowers\n  ```",
+      "zh-Hans": "* 安装扩展：\n\n  ```bash\n  gemini extensions install https://github.com/obra/superpowers\n  ```\n\n* 后续更新：\n\n  ```bash\n  gemini extensions update superpowers\n  ```"
     },
     {
-      "en-US": "To update:",
-      "zh-Hans": "要更新："
+      "en-US": "### OpenCode",
+      "zh-Hans": "### OpenCode"
     },
     {
-      "en-US": "```bash\ngemini extensions update superpowers\n```",
-      "zh-Hans": "```bash\ngemini extensions update superpowers\n```"
+      "en-US": "OpenCode uses its own plugin install; install Superpowers separately even if you\nalready use it in another harness.",
+      "zh-Hans": "OpenCode 使用自己的插件安装系统；即使你已在其他工具中使用，也请为 OpenCode 单独安装 Superpowers。"
     },
     {
-      "en-US": "### Verify Installation",
-      "zh-Hans": "### 验证安装"
+      "en-US": "- Tell OpenCode:\n\n  ```\n  Fetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md\n  ```\n\n- Detailed docs: [docs/README.opencode.md](docs/README.opencode.md)",
+      "zh-Hans": "* 告知 OpenCode：\n\n  ```\n  Fetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md\n  ```\n\n* 详细文档：[docs/README.opencode.md](docs/README.opencode.md)"
     },
     {
-      "en-US": "Start a new session in your chosen platform and ask for something that should trigger a skill (for example, \"help me plan this feature\" or \"let's debug this issue\"). The agent should automatically invoke the relevant superpowers skill.",
-      "zh-Hans": "在您选择的平台中启动一个新会话，并询问一些应该触发技能的事情（例如，“帮我规划这个功能”或“我们来调试这个问题”）。智能体应该会自动调用相关的 superpowers 技能。"
+      "en-US": "### Cursor",
+      "zh-Hans": "### Cursor"
+    },
+    {
+      "en-US": "- In Cursor Agent chat, install from marketplace:\n\n  ```text\n  /add-plugin superpowers\n  ```\n\n- Or search for \"superpowers\" in the plugin marketplace.",
+      "zh-Hans": "* 在 Cursor 代理聊天中，通过市场安装：\n\n  ```text\n  /add-plugin superpowers\n  ```\n\n* 或在插件市场中搜索 \"superpowers\"。"
+    },
+    {
+      "en-US": "### GitHub Copilot CLI",
+      "zh-Hans": "### GitHub Copilot CLI"
+    },
+    {
+      "en-US": "- Register the marketplace:\n\n  ```bash\n  copilot plugin marketplace add obra/superpowers-marketplace\n  ```\n\n- Install the plugin:\n\n  ```bash\n  copilot plugin install superpowers@superpowers-marketplace\n  ```",
+      "zh-Hans": "* 注册市场：\n\n  ```bash\n  copilot plugin marketplace add obra/superpowers-marketplace\n  ```\n\n* 安装插件：\n\n  ```bash\n  copilot plugin install superpowers@superpowers-marketplace\n  ```"
     },
     {
       "en-US": "## The Basic Workflow",
@@ -235,20 +223,20 @@
       "zh-Hans": "* **测试驱动开发** - 始终先写测试\n* **系统化优于临时性** - 流程优于猜测\n* **降低复杂性** - 以简洁为主要目标\n* **证据优于断言** - 在宣布成功前进行验证"
     },
     {
-      "en-US": "Read more: [Superpowers for Claude Code](https://blog.fsck.com/2025/10/09/superpowers/)",
-      "zh-Hans": "阅读更多：[适用于 Claude Code 的 Superpowers](https://blog.fsck.com/2025/10/09/superpowers/)"
+      "en-US": "Read [the original release announcement](https://blog.fsck.com/2025/10/09/superpowers/).",
+      "zh-Hans": "阅读 [原始发布公告](https://blog.fsck.com/2025/10/09/superpowers/)。"
     },
     {
       "en-US": "## Contributing",
       "zh-Hans": "## 贡献"
     },
     {
-      "en-US": "Skills live directly in this repository. To contribute:",
-      "zh-Hans": "技能直接存放在此代码库中。要贡献："
+      "en-US": "The general contribution process for Superpowers is below. Keep in mind that we don't generally accept contributions of new skills and that any updates to skills must work across all of the coding agents we support.",
+      "zh-Hans": "以下是 Superpowers 的一般贡献流程。请注意，我们一般不接受新技能的贡献，且对技能的任何更新都必须在所有支持的编码代理上有效。"
     },
     {
-      "en-US": "1. Fork the repository\n2. Create a branch for your skill\n3. Follow the `writing-skills` skill for creating and testing new skills\n4. Submit a PR",
-      "zh-Hans": "1. 分叉此代码库\n2. 为您的技能创建一个分支\n3. 遵循 `writing-skills` 技能来创建和测试新技能\n4. 提交 PR"
+      "en-US": "1. Fork the repository\n2. Switch to the 'dev' branch\n3. Create a branch for your work\n4. Follow the `writing-skills` skill for creating and testing new and modified skills\n5. Submit a PR, being sure to fill in the pull request template.",
+      "zh-Hans": "1. Fork 仓库\n2. 切换到 'dev' 分支\n3. 为你的工作创建一个分支\n4. 遵循 `writing-skills` 技能来创建并测试新技能或修改技能\n5. 提交 Pull 请求，务必填写拉取请求模板。"
     },
     {
       "en-US": "See `skills/writing-skills/SKILL.md` for the complete guide.",
@@ -259,12 +247,8 @@
       "zh-Hans": "## 更新"
     },
     {
-      "en-US": "Skills update automatically when you update the plugin:",
-      "zh-Hans": "当您更新插件时，技能会自动更新："
-    },
-    {
-      "en-US": "```bash\n/plugin update superpowers\n```",
-      "zh-Hans": "```bash\n/plugin update superpowers\n```"
+      "en-US": "Superpowers updates are somewhat coding-agent dependent, but are often automatic.",
+      "zh-Hans": "Superpowers 的更新在一定程度上依赖于编码代理，但通常是自动完成的。"
     },
     {
       "en-US": "## License",

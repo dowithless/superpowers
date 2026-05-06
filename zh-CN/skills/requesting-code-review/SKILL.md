@@ -5,7 +5,7 @@ description: 用于完成任务、实现主要功能或合并前验证工作是�
 
 # 请求代码审查
 
-调度 superpowers:code-reviewer 子代理以在问题蔓延前将其捕获。审查者会获得精心构建的评估上下文——绝不会是你会话的历史记录。这能让审查者专注于工作成果，而非你的思考过程，并为你自己的后续工作保留上下文。
+调派代码审查子代理，在问题连锁反应前及时拦截。审查者获得精心构造的评估上下文——绝不包含你的会话历史。这能使审查者专注于工作成果而非你的思维过程，同时保留你自身的工作上下文继续创作。
 
 **核心原则：** 早审查，常审查。
 
@@ -32,17 +32,16 @@ BASE_SHA=$(git rev-parse HEAD~1)  # or origin/main
 HEAD_SHA=$(git rev-parse HEAD)
 ```
 
-**2. 调度 code-reviewer 子代理：**
+**2. 调派代码审查子代理：**
 
-使用 Task 工具，类型为 superpowers:code-reviewer，填写位于 `code-reviewer.md` 的模板
+使用 `general-purpose` 类型的 Task 工具，填充位于 `code-reviewer.md` 的模板
 
 **占位符说明：**
 
-* `{WHAT_WAS_IMPLEMENTED}` - 你刚刚构建了什么
-* `{PLAN_OR_REQUIREMENTS}` - 它应该做什么
-* `{BASE_SHA}` - 起始提交
-* `{HEAD_SHA}` - 结束提交
-* `{DESCRIPTION}` - 简要总结
+* `{DESCRIPTION}` —— 你所构建内容的简要概述
+* `{PLAN_OR_REQUIREMENTS}` —— 应实现的功能
+* `{BASE_SHA}` —— 起始提交
+* `{HEAD_SHA}` —— 结束提交
 
 **3. 处理反馈：**
 
@@ -54,29 +53,28 @@ HEAD_SHA=$(git rev-parse HEAD)
 ## 示例
 
 ```
-[已完成任务 2：添加验证功能]
+[刚刚完成了任务2：添加验证功能]
 
-你：让我在继续之前请求代码审查。
+你: 让我先请求代码审查，然后再继续。
 
 BASE_SHA=$(git log --oneline | grep "Task 1" | head -1 | awk '{print $1}')
 HEAD_SHA=$(git rev-parse HEAD)
 
-[调度 superpowers:code-reviewer 子代理]
-  WHAT_WAS_IMPLEMENTED: 对话索引的验证和修复功能
-  PLAN_OR_REQUIREMENTS: 来自 docs/superpowers/plans/deployment-plan.md 的任务 2
-  BASE_SHA: a7981ec
-  HEAD_SHA: 3df7661
-  DESCRIPTION: 添加了包含 4 种问题类型的 verifyIndex() 和 repairIndex()
+[分派代码审查助手]
+  描述: 添加了verifyIndex()和repairIndex()以及4种问题类型
+  计划或需求: 来自docs/superpowers/plans/deployment-plan.md的任务2
+  基准提交哈希: a7981ec
+  头部提交哈希: 3df7661
 
-[子代理返回]：
-  优点：架构清晰，包含真实测试
-  问题：
-    重要：缺少进度指示器
-    次要：报告间隔使用魔数 (100)
-  评估：可以继续
+[助手返回]:
+  优点: 架构清晰，有实际测试
+  问题:
+    重要: 缺少进度指示
+    次要: 报告间隔使用了魔数(100)
+  评估: 已准备好继续
 
-你：[修复进度指示器]
-[继续任务 3]
+你: [修复进度指示]
+[继续执行任务3]
 ```
 
 ## 与工作流的集成
@@ -89,8 +87,8 @@ HEAD_SHA=$(git rev-parse HEAD)
 
 **执行计划时：**
 
-* 每批（3项任务）后审查
-* 获取反馈，应用，继续
+* 在每项任务完成后或自然检查点进行审查
+* 获取反馈，应用修改，继续推进
 
 **临时开发：**
 

@@ -12,9 +12,11 @@
 }
 ```
 
-重启 OpenCode。插件将通过 Bun 自动安装并自动注册所有技能。
+重新启动 OpenCode。该插件通过 OpenCode 的插件管理器安装，并将注册所有技能。
 
 通过询问以下内容进行验证：“告诉我关于你的 superpowers”
+
+OpenCode 使用其自身的插件安装方式。如果你同时使用 Claude Code、Codex 或其他集成环境，需要为每个工具分别安装 Superpowers。
 
 ### 从旧的基于符号链接的安装迁移
 
@@ -78,7 +80,7 @@ description: Use when [condition] - [what it does]
 
 ## 更新
 
-Superpowers 在你重启 OpenCode 时会自动更新。插件在每次启动时都会从 git 仓库重新安装。
+OpenCode 通过基于 Git 的包规范安装 Superpowers。某些 OpenCode 和 Bun 版本会将解析后的 Git 依赖固定到锁定文件或缓存中，因此重新启动可能不会自动获取最新的 Superpowers 提交。如果更新未生效，请清除 OpenCode 的包缓存或重新安装插件。
 
 要固定特定版本，请使用分支或标签：
 
@@ -111,6 +113,22 @@ Superpowers 在你重启 OpenCode 时会自动更新。插件在每次启动时�
 1. 检查 OpenCode 日志：`opencode run --print-logs "hello" 2>&1 | grep -i superpowers`
 2. 验证你的 `opencode.json` 中的插件行是否正确
 3. 确保你运行的是最新版本的 OpenCode
+
+### Windows 安装问题
+
+部分 Windows 版 OpenCode 构建版本存在上游安装器问题，涉及基于 Git 的包规范，包括 `git+https` URL 的缓存路径，以及 Bun 在正常终端中可正常运行但无法找到 `git.exe` 的情况。如果 OpenCode 无法安装该插件，可尝试使用系统 npm 安装，并将 OpenCode 指向本地包：
+
+```powershell
+npm install superpowers@git+https://github.com/obra/superpowers.git --prefix "$HOME\.config\opencode"
+```
+
+然后在 `opencode.json` 中使用已安装的包路径：
+
+```json
+{
+  "plugin": ["~/.config/opencode/node_modules/superpowers"]
+}
+```
 
 ### 技能未找到
 

@@ -13,7 +13,7 @@ description: 当您有一个多步骤任务的规范或需求时，在编写代�
 
 **开始时声明：** "我正在使用 writing-plans 技能来创建实施计划。"
 
-**上下文：** 这应该在专用工作树中运行（由 brainstorming 技能创建）。
+**上下文：** 若在隔离工作树中工作，该工作树应通过执行时的 `superpowers:using-git-worktrees` 技能创建。
 
 **计划保存至：** `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`
 

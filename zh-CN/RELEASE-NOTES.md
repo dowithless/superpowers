@@ -1,5 +1,89 @@
 # Superpowers 发布说明
 
+## v5.1.0 (2026-04-30)
+
+### 移除
+
+* **移除了旧版斜杠命令** — `/brainstorm`、`/execute-plan` 和 `/write-plan` 已被移除。它们是已弃用的存根，除了告知用户调用相应技能外不做任何事。请直接调用 `superpowers:brainstorming`、`superpowers:executing-plans` 和 `superpowers:writing-plans`。（#1188）
+* **移除 `superpowers:code-reviewer` 命名代理** — 该代理是该插件唯一的命名代理，仅由两个技能使用，而仓库中所有其他审核/实施子代理在其技能旁使用 `general-purpose` 加提示模板进行分发。该代理的个性与检查清单已作为独立的任务分发模板合并到 `skills/requesting-code-review/code-reviewer.md`。正在分发 `Task (superpowers:code-reviewer)` 的用户应切换到使用提示模板的 `Task (general-purpose)`。(PR #1299)
+* **移除了技能中的集成章节** — 这些是代理拥有原生技能系统之前的遗留产物，且不利于引导。
+
+### 工作目录技能重写
+
+`using-git-worktrees` 和 `finishing-a-development-branch` 现在可以检测代理是否已在隔离的工作目录中运行，并在回退到 `git worktree` 之前优先使用辅助程序的原生工作目录控制。该行为已通过 TDD 验证，并在五个辅助程序上进行了跨平台检查。(PRI-974, PR #1121)
+
+* **环境检测** — 两个技能在执行任何操作前都会检查 `GIT_DIR != GIT_COMMON`；如果已处于关联的工作目录中，则完全跳过创建工作。带有子模块防护，防止误检测。
+* \*\*创建前征询同意 \*\* — `using-git-worktrees` 不再隐式创建工作目录；技能会先询问用户。修复 #991（子代理驱动开发曾未经同意自动创建工作目录）。
+* **原生工具优先（步骤 1a）** — 当辅助程序暴露其自身的工作目录工具（例如 Codex）时，技能会优先使用该工具。用户的明确偏好将得到尊重。
+* **基于来源的清理** — `finishing-a-development-branch` 仅清理 `.worktrees/` 内部（由 superpowers 创建）的工作目录；外部的不会被处理。修复 #940（选项 2 错误地清理了工作目录）、#999（合并然后移除的顺序问题）以及 #238（在 `git worktree remove` 之前 `cd` 到仓库根目录）。
+* **分离头指针处理** — 当没有可分 支合并时，完成菜单将简化为两个选项。
+* **技能示例中的硬编码 `/Users/jesse` 路径** 已替换为通用占位符。(#858, PR #1122)
+
+### 面向 AI 代理的贡献者指南
+
+`CLAUDE.md`（符号链接到 `AGENTS.md`）顶部增加了两个新章节，直接针对 AI 代理。对该仓库最近 100 个已关闭 PR 的审计显示，94% 的被拒率是由 AI 生成的低质量内容导致的：这些代理未曾阅读 PR 模板，提交重复内容，虚构问题描述，或向上游推送了完全针对分支或专有领域的更改。
+
+* **提交前检查清单** — 阅读 PR 模板，搜索现有 PR，核实问题真实存在，确认更改属于核心功能，并在提交前向人类伙伴展示完整的差异。
+* **我们不会接受的内容** — 第三方依赖项、对技能内容的“合规性”重写、特定项目配置、批量 PR、推测性修复、特定领域技能、按分支的特定更改、虚构内容以及捆绑的非相关更改。
+* **新的辅助程序 PR 需要会话记录** — 过去大多数新的辅助程序都是直接复制技能文件或使用 `npx skills` 进行包装，而非在会话开始时加载 `using-superpowers` 引导程序。现在需要验收测试（“让我们创建一个 React 待办事项列表”必须在干净的会话中自动触发 `brainstorming`）和完整的会话记录。
+
+### Codex 插件镜像工具
+
+新增 `sync-to-codex-plugin` 脚本可将 superpowers 镜像至 OpenAI Codex 插件市场，命名为 `prime-radiant-inc/openai-codex-plugins`。该脚本对路径和用户无感，团队中的任何成员均可运行它。(PR #1165)
+
+* 每次运行时，从全新克隆的临时 Fork 仓库开始，即时重新生成叠加层，并打开一个 PR；自动从脚本自身位置检测上游，并预检 `rsync`/`git`/`gh auth`/`python3`。
+* 首次设置时使用 `--bootstrap` 标志；`EXCLUDES` 模式锚定在源根目录；`assets/` 被排除。
+* 镜像 `CODE_OF_CONDUCT.md`；移除 `agents/openai.yaml` 叠加层。
+* 在镜像的 `plugin.json` 中植入 `interface.defaultPrompt`。(PR #1180 by @arittr)
+* Codex 插件文件被提交到源仓库，以便同步脚本使用规范版本。Codex 市场的元数据得以保留。
+
+### OpenCode
+
+* **引导内容缓存在模块级别** — `getBootstrapContent()` 会在每个代理步骤调用 `fs.existsSync` + `fs.readFileSync` + 前置元数据正则表达式（`experimental.chat.messages.transform` 钩子在 OpenCode 代理循环的每个步骤都会触发）。现在只读取一次，在会话生命周期内缓存，对于文件缺失的情况使用空值标记。15 个回归测试涵盖了缓存行为、文件系统调用次数、注入防护、文件缺失标记和缓存重置。（修复 #1202）
+* **集成测试现代化改造**。
+* **README 中的安装注意事项** 已澄清。
+
+### 代码审查整合
+
+`requesting-code-review` 现在是一个独立的模块：个性、检查清单和分发模板都位于 `skills/requesting-code-review/code-reviewer.md` 中，并且技能直接分发 `Task (general-purpose)`。(PR #1299)
+
+* **单一事实来源** — 之前同时存在于 `agents/code-reviewer.md` 和该技能的占位模板中（且二者相互偏离）的个性/检查清单现在统一为一个文件。
+* **`subagent-driven-development`** 也已跟上 — 它的 `code-quality-reviewer-prompt.md` 现在分发 `Task (general-purpose)`，而不是命名代理。
+* **新增行为测试** — `tests/claude-code/test-requesting-code-review.sh` 在一个小型项目中植入真正的漏洞（SQL 注入、明文密码处理、凭证记录），并断言分发的审核员会标记所有植入了严重/重要级别的安全问题，并拒绝对差异进行批准。
+* **Codex 和 Copilot 工作区文档** 被精简 — `references/codex-tools.md` 和 `references/copilot-tools.md` 中的“命名代理分发”章节记录了如何将命名代理展平为通用分发。由于移除了所有命名代理，该解决方案不再必要，这两个章节均已删除。
+
+### 子代理驱动开发
+
+* **不再每 3 个任务暂停一次** — `requesting-code-review` 中的“每批次（3 个任务）后审核”节奏（最初针对 `executing-plans`），现会泄漏到 `subagent-driven-development`。已替换为“每个任务或自然检查点”，并加入了明确的持续执行指令。
+* **SDD 集成测试现已运行其断言** — 三个独立的错误导致测试在输出任何验证结果前静默退出：工作目录路径中一个未处理的 `..` 段、`@@README:String:S8A:REPLACE@@` 与 `@@README:String:S8A:REPLACE@@` 交互（生产者进程的 SIGPIPE 信号导致脚本终止）、以及在 `claude -p` 调用上缺失的 `--plugin-dir`，导致测试加载的是已安装的插件而非工作树状态。所有三个问题均已修复；六个验证测试现在真的会在实际的端到端 SDD 运行过程中执行。
+
+### Cursor
+
+* **Windows SessionStart 钩子** 现在通过 `run-hook.cmd` 路由，而不是直接调用无扩展名的 `session-start` 脚本。修复了 Windows 系统在编辑器中打开该文件而非正确执行的问题。同时移除了 `hooks-cursor.json` 中意外包含的 UTF-8 BOM。
+
+### Gemini CLI
+
+* **子代理分派映射** — Gemini 的 `@@ODE:STRING_S5L_I1@@` 分派现已映射到 `@@ODE:STRING_S5L_I1@@` / `@@ODE@@INLINE:WORD:I1DE2_ONEDOT@@:DOT_NAME@@:DISPATCH@@`，并且记录了并行子代理分派以用于独立任务。
+
+### 技能
+
+* **技能内容中的术语清理**。
+
+### 文档与安装
+
+* README 中新增了 **Factory Droid 安装指南**。
+* 在 README 中添加了 **快速开始安装链接**。(PR #1293 by @arittr)
+* **更新了 Codex 插件安装指南**。(PR #1288 by @arittr)
+* **修复了 Codex `wait` 的映射**，在工具参考中更正为 `wait_agent`。
+* **重新组织了安装顺序**；清理了 Codex 安装说明。
+* **移除了残留的 `CHANGELOG.md`**，改用 `RELEASE-NOTES.md` 作为唯一来源。(PR #1163 by @shaanmajid)
+* **修复了 Discord 邀请链接**；新增了发布公告链接，并在社区部分添加了详细的 Discord 描述。
+
+### 社区
+
+* @shaanmajid — 移除了残留的 `CHANGELOG.md` (PR #1163)
+* @arittr — README 中的快速开始安装链接 (#1293)，Codex 插件安装指南 (#1288)，以及 `sync-to-codex-plugin` `interface.defaultPrompt` 植入 (#1180)
+
 ## v5.0.7 (2026-03-31)
 
 ### GitHub Copilot CLI 支持

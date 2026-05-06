@@ -9,7 +9,7 @@ description: 当实现完成、所有测试通过且需要决定如何集成工�
 
 通过呈现清晰选项并处理所选工作流，指导完成开发工作。
 
-**核心原则：** 验证测试 → 呈现选项 → 执行选择 → 清理。
+**核心原则：** 验证测试 → 检测环境 → 提供选项 → 执行选择 → 清理。
 
 **开始时声明：** "我正在使用完成开发分支技能来完成这项工作。"
 
@@ -38,7 +38,24 @@ npm test / cargo test / pytest / go test ./...
 
 **如果测试通过：** 继续到步骤 2。
 
-### 步骤 2：确定基础分支
+### 步骤 2：检测环境
+
+**在提供选项之前确定工作区状态：**
+
+```bash
+GIT_DIR=$(cd "$(git rev-parse --git-dir)" 2>/dev/null && pwd -P)
+GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
+```
+
+这将决定显示哪个菜单以及清理工作的方式：
+
+| 状态 | 菜单 | 清理 |
+|-------|------|---------|
+| `GIT_DIR == GIT_COMMON`（正常仓库） | 标准4选项 | 无需清理工作树 |
+| `GIT_DIR != GIT_COMMON`，命名分支 | 标准4选项 | 基于来源（见步骤6） |
+| `GIT_DIR != GIT_COMMON`，分离头指针 | 精简3选项（无合并） | 不清理（外部管理） |
+
+### 步骤 3：确定基础分支
 
 ```bash
 # Try common base branches
@@ -47,9 +64,9 @@ git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null
 
 或询问："此分支是从 main 分支分出来的 - 是否正确？"
 
-### 步骤 3：呈现选项
+### 步骤 4：提供选项
 
-准确呈现这 4 个选项：
+**正常仓库和命名分支工作树 — 仅展示以下4个选项：**
 
 ```
 实施完成。您想做什么？
@@ -62,30 +79,45 @@ git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null
 请选择哪个选项？
 ```
 
+**分离头指针 — 仅展示以下3个选项：**
+
+```
+实现完成。您处于分离头指针状态（外部管理工作区）。
+
+1. 推送为新分支并创建拉取请求
+2. 保持现状（稍后处理）
+3. 放弃本次工作
+
+选择哪个选项？
+```
+
 **不要添加解释** - 保持选项简洁。
 
-### 步骤 4：执行选择
+### 步骤 5：执行选择
 
 #### 选项 1：本地合并
 
 ```bash
-# Switch to base branch
+# Get main repo root for CWD safety
+MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
+cd "$MAIN_ROOT"
+
+# Merge first — verify success before removing anything
 git checkout <base-branch>
-
-# Pull latest
 git pull
-
-# Merge feature branch
 git merge <feature-branch>
 
 # Verify tests on merged result
 <test command>
 
-# If tests pass
-git branch -d <feature-branch>
+# Only after merge succeeds: cleanup worktree (Step 6), then delete branch
 ```
 
-然后：清理工作树（步骤 5）
+然后：清理工作树（步骤6），然后删除分支：
+
+```bash
+git branch -d <feature-branch>
+```
 
 #### 选项 2：推送并创建 PR
 
@@ -104,7 +136,7 @@ EOF
 )"
 ```
 
-然后：清理工作树（步骤 5）
+**不要清理工作树** — 用户需要它活跃以迭代 PR 反馈。
 
 #### 选项 3：保持原样
 
@@ -130,38 +162,47 @@ EOF
 如果确认：
 
 ```bash
-git checkout <base-branch>
+MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
+cd "$MAIN_ROOT"
+```
+
+然后：清理工作树（步骤6），然后强制删除分支：
+
+```bash
 git branch -D <feature-branch>
 ```
 
-然后：清理工作树（步骤 5）
+### 步骤 6：清理工作区
 
-### 步骤 5：清理工作树
-
-**对于选项 1, 2, 4：**
-
-检查是否在工作树中：
+**仅对选项1和4执行。** 选项2和3始终保留工作树。
 
 ```bash
-git worktree list | grep $(git branch --show-current)
+GIT_DIR=$(cd "$(git rev-parse --git-dir)" 2>/dev/null && pwd -P)
+GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
+WORKTREE_PATH=$(git rev-parse --show-toplevel)
 ```
 
-如果是：
+**如果 `GIT_DIR == GIT_COMMON`：** 正常仓库，无需清理工作树。完成。
+
+**如果工作树路径位于 `.worktrees/`、`worktrees/` 或 `~/.config/superpowers/worktrees/` 下：** Superpowers 创建了此工作树 — 我们负责清理。
 
 ```bash
-git worktree remove <worktree-path>
+MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
+cd "$MAIN_ROOT"
+git worktree remove "$WORKTREE_PATH"
+git worktree prune  # Self-healing: clean up any stale registrations
 ```
 
-**对于选项 3：** 保留工作树。
+**否则：** 主机环境（测试框架）拥有此工作区。**不要**移除它。如果你的平台提供了一个工作区退出工具，请使用它。否则，保持工作区不变。
 
 ## 快速参考
 
 | 选项 | 合并 | 推送 | 保留工作树 | 清理分支 |
 |--------|-------|------|---------------|----------------|
-| 1. 本地合并 | ✓ | - | - | ✓ |
-| 2. 创建 PR | - | ✓ | ✓ | - |
-| 3. 保持原样 | - | - | ✓ | - |
-| 4. 丢弃 | - | - | - | ✓ (强制) |
+| 1. 本地合并 | 是 | - | - | 是 |
+| 2. 创建 PR | - | 是 | 是 | - |
+| 3. 保持原样 | - | - | 是 | - |
+| 4. 丢弃 | - | - | - | 是（强制） |
 
 ## 常见错误
 
@@ -172,13 +213,28 @@ git worktree remove <worktree-path>
 
 **开放式问题**
 
-* **问题：** "接下来我该做什么？" → 模糊不清
-* **修复：** 准确呈现 4 个结构化选项
+* **问题：** “我接下来应该做什么？”表述含糊
+* **修复：** 精确展示4个结构化选项（分离头指针则展示3个）
 
-**自动工作树清理**
+**为选项2清理工作树**
 
-* **问题：** 在可能还需要时移除工作树（选项 2, 3）
-* **修复：** 仅清理选项 1 和 4 的情况
+* **问题：** 用户迭代 PR 所需的工作树被移除
+* **修复：** 仅对选项1和4进行清理
+
+**在移除工作树之前删除分支**
+
+* **问题：** 由于工作树仍引用该分支，`git branch -d` 失败
+* **修复：** 先合并，再移除工作树，最后删除分支
+
+**从工作树内部运行 git worktree remove**
+
+* **问题：** 当当前工作目录位于即将移除的工作树内部时，命令会静默失败
+* **修复：** 在 `git worktree remove` 之前，始终 `cd` 返回主仓库根目录
+
+**清理测试框架拥有的工作树**
+
+* **问题：** 移除由测试框架创建工作树会导致幻影状态
+* **修复：** 只清理位于 `.worktrees/`、`worktrees/` 或 `~/.config/superpowers/worktrees/` 下的工作树
 
 **丢弃时无确认**
 
@@ -189,25 +245,20 @@ git worktree remove <worktree-path>
 
 **切勿：**
 
-* 在测试失败的情况下继续
-* 未验证结果测试就进行合并
-* 未经确认就删除工作
-* 未经明确请求就强制推送
+* 在测试失败的情况下继续操作
+* 未在结果上验证测试即进行合并
+* 未经确认删除工作
+* 未经明确请求强制推送
+* 在确认合并成功前移除工作树
+* 清理不是你创建的工作树（来源检查）
+* 从工作树内部运行 `git worktree remove`
 
 **始终：**
 
-* 在提供选项之前验证测试
-* 准确呈现 4 个选项
-* 获取选项 4 的输入确认
-* 仅清理选项 1 和 4 的工作树
-
-## 集成
-
-**由以下调用：**
-
-* **subagent-driven-development** (步骤 7) - 所有任务完成后
-* **executing-plans** (步骤 5) - 所有批次完成后
-
-**与以下配对：**
-
-* **using-git-worktrees** - 清理由该技能创建的工作树
+* 提供选项前先验证测试
+* 展示菜单前检测环境
+* 精确展示4个选项（分离头指针则展示3个）
+* 对选项4获取输入确认
+* 仅对选项1和4清理工作树
+* 工作树移除前先 `cd` 到主仓库根目录
+* 移除后运行 `git worktree prune`

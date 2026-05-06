@@ -151,6 +151,26 @@
       "zh-Hans": "* 工作流实际上能端到端运行\n* 我们的改进措施实际被应用\n* 子代理正确遵循技能\n* 最终代码功能正常且经过测试"
     },
     {
+      "en-US": "#### test-requesting-code-review.sh",
+      "zh-Hans": "#### test-requesting-code-review.sh"
+    },
+    {
+      "en-US": "Behavioral test for the code reviewer subagent (~5 minutes):",
+      "zh-Hans": "代码审查子代理的行为测试（约5分钟）："
+    },
+    {
+      "en-US": "- Builds a tiny project with a baseline commit\n- Adds a second commit that plants two real bugs (SQL injection, plaintext password handling)\n- Dispatches the code reviewer via the requesting-code-review skill\n- Verifies the reviewer flags the planted bugs at Critical/Important severity and refuses to approve",
+      "zh-Hans": "* 构建一个包含初始提交的小型项目\n* 添加第二个提交，植入两个真实漏洞（SQL注入、明文密码处理）\n* 通过'请求代码审查'技能调用代码审查子代理\n* 验证审查者以\"严重/重要\"级别标记植入的漏洞，并拒绝批准"
+    },
+    {
+      "en-US": "**What it tests:**",
+      "zh-Hans": "**测试内容：**"
+    },
+    {
+      "en-US": "- The skill actually dispatches a working code reviewer subagent\n- The reviewer template produces reviewers that catch obvious security bugs\n- The reviewer is not sycophantic — it does not approve a diff with planted Critical issues",
+      "zh-Hans": "* 该技能实际调用一个可工作的代码审查子代理\n* 审查者模板生成的审查者能够发现明显的安全漏洞\n* 审查者不是谄媚的——它不会批准包含\"严重\"级别植入问题的代码差异"
+    },
+    {
       "en-US": "## Adding New Tests",
       "zh-Hans": "## 添加新测试"
     },

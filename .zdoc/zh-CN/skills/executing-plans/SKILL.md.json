@@ -111,8 +111,8 @@
       "zh-Hans": "**必需的工作流技能：**"
     },
     {
-      "en-US": "- **superpowers:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting\n- **superpowers:writing-plans** - Creates the plan this skill executes\n- **superpowers:finishing-a-development-branch** - Complete development after all tasks",
-      "zh-Hans": "* **superpowers:using-git-worktrees** - 必需：在开始前设置隔离的工作空间\n* **superpowers:writing-plans** - 创建此技能执行的计划\n* **superpowers:finishing-a-development-branch** - 所有任务完成后完成开发"
+      "en-US": "- **superpowers:using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)\n- **superpowers:writing-plans** - Creates the plan this skill executes\n- **superpowers:finishing-a-development-branch** - Complete development after all tasks",
+      "zh-Hans": "* **superpowers:使用-git-工作树** - 确保隔离的工作空间（创建一个或验证已有的）\n* **superpowers:编写计划** - 创建此技能执行所需的计划\n* **superpowers:完成开发分支** - 在所有任务完成后完成开发"
     }
   ]
 }

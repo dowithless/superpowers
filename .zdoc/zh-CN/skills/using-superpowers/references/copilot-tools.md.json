@@ -11,20 +11,8 @@
       "zh-Hans": "技能使用 Claude Code 工具名称。当你在技能中遇到这些时，请使用你平台上的等效工具："
     },
     {
-      "en-US": "| Skill references | Copilot CLI equivalent |\n|-----------------|----------------------|\n| `Read` (file reading) | `view` |\n| `Write` (file creation) | `create` |\n| `Edit` (file editing) | `edit` |\n| `Bash` (run commands) | `bash` |\n| `Grep` (search file content) | `grep` |\n| `Glob` (search files by name) | `glob` |\n| `Skill` tool (invoke a skill) | `skill` |\n| `WebFetch` | `web_fetch` |\n| `Task` tool (dispatch subagent) | `task` (see [Agent types](#agent-types)) |\n| Multiple `Task` calls (parallel) | Multiple `task` calls |\n| Task status/output | `read_agent`, `list_agents` |\n| `TodoWrite` (task tracking) | `sql` with built-in `todos` table |\n| `WebSearch` | No equivalent — use `web_fetch` with a search engine URL |\n| `EnterPlanMode` / `ExitPlanMode` | No equivalent — stay in the main session |",
-      "zh-Hans": "| 技能引用 | Copilot CLI 等效工具 |\n|-----------------|----------------------|\n| `Read`（文件读取） | `view` |\n| `Write`（文件创建） | `create` |\n| `Edit`（文件编辑） | `edit` |\n| `Bash`（运行命令） | `bash` |\n| `Grep`（搜索文件内容） | `grep` |\n| `Glob`（按文件名搜索文件） | `glob` |\n| `Skill` 工具（调用技能） | `skill` |\n| `WebFetch` | `web_fetch` |\n| `Task` 工具（派发子代理） | `task`（参见[代理类型](#代理类型)） |\n| 多个 `Task` 调用（并行） | 多个 `task` 调用 |\n| 任务状态/输出 | `read_agent`, `list_agents` |\n| `TodoWrite`（任务跟踪） | `sql` 及内置的 `todos` 表格 |\n| `WebSearch` | 无等效工具 —— 使用带有搜索引擎 URL 的 `web_fetch` |\n| `EnterPlanMode` / `ExitPlanMode` | 无等效工具 —— 保持在主会话中 |"
-    },
-    {
-      "en-US": "## Agent types",
-      "zh-Hans": "## 代理类型"
-    },
-    {
-      "en-US": "Copilot CLI's `task` tool accepts an `agent_type` parameter:",
-      "zh-Hans": "Copilot CLI 的 `task` 工具接受一个 `agent_type` 参数："
-    },
-    {
-      "en-US": "| Claude Code agent | Copilot CLI equivalent |\n|-------------------|----------------------|\n| `general-purpose` | `\"general-purpose\"` |\n| `Explore` | `\"explore\"` |\n| Named plugin agents (e.g. `superpowers:code-reviewer`) | Discovered automatically from installed plugins |",
-      "zh-Hans": "| Claude Code 代理 | Copilot CLI 等效工具 |\n|-------------------|----------------------|\n| `general-purpose` | `\"general-purpose\"` |\n| `Explore` | `\"explore\"` |\n| 命名插件代理（例如 `superpowers:code-reviewer`） | 从已安装的插件中自动发现 |"
+      "en-US": "| Skill references | Copilot CLI equivalent |\n|-----------------|----------------------|\n| `Read` (file reading) | `view` |\n| `Write` (file creation) | `create` |\n| `Edit` (file editing) | `edit` |\n| `Bash` (run commands) | `bash` |\n| `Grep` (search file content) | `grep` |\n| `Glob` (search files by name) | `glob` |\n| `Skill` tool (invoke a skill) | `skill` |\n| `WebFetch` | `web_fetch` |\n| `Task` tool (dispatch subagent) | `task` with `agent_type: \"general-purpose\"` or `\"explore\"` |\n| Multiple `Task` calls (parallel) | Multiple `task` calls |\n| Task status/output | `read_agent`, `list_agents` |\n| `TodoWrite` (task tracking) | `sql` with built-in `todos` table |\n| `WebSearch` | No equivalent — use `web_fetch` with a search engine URL |\n| `EnterPlanMode` / `ExitPlanMode` | No equivalent — stay in the main session |",
+      "zh-Hans": "| 技能参考 | Copilot CLI 等效功能 |\n|-----------------|----------------------|\n| `Read`（文件读取） | `view` |\n| `Write`（文件创建） | `create` |\n| `Edit`（文件编辑） | `edit` |\n| `Bash`（运行命令） | `bash` |\n| `Grep`（搜索文件内容） | `grep` |\n| `Glob`（按名称搜索文件） | `glob` |\n| `Skill` 工具（调用技能） | `skill` |\n| `WebFetch` | `web_fetch` |\n| `Task` 工具（分派子代理） | `task` 与 `agent_type: \"general-purpose\"` 或 `\"explore\"` 配合使用 |\n| 多个 `Task` 调用（并行） | 多个 `task` 调用 |\n| 任务状态/输出 | `read_agent`、`list_agents` |\n| `TodoWrite`（任务跟踪） | `sql` 带有内置的 `todos` 表格 |\n| `WebSearch` | 无等效功能 — 请使用带搜索引擎 URL 的 `web_fetch` |\n| `EnterPlanMode` / `ExitPlanMode` | 无等效功能 — 留在主会话中 |"
     },
     {
       "en-US": "## Async shell sessions",

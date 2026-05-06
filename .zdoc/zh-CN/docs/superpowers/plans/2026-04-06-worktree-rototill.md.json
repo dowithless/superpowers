@@ -1,0 +1,910 @@
+{
+  "sourceFile": "docs/superpowers/plans/2026-04-06-worktree-rototill.md",
+  "sourceLanguage": "en-US",
+  "entries": [
+    {
+      "en-US": "# Worktree Rototill Implementation Plan",
+      "zh-Hans": "# Worktree Rototill 实现计划"
+    },
+    {
+      "en-US": "> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.",
+      "zh-Hans": "> **对于智能代理工作者：** 必需的子技能：使用 superpowers：subagent-driven-development（推荐）或 superpowers：executing-plans 来按任务实现此计划。步骤使用复选框 (`- [ ]`) 语法进行追踪。"
+    },
+    {
+      "en-US": "**Goal:** Make superpowers defer to native harness worktree systems when available, fall back to manual git worktrees when not, and fix three known finishing bugs.",
+      "zh-Hans": "**目标：** 使 superpowers 在可用时优先使用原生工作树系统，不可用时回退到手动 git worktree，并修复三个已知的完成阶段错误。"
+    },
+    {
+      "en-US": "**Architecture:** Two skill files are rewritten (`using-git-worktrees`, `finishing-a-development-branch`), three files get one-line integration updates (`executing-plans`, `subagent-driven-development`, `writing-plans`). The core change is adding detection (`GIT_DIR != GIT_COMMON`) and a native-tool-first creation path. These are markdown skill instruction files, not application code — \"tests\" are agent behavior tests using the testing-skills-with-subagents TDD framework.",
+      "zh-Hans": "**架构：** 重写两个技能文件 (`using-git-worktrees`，`finishing-a-development-branch`)，三个文件进行单行集成更新 (`executing-plans`，`subagent-driven-development`，`writing-plans`)。核心更改是添加检测 (`GIT_DIR != GIT_COMMON`) 和原生工具优先的创建路径。这些是 Markdown 技能指令文件，而非应用程序代码——\"测试\"是使用 testing-skills-with-subagents TDD 框架的代理行为测试。"
+    },
+    {
+      "en-US": "**Tech Stack:** Markdown (skill files), bash (test scripts), Claude Code CLI (`claude -p` for headless testing)",
+      "zh-Hans": "**技术栈：** Markdown（技能文件），bash（测试脚本），Claude Code CLI（`claude -p` 用于无头测试）"
+    },
+    {
+      "en-US": "**Spec:** `docs/superpowers/specs/2026-04-06-worktree-rototill-design.md`",
+      "zh-Hans": "**规格：** `docs/superpowers/specs/2026-04-06-worktree-rototill-design.md`"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 1: GATE — TDD Validation of Step 1a (Native Tool Preference)",
+      "zh-Hans": "### 任务 1：关卡 — 第 1a 步（原生工具偏好）的 TDD 验证"
+    },
+    {
+      "en-US": "Step 1a is the load-bearing assumption of the entire design. If agents don't prefer native worktree tools over `git worktree add`, the spec fails. Validate this FIRST, before touching any skill files.",
+      "zh-Hans": "第 1a 步是整个设计的承重假设。如果代理不优先使用原生工作树工具而非 `git worktree add`，则规格失败。请首先进行验证，然后再触碰任何技能文件。"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Create: `tests/claude-code/test-worktree-native-preference.sh`\n- Read: `skills/using-git-worktrees/SKILL.md` (current version, for RED baseline)\n- Read: `tests/claude-code/test-helpers.sh` (for `run_claude`, `assert_contains`, etc.)\n- Read: `skills/writing-skills/testing-skills-with-subagents.md` (TDD framework)",
+      "zh-Hans": "* 创建：`tests/claude-code/test-worktree-native-preference.sh`\n* 读取：`skills/using-git-worktrees/SKILL.md`（当前版本，用于 RED 基线）\n* 读取：`tests/claude-code/test-helpers.sh`（用于 `run_claude`，`assert_contains` 等）\n* 读取：`skills/writing-skills/testing-skills-with-subagents.md`（TDD 框架）"
+    },
+    {
+      "en-US": "**This task is a gate.** If the GREEN phase fails after 2 REFACTOR iterations, STOP. Do not proceed to Task 2. Report back — the creation approach needs redesign.",
+      "zh-Hans": "**此任务是一个关卡。** 如果 GREEN 阶段在 2 次 REFACTOR 迭代后失败，则应停止。不要继续执行任务 2。请报告问题——创建方法需要重新设计。"
+    },
+    {
+      "en-US": "- [ ] **Step 1: Write the RED baseline test script**",
+      "zh-Hans": "* \\[ ] **第 1 步：编写 RED 基线测试脚本**"
+    },
+    {
+      "en-US": "Create the test script that will run scenarios both WITHOUT and WITH the updated skill text. The RED phase runs against the current skill (which has no Step 1a).",
+      "zh-Hans": "创建将在不包含和包含更新技能文本的情况下运行场景的测试脚本。RED 阶段针对当前技能运行（该技能没有第 1a 步）。"
+    },
+    {
+      "en-US": "```bash\n#!/usr/bin/env bash\n# Test: Does the agent prefer native worktree tools (EnterWorktree) over git worktree add?\n# Framework: RED-GREEN-REFACTOR per testing-skills-with-subagents.md\n#\n# RED:   Current skill has no native tool preference. Agent should use git worktree add.\n# GREEN: Updated skill has Step 1a. Agent should use EnterWorktree on Claude Code.\n\nset -euo pipefail\nSCRIPT_DIR=\"$(cd \"$(dirname \"$0\")\" && pwd)\"\nsource \"$SCRIPT_DIR/test-helpers.sh\"\n\n# Pressure scenario: realistic implementation task where agent needs isolation\nSCENARIO='IMPORTANT: This is a real task. Choose and act.\n\nYou need to implement a small feature (add a \"version\" field to package.json).\nThis should be done in an isolated workspace to protect the main branch.\n\nYou have the using-git-worktrees skill available. Set up the isolated workspace now.\nDo NOT actually implement the feature — just set up the workspace and report what you did.\n\nRespond with EXACTLY what tool/command you used to create the workspace.'\n\necho \"=== Worktree Native Preference Test ===\"\necho \"\"\n\n# Phase selection\nPHASE=\"${1:-red}\"\n\nif [ \"$PHASE\" = \"red\" ]; then\n    echo \"--- RED PHASE: Running WITHOUT Step 1a (current skill) ---\"\n    echo \"Expected: Agent uses 'git worktree add' (no native tool awareness)\"\n    echo \"\"\n\n    test_dir=$(create_test_project)\n    cd \"$test_dir\"\n    git init && git commit --allow-empty -m \"init\"\n    mkdir -p .worktrees\n\n    output=$(run_claude \"$SCENARIO\" 120)\n\n    echo \"Agent output:\"\n    echo \"$output\"\n    echo \"\"\n\n    # RED expectation: agent uses git worktree add (current behavior)\n    if echo \"$output\" | grep -qi \"EnterWorktree\"; then\n        echo \"[UNEXPECTED] Agent used EnterWorktree WITHOUT Step 1a — skill may not be needed\"\n        echo \"Investigate: is Claude Code's default behavior already correct?\"\n    else\n        echo \"[RED CONFIRMED] Agent did NOT use EnterWorktree\"\n        assert_contains \"$output\" \"git worktree\" \"Agent used git worktree (expected in RED)\"\n    fi\n\n    cleanup_test_project \"$test_dir\"\n\nelif [ \"$PHASE\" = \"green\" ]; then\n    echo \"--- GREEN PHASE: Running WITH Step 1a (updated skill) ---\"\n    echo \"Expected: Agent uses EnterWorktree instead of git worktree add\"\n    echo \"\"\n\n    test_dir=$(create_test_project)\n    cd \"$test_dir\"\n    git init && git commit --allow-empty -m \"init\"\n\n    output=$(run_claude \"$SCENARIO\" 120)\n\n    echo \"Agent output:\"\n    echo \"$output\"\n    echo \"\"\n\n    # GREEN expectation: agent uses EnterWorktree\n    assert_contains \"$output\" \"EnterWorktree\" \"Agent used native EnterWorktree tool\"\n    assert_not_contains \"$output\" \"git worktree add\" \"Agent did NOT fall back to git worktree add\"\n\n    cleanup_test_project \"$test_dir\"\n\nelif [ \"$PHASE\" = \"pressure\" ]; then\n    echo \"--- PRESSURE PHASE: Multiple pressures to skip native tools ---\"\n    echo \"\"\n\n    PRESSURE_SCENARIO='IMPORTANT: This is a real task. Choose and act.\n\nYou need to set up an isolated workspace URGENTLY. Production is impacted and\nthe fix needs to go in a worktree. You know git worktree add works reliably.\nThe .worktrees/ directory already exists and is gitignored.\n\nYou have the using-git-worktrees skill. Set up the workspace NOW.\nSpeed matters. Report EXACTLY what tool/command you used.'\n\n    test_dir=$(create_test_project)\n    cd \"$test_dir\"\n    git init && git commit --allow-empty -m \"init\"\n    mkdir -p .worktrees\n    echo \".worktrees/\" >> .gitignore\n\n    output=$(run_claude \"$PRESSURE_SCENARIO\" 120)\n\n    echo \"Agent output:\"\n    echo \"$output\"\n    echo \"\"\n\n    # Should STILL use EnterWorktree even under pressure\n    assert_contains \"$output\" \"EnterWorktree\" \"Agent used native tool even under time pressure\"\n    assert_not_contains \"$output\" \"git worktree add\" \"Agent resisted falling back to git despite pressure\"\n\n    cleanup_test_project \"$test_dir\"\nfi\n\necho \"\"\necho \"=== Test Complete ===\"\n```",
+      "zh-Hans": "```bash\n#!/usr/bin/env bash\n# Test: Does the agent prefer native worktree tools (EnterWorktree) over git worktree add?\n# Framework: RED-GREEN-REFACTOR per testing-skills-with-subagents.md\n#\n# RED:   Current skill has no native tool preference. Agent should use git worktree add.\n# GREEN: Updated skill has Step 1a. Agent should use EnterWorktree on Claude Code.\n\nset -euo pipefail\nSCRIPT_DIR=\"$(cd \"$(dirname \"$0\")\" && pwd)\"\nsource \"$SCRIPT_DIR/test-helpers.sh\"\n\n# Pressure scenario: realistic implementation task where agent needs isolation\nSCENARIO='IMPORTANT: This is a real task. Choose and act.\n\nYou need to implement a small feature (add a \"version\" field to package.json).\nThis should be done in an isolated workspace to protect the main branch.\n\nYou have the using-git-worktrees skill available. Set up the isolated workspace now.\nDo NOT actually implement the feature — just set up the workspace and report what you did.\n\nRespond with EXACTLY what tool/command you used to create the workspace.'\n\necho \"=== Worktree Native Preference Test ===\"\necho \"\"\n\n# Phase selection\nPHASE=\"${1:-red}\"\n\nif [ \"$PHASE\" = \"red\" ]; then\n    echo \"--- RED PHASE: Running WITHOUT Step 1a (current skill) ---\"\n    echo \"Expected: Agent uses 'git worktree add' (no native tool awareness)\"\n    echo \"\"\n\n    test_dir=$(create_test_project)\n    cd \"$test_dir\"\n    git init && git commit --allow-empty -m \"init\"\n    mkdir -p .worktrees\n\n    output=$(run_claude \"$SCENARIO\" 120)\n\n    echo \"Agent output:\"\n    echo \"$output\"\n    echo \"\"\n\n    # RED expectation: agent uses git worktree add (current behavior)\n    if echo \"$output\" | grep -qi \"EnterWorktree\"; then\n        echo \"[UNEXPECTED] Agent used EnterWorktree WITHOUT Step 1a — skill may not be needed\"\n        echo \"Investigate: is Claude Code's default behavior already correct?\"\n    else\n        echo \"[RED CONFIRMED] Agent did NOT use EnterWorktree\"\n        assert_contains \"$output\" \"git worktree\" \"Agent used git worktree (expected in RED)\"\n    fi\n\n    cleanup_test_project \"$test_dir\"\n\nelif [ \"$PHASE\" = \"green\" ]; then\n    echo \"--- GREEN PHASE: Running WITH Step 1a (updated skill) ---\"\n    echo \"Expected: Agent uses EnterWorktree instead of git worktree add\"\n    echo \"\"\n\n    test_dir=$(create_test_project)\n    cd \"$test_dir\"\n    git init && git commit --allow-empty -m \"init\"\n\n    output=$(run_claude \"$SCENARIO\" 120)\n\n    echo \"Agent output:\"\n    echo \"$output\"\n    echo \"\"\n\n    # GREEN expectation: agent uses EnterWorktree\n    assert_contains \"$output\" \"EnterWorktree\" \"Agent used native EnterWorktree tool\"\n    assert_not_contains \"$output\" \"git worktree add\" \"Agent did NOT fall back to git worktree add\"\n\n    cleanup_test_project \"$test_dir\"\n\nelif [ \"$PHASE\" = \"pressure\" ]; then\n    echo \"--- PRESSURE PHASE: Multiple pressures to skip native tools ---\"\n    echo \"\"\n\n    PRESSURE_SCENARIO='IMPORTANT: This is a real task. Choose and act.\n\nYou need to set up an isolated workspace URGENTLY. Production is impacted and\nthe fix needs to go in a worktree. You know git worktree add works reliably.\nThe .worktrees/ directory already exists and is gitignored.\n\nYou have the using-git-worktrees skill. Set up the workspace NOW.\nSpeed matters. Report EXACTLY what tool/command you used.'\n\n    test_dir=$(create_test_project)\n    cd \"$test_dir\"\n    git init && git commit --allow-empty -m \"init\"\n    mkdir -p .worktrees\n    echo \".worktrees/\" >> .gitignore\n\n    output=$(run_claude \"$PRESSURE_SCENARIO\" 120)\n\n    echo \"Agent output:\"\n    echo \"$output\"\n    echo \"\"\n\n    # Should STILL use EnterWorktree even under pressure\n    assert_contains \"$output\" \"EnterWorktree\" \"Agent used native tool even under time pressure\"\n    assert_not_contains \"$output\" \"git worktree add\" \"Agent resisted falling back to git despite pressure\"\n\n    cleanup_test_project \"$test_dir\"\nfi\n\necho \"\"\necho \"=== Test Complete ===\"\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Run RED phase — confirm agent uses git worktree add today**",
+      "zh-Hans": "* \\[ ] **第 2 步：运行 RED 阶段 — 确认代理当前使用 git worktree add**"
+    },
+    {
+      "en-US": "Run: `cd tests/claude-code && bash test-worktree-native-preference.sh red`",
+      "zh-Hans": "运行：`cd tests/claude-code && bash test-worktree-native-preference.sh red`"
+    },
+    {
+      "en-US": "Expected: `[RED CONFIRMED] Agent did NOT use EnterWorktree` — agent uses `git worktree add` because current skill has no native tool preference.",
+      "zh-Hans": "预期结果：`[RED CONFIRMED] Agent did NOT use EnterWorktree` — 代理使用 `git worktree add`，因为当前技能没有原生工具偏好。"
+    },
+    {
+      "en-US": "Document the agent's exact output and any rationalizations verbatim. This is the baseline failure the skill must fix.",
+      "zh-Hans": "逐字记录代理的确切输出和任何理由。这是技能必须修复的基线失败。"
+    },
+    {
+      "en-US": "- [ ] **Step 3: If RED confirmed, proceed. Write the Step 1a skill text.**",
+      "zh-Hans": "* \\[ ] **第 3 步：如果 RED 已确认，继续执行。编写第 1a 步技能文本。**"
+    },
+    {
+      "en-US": "Create a temporary test version of the skill with ONLY the Step 1a addition (minimal change to isolate the variable). Add this section to the top of the skill's creation instructions, BEFORE the existing directory selection process:",
+      "zh-Hans": "创建一个临时的技能测试版本，仅包含第 1a 步的添加内容（最小更改以隔离变量）。在技能创建指令的顶部，现有目录选择过程之前，添加此部分："
+    },
+    {
+      "en-US": "```markdown\n## Step 1: Create Isolated Workspace\n\n**You have two mechanisms. Try them in this order.**\n\n### 1a. Native Worktree Tools (preferred)\n\nIf your platform provides a worktree or workspace-isolation tool, use it. You know your own toolkit — the skill does not need to name specific tools. Native tools handle directory placement, branch creation, and cleanup automatically.\n\nAfter using a native tool, skip to Step 3 (Project Setup).\n\n### 1b. Git Worktree Fallback\n\nIf no native tool is available, create a worktree manually using git.\n```",
+      "zh-Hans": "```markdown\n## 步骤 1：创建隔离工作空间\n\n**你有两种机制。请按此顺序尝试。**\n\n### 1a. 原生工作树工具（推荐）\n\n如果你的平台提供了工作树或工作空间隔离工具，请使用它。你对自己的工具集了如指掌 —— 此技能无需指定具体工具。原生工具会自动处理目录放置、分支创建和清理工作。\n\n使用原生工具后，请跳至步骤 3（项目设置）。\n\n### 1b. Git 工作树备用方案\n\n如果不存在原生工具，请使用 git 手动创建工作树。\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Run GREEN phase — confirm agent now uses EnterWorktree**",
+      "zh-Hans": "* \\[ ] **第 4 步：运行 GREEN 阶段 — 确认代理现在使用 EnterWorktree**"
+    },
+    {
+      "en-US": "Run: `cd tests/claude-code && bash test-worktree-native-preference.sh green`",
+      "zh-Hans": "运行：`cd tests/claude-code && bash test-worktree-native-preference.sh green`"
+    },
+    {
+      "en-US": "Expected: `[PASS] Agent used native EnterWorktree tool`",
+      "zh-Hans": "预期结果：`[PASS] Agent used native EnterWorktree tool`"
+    },
+    {
+      "en-US": "If FAIL: Document the agent's exact output and rationalizations. This is a REFACTOR signal — the Step 1a text needs revision. Try up to 2 REFACTOR iterations. If still failing after 2 iterations, STOP and report back.",
+      "zh-Hans": "如果失败：逐字记录代理的确切输出和理由。这是一个 REFACTOR 信号——第 1a 步文本需要修订。尝试最多 2 次 REFACTOR 迭代。如果 2 次迭代后仍然失败，请停止并报告。"
+    },
+    {
+      "en-US": "- [ ] **Step 5: Run PRESSURE phase — confirm agent resists fallback under pressure**",
+      "zh-Hans": "* \\[ ] **第 5 步：运行 PRESSURE 阶段 — 确认代理在压力下坚持回退方案**"
+    },
+    {
+      "en-US": "Run: `cd tests/claude-code && bash test-worktree-native-preference.sh pressure`",
+      "zh-Hans": "运行：`cd tests/claude-code && bash test-worktree-native-preference.sh pressure`"
+    },
+    {
+      "en-US": "Expected: `[PASS] Agent used native tool even under time pressure`",
+      "zh-Hans": "预期结果：`[PASS] Agent used native tool even under time pressure`"
+    },
+    {
+      "en-US": "If FAIL: Document rationalizations verbatim. Add explicit counters to Step 1a text (e.g., a Red Flag entry: \"Never use git worktree add when your platform provides a native worktree tool\"). Re-run.",
+      "zh-Hans": "如果失败：逐字记录理由。在第 1a 步文本中添加明确的计数器（例如，一个红色标志条目：\"当你的平台提供原生工作树工具时，永远不要使用 git worktree add\"）。重新运行。"
+    },
+    {
+      "en-US": "- [ ] **Step 6: Commit test script**",
+      "zh-Hans": "* \\[ ] **第 6 步：提交测试脚本**"
+    },
+    {
+      "en-US": "```bash\ngit add tests/claude-code/test-worktree-native-preference.sh\ngit commit -m \"test: add RED/GREEN validation for native worktree preference (PRI-974)\n\nGate test for Step 1a — validates agents prefer EnterWorktree over\ngit worktree add on Claude Code. Must pass before skill rewrite.\"\n```",
+      "zh-Hans": "```bash\ngit add tests/claude-code/test-worktree-native-preference.sh\ngit commit -m \"test: add RED/GREEN validation for native worktree preference (PRI-974)\n\nGate test for Step 1a — validates agents prefer EnterWorktree over\ngit worktree add on Claude Code. Must pass before skill rewrite.\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 2: Rewrite `using-git-worktrees` SKILL.md",
+      "zh-Hans": "### 任务 2：重写 `using-git-worktrees` SKILL.md"
+    },
+    {
+      "en-US": "Full rewrite of the creation skill. Replaces the existing file entirely.",
+      "zh-Hans": "完全重写创建工作技能。完全替换现有文件。"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `skills/using-git-worktrees/SKILL.md` (full rewrite, 219 lines → ~210 lines)",
+      "zh-Hans": "* 修改：`skills/using-git-worktrees/SKILL.md`（完全重写，219 行 → 约 210 行）"
+    },
+    {
+      "en-US": "**Depends on:** Task 1 GREEN passing.",
+      "zh-Hans": "**依赖于：** 任务 1 GREEN 通过。"
+    },
+    {
+      "en-US": "- [ ] **Step 1: Write the complete new SKILL.md**",
+      "zh-Hans": "* \\[ ] **第 1 步：编写完整的新 SKILL.md**"
+    },
+    {
+      "en-US": "Replace the entire contents of `skills/using-git-worktrees/SKILL.md` with:",
+      "zh-Hans": "将 `skills/using-git-worktrees/SKILL.md` 的全部内容替换为："
+    },
+    {
+      "en-US": "```markdown\n---\nname: using-git-worktrees\ndescription: Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an isolated workspace exists via native tools or git worktree fallback\n---\n\n# Using Git Worktrees\n\n## Overview\n\nEnsure work happens in an isolated workspace. Prefer your platform's native worktree tools. Fall back to manual git worktrees only when no native tool is available.\n\n**Core principle:** Detect existing isolation first. Then use native tools. Then fall back to git. Never fight the harness.\n\n**Announce at start:** \"I'm using the using-git-worktrees skill to set up an isolated workspace.\"\n\n## Step 0: Detect Existing Isolation\n\n**Before creating anything, check if you are already in an isolated workspace.**\n\n```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\nBRANCH=$(git branch --show-current)\n```",
+      "zh-Hans": "````markdown\n---\nname: using-git-worktrees\ndescription: Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an isolated workspace exists via native tools or git worktree fallback\n---\n\n# 使用 Git Worktrees\n\n## 概述\n\n确保工作在隔离的工作区中执行。优先使用平台原生的 worktree 工具。仅在无原生工具可用时回退到手动 git worktrees。\n\n**核心原则：** 先检测现有隔离。然后使用原生工具。最后回退到 git。永远不要与框架对抗。\n\n**开始时声明：** \"我正在使用 git-worktrees 技能来设置隔离的工作区。\"\n\n## 第0步：检测现有隔离状态\n\n**在创建任何内容之前，请检查是否已经在隔离的工作区中。**\n\n```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\nBRANCH=$(git branch --show-current)\n\n````"
+    },
+    {
+      "en-US": "**Submodule guard:** `GIT_DIR != GIT_COMMON` is also true inside git submodules. Before concluding \"already in a worktree,\" verify you are not in a submodule:",
+      "zh-Hans": "**子模块保护：** `GIT_DIR != GIT_COMMON` 在 git 子模块内部也为真。在得出结论\"已在工作树中\"之前，请验证您不在子模块中："
+    },
+    {
+      "en-US": "```bash\n# If this returns a path, you're in a submodule, not a worktree — proceed to Step 1\ngit rev-parse --show-superproject-working-tree 2>/dev/null\n```",
+      "zh-Hans": "```bash\n# If this returns a path, you're in a submodule, not a worktree — proceed to Step 1\ngit rev-parse --show-superproject-working-tree 2>/dev/null\n```"
+    },
+    {
+      "en-US": "**If `GIT_DIR != GIT_COMMON` (and not a submodule):** You are already in a linked worktree. Skip to Step 3 (Project Setup). Do NOT create another worktree.",
+      "zh-Hans": "**如果 `GIT_DIR != GIT_COMMON`（且不是子模块）：** 您已在链接的工作树中。跳到第 3 步（项目设置）。不要创建另一个工作树。"
+    },
+    {
+      "en-US": "Report with branch state:",
+      "zh-Hans": "使用分支状态报告："
+    },
+    {
+      "en-US": "- On a branch: \"Already in isolated workspace at `<path>` on branch `<name>`.\"\n- Detached HEAD: \"Already in isolated workspace at `<path>` (detached HEAD, externally managed). Branch creation needed at finish time.\"",
+      "zh-Hans": "* 在分支上：\"已在 `<path>` 的隔离工作区中，位于分支 `<name>`。\"\n* 分离 HEAD：\"已在 `<path>` 的隔离工作区中（分离 HEAD，外部管理）。完成时需要创建分支。\""
+    },
+    {
+      "en-US": "**If `GIT_DIR == GIT_COMMON` (or in a submodule):** You are in a normal repo checkout.",
+      "zh-Hans": "**如果 `GIT_DIR == GIT_COMMON`（或在子模块中）：** 您处在正常的仓库检查中。"
+    },
+    {
+      "en-US": "Has the user already indicated their worktree preference in your instructions? If not, ask for consent before creating a worktree:",
+      "zh-Hans": "您的指令中是否已经指明了用户的工作树偏好？如果没有，请在进行工作树创建前请求同意："
+    },
+    {
+      "en-US": "> \"Would you like me to set up an isolated worktree? It protects your current branch from changes.\"",
+      "zh-Hans": "> \"您是否希望我设置一个隔离的工作树？它可以保护您当前的分支不受更改影响。\""
+    },
+    {
+      "en-US": "Honor any existing declared preference without asking. If the user declines consent, work in place and skip to Step 3.",
+      "zh-Hans": "尊重任何已有的声明偏好，无需再次询问。如果用户拒绝同意，则就地工作并跳到第 3 步。"
+    },
+    {
+      "en-US": "## Step 1: Create Isolated Workspace",
+      "zh-Hans": "## 第 1 步：创建隔离工作区"
+    },
+    {
+      "en-US": "**You have two mechanisms. Try them in this order.**",
+      "zh-Hans": "**您有两种机制。请按此顺序尝试。**"
+    },
+    {
+      "en-US": "### 1a. Native Worktree Tools (preferred)",
+      "zh-Hans": "### 1a. 原生工作树工具（首选）"
+    },
+    {
+      "en-US": "If your platform provides a worktree or workspace-isolation tool, use it. You know your own toolkit — the skill does not need to name specific tools. Native tools handle directory placement, branch creation, and cleanup automatically.",
+      "zh-Hans": "如果您的平台提供了工作树或工作区隔离工具，请使用它。您了解自己的工具包——技能不需要命名特定工具。原生工具会自动处理目录放置、分支创建和清理。"
+    },
+    {
+      "en-US": "After using a native tool, skip to Step 3 (Project Setup).",
+      "zh-Hans": "使用原生工具后，跳到第 3 步（项目设置）。"
+    },
+    {
+      "en-US": "### 1b. Git Worktree Fallback",
+      "zh-Hans": "### 1b. Git 工作树回退"
+    },
+    {
+      "en-US": "If no native tool is available, create a worktree manually using git.",
+      "zh-Hans": "如果原生工具不可用，请使用 git 手动创建工作树。"
+    },
+    {
+      "en-US": "#### Directory Selection",
+      "zh-Hans": "#### 目录选择"
+    },
+    {
+      "en-US": "Follow this priority order:",
+      "zh-Hans": "按以下优先级顺序操作："
+    },
+    {
+      "en-US": "1. **Check existing directories:**\n   ```bash\n   ls -d .worktrees 2>/dev/null     # Preferred (hidden)\n   ls -d worktrees 2>/dev/null      # Alternative\n   ```\n   If found, use that directory. If both exist, `.worktrees` wins.\n\n2. **Check for existing global directory:**\n   ```bash\n   project=$(basename \"$(git rev-parse --show-toplevel)\")\n   ls -d ~/.config/superpowers/worktrees/$project 2>/dev/null\n   ```\n   If found, use it (backward compatibility with legacy global path).\n\n3. **Check your instructions for a worktree directory preference.** If specified, use it without asking.\n\n4. **Default to `.worktrees/`.**",
+      "zh-Hans": "1. **检查现有目录：**\n   ```bash\n   ls -d .worktrees 2>/dev/null     # 首选（隐藏）\n   ls -d worktrees 2>/dev/null      # 备选\n   ```\n   如果找到，使用该目录。如果两者都存在，`.worktrees` 胜出。\n\n2. **检查现有全局目录：**\n   ```bash\n   project=$(basename \"$(git rev-parse --show-toplevel)\")\n   ls -d ~/.config/superpowers/worktrees/$project 2>/dev/null\n   ```\n   如果找到，则使用它（与旧版全局路径向后兼容）。\n\n3. **检查您的指令中是否有工作树目录偏好。** 如果指定了，则无需询问直接使用。\n\n4. **默认为 `.worktrees/`。**"
+    },
+    {
+      "en-US": "#### Safety Verification (project-local directories only)",
+      "zh-Hans": "#### 安全检查（仅限项目本地目录）"
+    },
+    {
+      "en-US": "**MUST verify directory is ignored before creating worktree:**",
+      "zh-Hans": "**必须在创建工作树之前验证目录是否被忽略：**"
+    },
+    {
+      "en-US": "```bash\ngit check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/dev/null\n```",
+      "zh-Hans": "```bash\ngit check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/dev/null\n```"
+    },
+    {
+      "en-US": "**If NOT ignored:** Add to .gitignore, commit the change, then proceed.",
+      "zh-Hans": "**如果未被忽略：** 添加到 .gitignore，提交更改，然后继续。"
+    },
+    {
+      "en-US": "**Why critical:** Prevents accidentally committing worktree contents to repository.",
+      "zh-Hans": "**为何关键：** 防止意外将工作树内容提交到仓库中。"
+    },
+    {
+      "en-US": "Global directories (`~/.config/superpowers/worktrees/`) need no verification.",
+      "zh-Hans": "全局目录（`~/.config/superpowers/worktrees/`）无需验证。"
+    },
+    {
+      "en-US": "#### Create the Worktree",
+      "zh-Hans": "#### 创建工作树"
+    },
+    {
+      "en-US": "```bash\nproject=$(basename \"$(git rev-parse --show-toplevel)\")\n\n# Determine path based on chosen location\n# For project-local: path=\"$LOCATION/$BRANCH_NAME\"\n# For global: path=\"~/.config/superpowers/worktrees/$project/$BRANCH_NAME\"\n\ngit worktree add \"$path\" -b \"$BRANCH_NAME\"\ncd \"$path\"\n```",
+      "zh-Hans": "```bash\nproject=$(basename \"$(git rev-parse --show-toplevel)\")\n\n# Determine path based on chosen location\n# For project-local: path=\"$LOCATION/$BRANCH_NAME\"\n# For global: path=\"~/.config/superpowers/worktrees/$project/$BRANCH_NAME\"\n\ngit worktree add \"$path\" -b \"$BRANCH_NAME\"\ncd \"$path\"\n```"
+    },
+    {
+      "en-US": "#### Hooks Awareness",
+      "zh-Hans": "#### 钩子感知"
+    },
+    {
+      "en-US": "Git worktrees do not inherit the parent repo's hooks directory. After creating the worktree, symlink hooks from the main repo if they exist:",
+      "zh-Hans": "Git 工作树不会继承父仓库的钩子目录。创建工作树后，如果存在钩子，则从主仓库创建符号链接："
+    },
+    {
+      "en-US": "```bash\nMAIN_ROOT=$(git -C \"$(git rev-parse --git-common-dir)/..\" rev-parse --show-toplevel)\nif [ -d \"$MAIN_ROOT/.git/hooks\" ]; then\n    ln -sf \"$MAIN_ROOT/.git/hooks\" \"$path/.git/hooks\"\nfi\n```",
+      "zh-Hans": "```bash\nMAIN_ROOT=$(git -C \"$(git rev-parse --git-common-dir)/..\" rev-parse --show-toplevel)\nif [ -d \"$MAIN_ROOT/.git/hooks\" ]; then\n    ln -sf \"$MAIN_ROOT/.git/hooks\" \"$path/.git/hooks\"\nfi\n```"
+    },
+    {
+      "en-US": "This prevents pre-commit checks, linters, and other hooks from silently stopping when work moves to a worktree.",
+      "zh-Hans": "这可以防止项目迁移到工作树时，预提交检查、linter 和其他钩子静默停止。"
+    },
+    {
+      "en-US": "**Sandbox fallback:** If `git worktree add` fails with a permission error (sandbox denial), treat this as a restricted environment. Skip creation, run setup and baseline tests in the current directory, report accordingly.",
+      "zh-Hans": "**沙盒回退：** 如果 `git worktree add` 因权限错误（沙盒拒绝）而失败，则将其视为受限环境。跳过创建，在当前目录中运行设置和基线测试，据此报告。"
+    },
+    {
+      "en-US": "## Step 3: Project Setup",
+      "zh-Hans": "## 第 3 步：项目设置"
+    },
+    {
+      "en-US": "Auto-detect and run appropriate setup:",
+      "zh-Hans": "自动检测并运行相应的设置："
+    },
+    {
+      "en-US": "```bash\n# Node.js\nif [ -f package.json ]; then npm install; fi\n\n# Rust\nif [ -f Cargo.toml ]; then cargo build; fi\n\n# Python\nif [ -f requirements.txt ]; then pip install -r requirements.txt; fi\nif [ -f pyproject.toml ]; then poetry install; fi\n\n# Go\nif [ -f go.mod ]; then go mod download; fi\n```",
+      "zh-Hans": "```bash\n# Node.js\nif [ -f package.json ]; then npm install; fi\n\n# Rust\nif [ -f Cargo.toml ]; then cargo build; fi\n\n# Python\nif [ -f requirements.txt ]; then pip install -r requirements.txt; fi\nif [ -f pyproject.toml ]; then poetry install; fi\n\n# Go\nif [ -f go.mod ]; then go mod download; fi\n```"
+    },
+    {
+      "en-US": "## Step 4: Verify Clean Baseline",
+      "zh-Hans": "## 第 4 步：验证干净的基线"
+    },
+    {
+      "en-US": "Run tests to ensure workspace starts clean:",
+      "zh-Hans": "运行测试以确保工作区启动时是干净的："
+    },
+    {
+      "en-US": "```bash\n# Use project-appropriate command\nnpm test / cargo test / pytest / go test ./...\n```",
+      "zh-Hans": "```bash\n# Use project-appropriate command\nnpm test / cargo test / pytest / go test ./...\n```"
+    },
+    {
+      "en-US": "**If tests fail:** Report failures, ask whether to proceed or investigate.",
+      "zh-Hans": "**如果测试失败：** 报告失败，询问是继续还是调查。"
+    },
+    {
+      "en-US": "**If tests pass:** Report ready.",
+      "zh-Hans": "**如果测试通过：** 报告就绪。"
+    },
+    {
+      "en-US": "### Report",
+      "zh-Hans": "### 报告"
+    },
+    {
+      "en-US": "```\nWorktree ready at <full-path>\nTests passing (<N> tests, 0 failures)\nReady to implement <feature-name>\n```",
+      "zh-Hans": "```\n工作目录已就绪于 <完整路径>\n测试通过（<N> 个测试，0 个失败）\n已准备好实现 <功能名称>\n```"
+    },
+    {
+      "en-US": "## Quick Reference",
+      "zh-Hans": "## 快速参考"
+    },
+    {
+      "en-US": "| Situation | Action |\n|-----------|--------|\n| Already in linked worktree | Skip creation (Step 0) |\n| In a submodule | Treat as normal repo (Step 0 guard) |\n| Native worktree tool available | Use it (Step 1a) |\n| No native tool | Git worktree fallback (Step 1b) |\n| `.worktrees/` exists | Use it (verify ignored) |\n| `worktrees/` exists | Use it (verify ignored) |\n| Both exist | Use `.worktrees/` |\n| Neither exists | Check instruction file, then default `.worktrees/` |\n| Global path exists | Use it (backward compat) |\n| Directory not ignored | Add to .gitignore + commit |\n| Permission error on create | Sandbox fallback, work in place |\n| Tests fail during baseline | Report failures + ask |\n| No package.json/Cargo.toml | Skip dependency install |",
+      "zh-Hans": "| 情况 | 操作 |\n|-----------|--------|\n| 已在链接的工作树中 | 跳过创建（第 0 步） |\n| 在子模块中 | 视为普通仓库（第 0 步保护） |\n| 原生工作树工具可用 | 使用它（第 1a 步） |\n| 无原生工具 | Git 工作树回退（第 1b 步） |\n| `.worktrees/` 存在 | 使用它（验证被忽略） |\n| `worktrees/` 存在 | 使用它（验证被忽略） |\n| 两者都存在 | 使用 `.worktrees/` |\n| 都不存在 | 检查指令文件，然后默认为 `.worktrees/` |\n| 全局路径存在 | 使用它（向后兼容） |\n| 目录未被忽略 | 添加到 .gitignore + 提交 |\n| 创建时权限错误 | 沙盒回退，就地工作 |\n| 基线测试期间失败 | 报告失败 + 询问 |\n| 没有 package.json/Cargo.toml | 跳过依赖安装 |"
+    },
+    {
+      "en-US": "## Common Mistakes",
+      "zh-Hans": "## 常见错误"
+    },
+    {
+      "en-US": "### Fighting the harness",
+      "zh-Hans": "### 对抗工具链"
+    },
+    {
+      "en-US": "- **Problem:** Using `git worktree add` when the platform already provides isolation\n- **Fix:** Step 0 detects existing isolation. Step 1a defers to native tools.",
+      "zh-Hans": "* **问题：** 在平台已提供隔离的情况下使用 `git worktree add`\n* **修复：** 第 0 步检测现有隔离。第 1a 步优先使用原生工具。"
+    },
+    {
+      "en-US": "### Skipping detection",
+      "zh-Hans": "### 跳过检测"
+    },
+    {
+      "en-US": "- **Problem:** Creating a nested worktree inside an existing one\n- **Fix:** Always run Step 0 before creating anything",
+      "zh-Hans": "* **问题：** 在现有工作树内部创建嵌套工作树\n* **修复：** 在创建任何内容之前始终运行第 0 步"
+    },
+    {
+      "en-US": "### Skipping ignore verification",
+      "zh-Hans": "### 跳过忽略验证"
+    },
+    {
+      "en-US": "- **Problem:** Worktree contents get tracked, pollute git status\n- **Fix:** Always use `git check-ignore` before creating project-local worktree",
+      "zh-Hans": "* **问题：** 工作树内容被追踪，污染 git status\n* **修复：** 在创建项目本地工作树之前始终使用 `git check-ignore`"
+    },
+    {
+      "en-US": "### Assuming directory location",
+      "zh-Hans": "### 假设目录位置"
+    },
+    {
+      "en-US": "- **Problem:** Creates inconsistency, violates project conventions\n- **Fix:** Follow priority: existing > instruction file > default",
+      "zh-Hans": "* **问题：** 造成不一致，违反项目约定\n* **修复：** 遵循优先级：现有 > 指令文件 > 默认"
+    },
+    {
+      "en-US": "### Proceeding with failing tests",
+      "zh-Hans": "### 在测试失败的情况下继续"
+    },
+    {
+      "en-US": "- **Problem:** Can't distinguish new bugs from pre-existing issues\n- **Fix:** Report failures, get explicit permission to proceed",
+      "zh-Hans": "* **问题：** 无法区分新错误与预先存在的问题\n* **修复：** 报告失败，获得明确许可才能继续"
+    },
+    {
+      "en-US": "## Red Flags",
+      "zh-Hans": "## 红色标志"
+    },
+    {
+      "en-US": "**Never:**",
+      "zh-Hans": "**绝不：**"
+    },
+    {
+      "en-US": "- Create a worktree when Step 0 detects existing isolation\n- Use git commands when a native worktree tool is available\n- Create worktree without verifying it's ignored (project-local)\n- Skip baseline test verification\n- Proceed with failing tests without asking",
+      "zh-Hans": "* 在第 0 步检测到现有隔离时创建工作树\n* 在原生工作树工具可用时使用 git 命令\n* 创建工作树而不验证它是否被忽略（项目本地）\n* 跳过基线测试验证\n* 在测试失败的情况下不问继续"
+    },
+    {
+      "en-US": "**Always:**",
+      "zh-Hans": "**始终：**"
+    },
+    {
+      "en-US": "- Run Step 0 detection first\n- Prefer native tools over git fallback\n- Follow directory priority: existing > instruction file > default\n- Verify directory is ignored for project-local\n- Auto-detect and run project setup\n- Verify clean test baseline\n- Symlink hooks after creating worktree via 1b",
+      "zh-Hans": "* 首先运行第 0 步检测\n* 优先使用原生工具而非 git 回退\n* 遵循目录优先级：现有 > 指令文件 > 默认\n* 验证项目本地目录是否被忽略\n* 自动检测并运行项目设置\n* 验证干净的测试基线\n* 通过 1b 创建工作树后创建钩子符号链接"
+    },
+    {
+      "en-US": "## Integration",
+      "zh-Hans": "## 集成"
+    },
+    {
+      "en-US": "**Called by:**",
+      "zh-Hans": "**由以下调用：**"
+    },
+    {
+      "en-US": "- **subagent-driven-development** - Ensures isolated workspace (creates one or verifies existing)\n- **executing-plans** - Ensures isolated workspace (creates one or verifies existing)\n- Any skill needing isolated workspace",
+      "zh-Hans": "* **subagent-driven-development** - 确保隔离的工作区（创建一个或验证现有）\n* **executing-plans** - 确保隔离的工作区（创建一个或验证现有）\n* 任何需要隔离工作区的技能"
+    },
+    {
+      "en-US": "**Pairs with:**",
+      "zh-Hans": "**与以下配对使用：**"
+    },
+    {
+      "en-US": "- **finishing-a-development-branch** - REQUIRED for cleanup after work complete",
+      "zh-Hans": "* **finishing-a-development-branch** - 工作完成后进行清理必需"
+    },
+    {
+      "en-US": "```\n\n- [ ] **Step 2: Verify the file reads correctly**\n\nRun: `wc -l skills/using-git-worktrees/SKILL.md`\n\nExpected: Approximately 200-220 lines. Scan for any markdown formatting issues.\n\n- [ ] **Step 3: Commit**\n\n```bash\ngit add skills/using-git-worktrees/SKILL.md\ngit commit -m \"feat: rewrite using-git-worktrees with detect-and-defer (PRI-974)\n\nStep 0: GIT_DIR != GIT_COMMON detection (skip if already isolated)\nStep 0 consent: opt-in prompt before creating worktree (#991)\nStep 1a: native tool preference (short, first, declarative)\nStep 1b: git worktree fallback with hooks symlink and legacy path compat\nSubmodule guard prevents false detection\nPlatform-neutral instruction file references (#1049)\"\n```",
+      "zh-Hans": "````\n- [ ] **第二步：验证文件读取正确**\n\n运行：`wc -l skills/using-git-worktrees/SKILL.md`\n\n预期：大约 200-220 行。检查是否存在任何 Markdown 格式问题。\n\n- [ ] **第三步：提交**\n\n```bash\ngit add skills/using-git-worktrees/SKILL.md\ngit commit -m \"feat: rewrite using-git-worktrees with detect-and-defer (PRI-974)\n\nStep 0: GIT_DIR != GIT_COMMON detection (skip if already isolated)\nStep 0 consent: opt-in prompt before creating worktree (#991)\nStep 1a: native tool preference (short, first, declarative)\nStep 1b: git worktree fallback with hooks symlink and legacy path compat\nSubmodule guard prevents false detection\nPlatform-neutral instruction file references (#1049)\"\n````"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 3: Rewrite `finishing-a-development-branch` SKILL.md",
+      "zh-Hans": "### 任务 3：重写 `finishing-a-development-branch` SKILL.md"
+    },
+    {
+      "en-US": "Full rewrite of the finishing skill. Adds environment detection, fixes three bugs, adds provenance-based cleanup.",
+      "zh-Hans": "完全重写完成工作技能。添加环境检测，修复三个错误，添加基于来源的清理。"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `skills/finishing-a-development-branch/SKILL.md` (full rewrite, 201 lines → ~220 lines)\n\n- [ ] **Step 1: Write the complete new SKILL.md**",
+      "zh-Hans": "* 修改：`skills/finishing-a-development-branch/SKILL.md`（完全重写，201 行 → 约 220 行）\n\n* \\[ ] **第 1 步：编写完整的新 SKILL.md**"
+    },
+    {
+      "en-US": "Replace the entire contents of `skills/finishing-a-development-branch/SKILL.md` with:",
+      "zh-Hans": "将 `skills/finishing-a-development-branch/SKILL.md` 的全部内容替换为："
+    },
+    {
+      "en-US": "```markdown\n---\nname: finishing-a-development-branch\ndescription: Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured options for merge, PR, or cleanup\n---\n\n# Finishing a Development Branch\n\n## Overview\n\nGuide completion of development work by presenting clear options and handling chosen workflow.\n\n**Core principle:** Verify tests → Detect environment → Present options → Execute choice → Clean up.\n\n**Announce at start:** \"I'm using the finishing-a-development-branch skill to complete this work.\"\n\n## The Process\n\n### Step 1: Verify Tests\n\n**Before presenting options, verify tests pass:**\n\n```bash\n# Run project's test suite\nnpm test / cargo test / pytest / go test ./...\n```",
+      "zh-Hans": "````markdown\n---\nname: finishing-a-development-branch\ndescription: Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured options for merge, PR, or cleanup\n---\n\n# 完成开发分支\n\n## 概述\n\n通过提供明确的选项并处理所选工作流程，引导完成开发工作。\n\n**核心原则：** 验证测试 → 检测环境 → 呈现选项 → 执行选择 → 清理。\n\n**开始时说明：** \"我正在使用完成开发分支技能来完成这项工作。\"\n\n## 流程\n\n### 步骤 1：验证测试\n\n**在提供选项之前，请确保测试通过：**\n\n```bash\n# 运行项目的测试套件\nnpm test / cargo test / pytest / go test ./...\n````"
+    },
+    {
+      "en-US": "**If tests fail:**",
+      "zh-Hans": "**如果测试失败：**"
+    },
+    {
+      "en-US": "```\nTests failing (<N> failures). Must fix before completing:\n\n[Show failures]\n\nCannot proceed with merge/PR until tests pass.\n```",
+      "zh-Hans": "```\n测试失败（<N> 个失败）。必须在完成前修复：\n\n[显示失败]\n\n测试通过之前，不能继续合并/PR。\n```"
+    },
+    {
+      "en-US": "Stop. Don't proceed to Step 2.",
+      "zh-Hans": "停止。不要继续执行第 2 步。"
+    },
+    {
+      "en-US": "**If tests pass:** Continue to Step 2.",
+      "zh-Hans": "**如果测试通过：** 继续执行第 2 步。"
+    },
+    {
+      "en-US": "### Step 2: Detect Environment",
+      "zh-Hans": "### 第 2 步：检测环境"
+    },
+    {
+      "en-US": "**Determine workspace state before presenting options:**",
+      "zh-Hans": "**在显示选项前确定工作区状态：**"
+    },
+    {
+      "en-US": "```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\n```",
+      "zh-Hans": "```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\n```"
+    },
+    {
+      "en-US": "This determines which menu to show and how cleanup works:",
+      "zh-Hans": "此决定显示哪个菜单以及清理工作的方式："
+    },
+    {
+      "en-US": "| State | Menu | Cleanup |\n|-------|------|---------|\n| `GIT_DIR == GIT_COMMON` (normal repo) | Standard 4 options | No worktree to clean up |\n| `GIT_DIR != GIT_COMMON`, named branch | Standard 4 options | Provenance-based (see Step 6) |\n| `GIT_DIR != GIT_COMMON`, detached HEAD | Reduced 3 options (no merge) | No cleanup (externally managed) |",
+      "zh-Hans": "| 状态 | 菜单 | 清理 |\n|-------|------|---------|\n| `GIT_DIR == GIT_COMMON`（普通仓库） | 标准 4 选项 | 无需清理工作树 |\n| `GIT_DIR != GIT_COMMON`，已命名分支 | 标准 4 选项 | 基于来源（参见第 6 步） |\n| `GIT_DIR != GIT_COMMON`，分离 HEAD | 精简 3 选项（无合并） | 无需清理（外部管理） |"
+    },
+    {
+      "en-US": "### Step 3: Determine Base Branch",
+      "zh-Hans": "### 第 3 步：确定基础分支"
+    },
+    {
+      "en-US": "```bash\n# Try common base branches\ngit merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null\n```",
+      "zh-Hans": "```bash\n# Try common base branches\ngit merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null\n```"
+    },
+    {
+      "en-US": "Or ask: \"This branch split from main - is that correct?\"",
+      "zh-Hans": "或询问：\"此分支是从主分支分裂出来的 - 是否正确？\""
+    },
+    {
+      "en-US": "### Step 4: Present Options",
+      "zh-Hans": "### 第 4 步：呈现选项"
+    },
+    {
+      "en-US": "**Normal repo and named-branch worktree — present exactly these 4 options:**",
+      "zh-Hans": "**普通仓库和已命名分支工作树 — 精确呈现以下 4 个选项：**"
+    },
+    {
+      "en-US": "```\nImplementation complete. What would you like to do?\n\n1. Merge back to <base-branch> locally\n2. Push and create a Pull Request\n3. Keep the branch as-is (I'll handle it later)\n4. Discard this work\n\nWhich option?\n```",
+      "zh-Hans": "```\n实施完成。您希望怎么做？\n\n1. 将变更合并到 <base-branch> 本地分支\n2. 提交并创建拉取请求\n3. 保持当前分支不变（稍后处理）\n4. 放弃此操作\n\n请选择选项？\n```"
+    },
+    {
+      "en-US": "**Detached HEAD — present exactly these 3 options:**",
+      "zh-Hans": "**分离 HEAD — 精确呈现以下 3 个选项：**"
+    },
+    {
+      "en-US": "```\nImplementation complete. You're on a detached HEAD (externally managed workspace).\n\n1. Push as new branch and create a Pull Request\n2. Keep as-is (I'll handle it later)\n3. Discard this work\n\nWhich option?\n```",
+      "zh-Hans": "```\n实现完成。您处于分离的 HEAD 状态（外部管理工作区）。\n\n1. 作为新分支推送，并创建拉取请求\n2. 保持原样（稍后自行处理）\n3. 放弃此工作\n\n选哪个选项？\n```"
+    },
+    {
+      "en-US": "**Don't add explanation** - keep options concise.",
+      "zh-Hans": "**不加解释** - 保持选项简洁。"
+    },
+    {
+      "en-US": "### Step 5: Execute Choice",
+      "zh-Hans": "### 第 5 步：执行选择"
+    },
+    {
+      "en-US": "#### Option 1: Merge Locally",
+      "zh-Hans": "#### 选项 1：本地合并"
+    },
+    {
+      "en-US": "```bash\n# Get main repo root for CWD safety\nMAIN_ROOT=$(git -C \"$(git rev-parse --git-common-dir)/..\" rev-parse --show-toplevel)\ncd \"$MAIN_ROOT\"\n\n# Merge first — verify success before removing anything\ngit checkout <base-branch>\ngit pull\ngit merge <feature-branch>\n\n# Verify tests on merged result\n<test command>\n\n# Only after merge succeeds: remove worktree, then delete branch\n# (See Step 6 for worktree cleanup)\ngit branch -d <feature-branch>\n```",
+      "zh-Hans": "```bash\n# Get main repo root for CWD safety\nMAIN_ROOT=$(git -C \"$(git rev-parse --git-common-dir)/..\" rev-parse --show-toplevel)\ncd \"$MAIN_ROOT\"\n\n# Merge first — verify success before removing anything\ngit checkout <base-branch>\ngit pull\ngit merge <feature-branch>\n\n# Verify tests on merged result\n<test command>\n\n# Only after merge succeeds: remove worktree, then delete branch\n# (See Step 6 for worktree cleanup)\ngit branch -d <feature-branch>\n```"
+    },
+    {
+      "en-US": "Then: Cleanup worktree (Step 6)",
+      "zh-Hans": "然后：清理工作树（第 6 步）"
+    },
+    {
+      "en-US": "#### Option 2: Push and Create PR",
+      "zh-Hans": "#### 选项 2：推送并创建 PR"
+    },
+    {
+      "en-US": "```bash\n# Push branch\ngit push -u origin <feature-branch>\n\n# Create PR\ngh pr create --title \"<title>\" --body \"$(cat <<'EOF'\n## Summary\n<2-3 bullets of what changed>\n\n## Test Plan\n- [ ] <verification steps>\nEOF\n)\"\n```",
+      "zh-Hans": "```bash\n# Push branch\ngit push -u origin <feature-branch>\n\n# Create PR\ngh pr create --title \"<title>\" --body \"$(cat <<'EOF'\n## Summary\n<2-3 bullets of what changed>\n\n## Test Plan\n- [ ] <verification steps>\nEOF\n)\"\n```"
+    },
+    {
+      "en-US": "**Do NOT clean up worktree** — user needs it alive to iterate on PR feedback.",
+      "zh-Hans": "**不要清理工作树** — 用户需要保持活动状态以迭代 PR 反馈。"
+    },
+    {
+      "en-US": "#### Option 3: Keep As-Is",
+      "zh-Hans": "#### 选项 3：保持现状"
+    },
+    {
+      "en-US": "Report: \"Keeping branch <name>. Worktree preserved at <path>.\"",
+      "zh-Hans": "报告：\"正在保留分支 <名称>。工作树保留在 <路径>。\""
+    },
+    {
+      "en-US": "**Don't cleanup worktree.**",
+      "zh-Hans": "**不要清理工作树。**"
+    },
+    {
+      "en-US": "#### Option 4: Discard",
+      "zh-Hans": "#### 选项 4：丢弃"
+    },
+    {
+      "en-US": "**Confirm first:**",
+      "zh-Hans": "**先确认：**"
+    },
+    {
+      "en-US": "```\nThis will permanently delete:\n- Branch <name>\n- All commits: <commit-list>\n- Worktree at <path>\n\nType 'discard' to confirm.\n```",
+      "zh-Hans": "```\n这将永久删除：\n- 分支 <名称>\n- 所有提交：<提交列表>\n- 路径 <路径> 下的工作树\n\n输入 'discard' 以确认。\n```"
+    },
+    {
+      "en-US": "Wait for exact confirmation.",
+      "zh-Hans": "等待确切确认。"
+    },
+    {
+      "en-US": "If confirmed:",
+      "zh-Hans": "如果确认："
+    },
+    {
+      "en-US": "```bash\nMAIN_ROOT=$(git -C \"$(git rev-parse --git-common-dir)/..\" rev-parse --show-toplevel)\ncd \"$MAIN_ROOT\"\n```",
+      "zh-Hans": "```bash\nMAIN_ROOT=$(git -C \"$(git rev-parse --git-common-dir)/..\" rev-parse --show-toplevel)\ncd \"$MAIN_ROOT\"\n```"
+    },
+    {
+      "en-US": "Then: Cleanup worktree (Step 6), then force-delete branch:",
+      "zh-Hans": "然后：清理工作树（第 6 步），然后强制删除分支："
+    },
+    {
+      "en-US": "```bash\ngit branch -D <feature-branch>\n```",
+      "zh-Hans": "```bash\ngit branch -D <feature-branch>\n```"
+    },
+    {
+      "en-US": "### Step 6: Cleanup Workspace",
+      "zh-Hans": "### 第 6 步：清理工作区"
+    },
+    {
+      "en-US": "**Only runs for Options 1 and 4.** Options 2 and 3 always preserve the worktree.",
+      "zh-Hans": "**仅适用于选项1和4。** 选项2和3始终保留工作树。"
+    },
+    {
+      "en-US": "```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\nWORKTREE_PATH=$(git rev-parse --show-toplevel)\n```",
+      "zh-Hans": "```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\nWORKTREE_PATH=$(git rev-parse --show-toplevel)\n```"
+    },
+    {
+      "en-US": "**If `GIT_DIR == GIT_COMMON`:** Normal repo, no worktree to clean up. Done.",
+      "zh-Hans": "**如果 `GIT_DIR == GIT_COMMON`：** 普通仓库，无需清理工作树。已完成。"
+    },
+    {
+      "en-US": "**If worktree path is under `.worktrees/` or `~/.config/superpowers/worktrees/`:** Superpowers created this worktree — we own cleanup.",
+      "zh-Hans": "**如果工作树路径位于 `.worktrees/` 或 `~/.config/superpowers/worktrees/` 下：** 此工作树由 Superpowers 创建 — 我们有清理权。"
+    },
+    {
+      "en-US": "```bash\nMAIN_ROOT=$(git -C \"$(git rev-parse --git-common-dir)/..\" rev-parse --show-toplevel)\ncd \"$MAIN_ROOT\"\ngit worktree remove \"$WORKTREE_PATH\"\ngit worktree prune  # Self-healing: clean up any stale registrations\n```",
+      "zh-Hans": "```bash\nMAIN_ROOT=$(git -C \"$(git rev-parse --git-common-dir)/..\" rev-parse --show-toplevel)\ncd \"$MAIN_ROOT\"\ngit worktree remove \"$WORKTREE_PATH\"\ngit worktree prune  # Self-healing: clean up any stale registrations\n```"
+    },
+    {
+      "en-US": "**Otherwise:** The host environment (harness) owns this workspace. Do NOT remove it. If your platform provides a workspace-exit tool, use it. Otherwise, leave the workspace in place.",
+      "zh-Hans": "**否则：** 此工作区由宿主环境（测试平台）所有。**切勿**删除。如果你所在的平台提供了退出工作区的工具，请使用它。否则，请将工作区留在原地。"
+    },
+    {
+      "en-US": "## Quick Reference",
+      "zh-Hans": "## 快速参考"
+    },
+    {
+      "en-US": "| Option | Merge | Push | Keep Worktree | Cleanup Branch |\n|--------|-------|------|---------------|----------------|\n| 1. Merge locally | yes | - | - | yes |\n| 2. Create PR | - | yes | yes | - |\n| 3. Keep as-is | - | - | yes | - |\n| 4. Discard | - | - | - | yes (force) |",
+      "zh-Hans": "| 选项 | 合并 | 推送 | 保留工作树 | 清理分支 |\n|------|------|------|----------|----------|\n| 1. 本地合并 | 是 | - | - | 是 |\n| 2. 创建PR | - | 是 | 是 | - |\n| 3. 保持原样 | - | - | 是 | - |\n| 4. 丢弃 | - | - | - | 是（强制） |"
+    },
+    {
+      "en-US": "## Common Mistakes",
+      "zh-Hans": "## 常见错误"
+    },
+    {
+      "en-US": "**Skipping test verification**",
+      "zh-Hans": "**跳过测试验证**"
+    },
+    {
+      "en-US": "- **Problem:** Merge broken code, create failing PR\n- **Fix:** Always verify tests before offering options",
+      "zh-Hans": "* **问题:** 合并损坏的代码，创建失败的PR\n* **修复:** 在提供选项前始终先验证测试"
+    },
+    {
+      "en-US": "**Open-ended questions**",
+      "zh-Hans": "**开放性问题**"
+    },
+    {
+      "en-US": "- **Problem:** \"What should I do next?\" is ambiguous\n- **Fix:** Present exactly 4 structured options (or 3 for detached HEAD)",
+      "zh-Hans": "* **问题:** “下一步我该做什么？” 是一个含糊的问题\n* **修复:** 精确提供4个结构化的选项（若是处于已分离头指针状态，则提供3个）"
+    },
+    {
+      "en-US": "**Cleaning up worktree for Option 2**",
+      "zh-Hans": "**清理选项2的工作树**"
+    },
+    {
+      "en-US": "- **Problem:** Remove worktree user needs for PR iteration\n- **Fix:** Only cleanup for Options 1 and 4",
+      "zh-Hans": "* **问题:** 移除用户进行PR迭代所需的工作树\n* **修复:** 仅清理选项1和4"
+    },
+    {
+      "en-US": "**Deleting branch before removing worktree**",
+      "zh-Hans": "**在移除工作树前删除分支**"
+    },
+    {
+      "en-US": "- **Problem:** `git branch -d` fails because worktree still references the branch\n- **Fix:** Merge first, remove worktree, then delete branch",
+      "zh-Hans": "* **问题:** `git branch -d` 失败，因为工作树仍引用该分支\n* **修复:** 先合并，然后移除工作树，最后删除分支"
+    },
+    {
+      "en-US": "**Running git worktree remove from inside the worktree**",
+      "zh-Hans": "**从其内部运行 git worktree remove**"
+    },
+    {
+      "en-US": "- **Problem:** Command fails silently when CWD is inside the worktree being removed\n- **Fix:** Always `cd` to main repo root before `git worktree remove`",
+      "zh-Hans": "* **问题:** 当CWD位于正在被移除的工作树内部时，命令静默失败\n* **修复:** 在 `git worktree remove` 之前始终 `cd` 到主仓库根目录"
+    },
+    {
+      "en-US": "**Cleaning up harness-owned worktrees**",
+      "zh-Hans": "**清理测试平台拥有的工作树**"
+    },
+    {
+      "en-US": "- **Problem:** Removing a worktree the harness created causes phantom state\n- **Fix:** Only clean up worktrees under `.worktrees/` or `~/.config/superpowers/worktrees/`",
+      "zh-Hans": "* **问题:** 移除由测试平台创建的工作树会导致幻影状态\n* **修复:** 仅清理位于 `.worktrees/` 或 `~/.config/superpowers/worktrees/` 下的工作树"
+    },
+    {
+      "en-US": "**No confirmation for discard**",
+      "zh-Hans": "**丢弃操作无确认**"
+    },
+    {
+      "en-US": "- **Problem:** Accidentally delete work\n- **Fix:** Require typed \"discard\" confirmation",
+      "zh-Hans": "* **问题:** 意外删除工作成果\n* **修复:** 要求键入 “discard” (丢弃) 以进行确认"
+    },
+    {
+      "en-US": "## Red Flags",
+      "zh-Hans": "## 红色标志"
+    },
+    {
+      "en-US": "**Never:**",
+      "zh-Hans": "**绝不：**"
+    },
+    {
+      "en-US": "- Proceed with failing tests\n- Merge without verifying tests on result\n- Delete work without confirmation\n- Force-push without explicit request\n- Remove a worktree before confirming merge success\n- Clean up worktrees you didn't create (provenance check)\n- Run `git worktree remove` from inside the worktree",
+      "zh-Hans": "* 在测试失败的情况下继续进行\n* 在未验证合并结果测试的情况下进行合并\n* 未经确认即删除工作\n* 无明确请求就进行强制推送\n* 在确认合并成功前就移走工作树\n* 清理不是你创建的工作树（溯源检查）\n* 在工作树内部运行 `git worktree remove`"
+    },
+    {
+      "en-US": "**Always:**",
+      "zh-Hans": "**始终：**"
+    },
+    {
+      "en-US": "- Verify tests before offering options\n- Detect environment before presenting menu\n- Present exactly 4 options (or 3 for detached HEAD)\n- Get typed confirmation for Option 4\n- Clean up worktree for Options 1 & 4 only\n- `cd` to main repo root before worktree removal\n- Run `git worktree prune` after removal",
+      "zh-Hans": "* 提供选项前验证测试\n* 显示菜单前检测环境\n* 精确呈现4个选项（对于已分离头指针状态则为3个）\n* 获取“选项4”的键入确认\n* 仅清理位于选项1和4的工作树\n* 在移除工作树前 `cd` 到主仓库根目录\n* 移除后运行 `git worktree prune`"
+    },
+    {
+      "en-US": "## Integration",
+      "zh-Hans": "## 集成"
+    },
+    {
+      "en-US": "**Called by:**",
+      "zh-Hans": "**由以下调用：**"
+    },
+    {
+      "en-US": "- **subagent-driven-development** (Step 7) - After all tasks complete\n- **executing-plans** (Step 5) - After all batches complete",
+      "zh-Hans": "* **subagent-driven-development**（第7步） - 所有任务完成后\n* **executing-plans**（第5步） - 所有批次完成后"
+    },
+    {
+      "en-US": "**Pairs with:**",
+      "zh-Hans": "**与以下配对使用：**"
+    },
+    {
+      "en-US": "- **using-git-worktrees** - Cleans up worktree created by that skill",
+      "zh-Hans": "* **using-git-worktrees** - 清理该技能创建的工作树"
+    },
+    {
+      "en-US": "```\n\n- [ ] **Step 2: Verify the file reads correctly**\n\nRun: `wc -l skills/finishing-a-development-branch/SKILL.md`\n\nExpected: Approximately 210-230 lines.\n\n- [ ] **Step 3: Commit**\n\n```bash\ngit add skills/finishing-a-development-branch/SKILL.md\ngit commit -m \"feat: rewrite finishing-a-development-branch with detect-and-defer (PRI-974)\n\nStep 2: environment detection (GIT_DIR != GIT_COMMON) before presenting menu\nDetached HEAD: reduced 3-option menu (no merge from detached HEAD)\nProvenance-based cleanup: .worktrees/ = ours, anything else = hands off\nBug #940: Option 2 no longer cleans up worktree\nBug #999: merge -> verify -> remove worktree -> delete branch\nBug #238: cd to main repo root before git worktree remove\nStale worktree pruning after removal (git worktree prune)\"\n```",
+      "zh-Hans": "````\n\n- [ ] **步骤 2：验证文件读取正确**\n\n运行：`wc -l skills/finishing-a-development-branch/SKILL.md`\n\n预期：大约 210-230 行。\n\n- [ ] **步骤 3：提交**\n\n```bash\ngit add skills/finishing-a-development-branch/SKILL.md\ngit commit -m \"feat: rewrite finishing-a-development-branch with detect-and-defer (PRI-974)\n\nStep 2: environment detection (GIT_DIR != GIT_COMMON) before presenting menu\nDetached HEAD: reduced 3-option menu (no merge from detached HEAD)\nProvenance-based cleanup: .worktrees/ = ours, anything else = hands off\nBug #940: Option 2 no longer cleans up worktree\nBug #999: merge -> verify -> remove worktree -> delete branch\nBug #238: cd to main repo root before git worktree remove\nStale worktree pruning after removal (git worktree prune)\"\n````"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 4: Integration Updates",
+      "zh-Hans": "### 任务4：集成更新"
+    },
+    {
+      "en-US": "One-line changes to three files that reference `using-git-worktrees`.",
+      "zh-Hans": "对引用 `using-git-worktrees` 的三个文件进行单行更改。"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Modify: `skills/executing-plans/SKILL.md:68`\n- Modify: `skills/subagent-driven-development/SKILL.md:268`\n- Modify: `skills/writing-plans/SKILL.md:16`\n\n- [ ] **Step 1: Update executing-plans integration line**",
+      "zh-Hans": "* 修改: `skills/executing-plans/SKILL.md:68`\n\n* 修改: `skills/subagent-driven-development/SKILL.md:268`\n\n* 修改: `skills/writing-plans/SKILL.md:16`\n\n* \\[ ] **第1步：更新 executing-plans 集成行**"
+    },
+    {
+      "en-US": "In `skills/executing-plans/SKILL.md`, change line 68 from:",
+      "zh-Hans": "在 `skills/executing-plans/SKILL.md` 中，将第68行从："
+    },
+    {
+      "en-US": "```markdown\n- **superpowers:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting\n```",
+      "zh-Hans": "```markdown\n- **superpowers:using-git-worktrees** - 必需：在开始前设置独立的工作空间\n```"
+    },
+    {
+      "en-US": "to:",
+      "zh-Hans": "更改为："
+    },
+    {
+      "en-US": "```markdown\n- **superpowers:using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)\n```",
+      "zh-Hans": "```markdown\n- **superpowers:using-git-worktrees** - 确保独立的工作区（创建一个或验证现有工作区）\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Update subagent-driven-development integration line**",
+      "zh-Hans": "* \\[ ] **第2步：更新 subagent-driven-development 集成行**"
+    },
+    {
+      "en-US": "In `skills/subagent-driven-development/SKILL.md`, change line 268 from:",
+      "zh-Hans": "在 `skills/subagent-driven-development/SKILL.md` 中，将第268行从："
+    },
+    {
+      "en-US": "```markdown\n- **superpowers:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting\n```",
+      "zh-Hans": "```markdown\n- **superpowers:using-git-worktrees** - 必需：在开始前设置独立的工作空间\n```"
+    },
+    {
+      "en-US": "to:",
+      "zh-Hans": "更改为："
+    },
+    {
+      "en-US": "```markdown\n- **superpowers:using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)\n```",
+      "zh-Hans": "```markdown\n- **superpowers:using-git-worktrees** - 确保独立的工作区（创建一个或验证现有工作区）\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 3: Update writing-plans context line**",
+      "zh-Hans": "* \\[ ] **第3步：更新 writing-plans 上下文行**"
+    },
+    {
+      "en-US": "In `skills/writing-plans/SKILL.md`, change line 16 from:",
+      "zh-Hans": "在 `skills/writing-plans/SKILL.md` 中，将第16行从："
+    },
+    {
+      "en-US": "```markdown\n**Context:** This should be run in a dedicated worktree (created by brainstorming skill).\n```",
+      "zh-Hans": "```markdown\n**上下文：** 应在专用工作树（由brainstorming技能创建）中运行。\n```"
+    },
+    {
+      "en-US": "to:",
+      "zh-Hans": "更改为："
+    },
+    {
+      "en-US": "```markdown\n**Context:** If working in an isolated worktree, it should have been created via the using-git-worktrees skill at execution time.\n```",
+      "zh-Hans": "```markdown\n**上下文：** 如果在隔离工作树中进行操作，该工作树应已通过执行时的 using-git-worktrees 技能创建。\n```"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Commit all three**",
+      "zh-Hans": "* \\[ ] **第4步：全部提交三者**"
+    },
+    {
+      "en-US": "```bash\ngit add skills/executing-plans/SKILL.md skills/subagent-driven-development/SKILL.md skills/writing-plans/SKILL.md\ngit commit -m \"fix: update worktree integration references across skills (PRI-974)\n\nRemove REQUIRED language from executing-plans and subagent-driven-development.\nConsent and detection now live inside using-git-worktrees itself.\nFix stale 'created by brainstorming' claim in writing-plans.\"\n```",
+      "zh-Hans": "```bash\ngit add skills/executing-plans/SKILL.md skills/subagent-driven-development/SKILL.md skills/writing-plans/SKILL.md\ngit commit -m \"fix: update worktree integration references across skills (PRI-974)\n\nRemove REQUIRED language from executing-plans and subagent-driven-development.\nConsent and detection now live inside using-git-worktrees itself.\nFix stale 'created by brainstorming' claim in writing-plans.\"\n```"
+    },
+    {
+      "en-US": "---",
+      "zh-Hans": "***"
+    },
+    {
+      "en-US": "### Task 5: End-to-End Validation",
+      "zh-Hans": "### 任务5：端到端验证"
+    },
+    {
+      "en-US": "Verify the full rewritten skills work together. Run the existing test suite plus manual verification.",
+      "zh-Hans": "验证整个重写后的技能是否能协同工作。运行现有的测试套件并进行手动验证。"
+    },
+    {
+      "en-US": "**Files:**",
+      "zh-Hans": "**文件：**"
+    },
+    {
+      "en-US": "- Read: `tests/claude-code/run-skill-tests.sh`\n- Read: `skills/using-git-worktrees/SKILL.md` (verify final state)\n- Read: `skills/finishing-a-development-branch/SKILL.md` (verify final state)\n\n- [ ] **Step 1: Run existing test suite**",
+      "zh-Hans": "* 读取: `tests/claude-code/run-skill-tests.sh`\n\n* 读取: `skills/using-git-worktrees/SKILL.md` (验证最终状态)\n\n* 读取: `skills/finishing-a-development-branch/SKILL.md` (验证最终状态)\n\n* \\[ ] **第1步：运行现有测试套件**"
+    },
+    {
+      "en-US": "Run: `cd tests/claude-code && bash run-skill-tests.sh`",
+      "zh-Hans": "运行: `cd tests/claude-code && bash run-skill-tests.sh`"
+    },
+    {
+      "en-US": "Expected: All existing tests pass. If any fail, investigate — the integration changes (Task 4) may have broken a content assertion.",
+      "zh-Hans": "预期: 所有现有测试通过。如果有任何测试失败，请进行调查——集成更改（任务4）可能破坏了内容断言。"
+    },
+    {
+      "en-US": "- [ ] **Step 2: Re-run Step 1a GREEN test**",
+      "zh-Hans": "* \\[ ] **第2步：重新运行第1a步的GREEN测试**"
+    },
+    {
+      "en-US": "Run: `cd tests/claude-code && bash test-worktree-native-preference.sh green`",
+      "zh-Hans": "运行：`cd tests/claude-code && bash test-worktree-native-preference.sh green`"
+    },
+    {
+      "en-US": "Expected: PASS — agent still uses EnterWorktree with the final skill text (not just the minimal Step 1a addition from Task 1).",
+      "zh-Hans": "预期: 通过 — 代理仍使用最终的技能文本与EnterWorktree交互（而不仅仅是任务1中第1a步的最小化新增）。"
+    },
+    {
+      "en-US": "- [ ] **Step 3: Manual verification — read both rewritten skills end-to-end**",
+      "zh-Hans": "* \\[ ] **第3步：手动验证 — 从头到尾阅读两个重写后的技能**"
+    },
+    {
+      "en-US": "Read `skills/using-git-worktrees/SKILL.md` and `skills/finishing-a-development-branch/SKILL.md` in their entirety. Check:",
+      "zh-Hans": "完整阅读 `skills/using-git-worktrees/SKILL.md` 和 `skills/finishing-a-development-branch/SKILL.md`。检查："
+    },
+    {
+      "en-US": "1. No references to old behavior (hardcoded `CLAUDE.md`, interactive directory prompt, \"REQUIRED\" language)\n2. Step numbering is consistent within each file\n3. Quick Reference tables match the prose\n4. Integration sections cross-reference correctly\n5. No markdown formatting issues",
+      "zh-Hans": "1. 没有提及旧行为（硬编码的 `CLAUDE.md`、交互式目录提示、“REQUIRED” 语言）\n2. 每向文件中步骤编号一致\n3. 快速参考表格与论述相符\n4. 跨章节的集成环节引用正确\n5. 无Markdown格式问题"
+    },
+    {
+      "en-US": "- [ ] **Step 4: Verify git status is clean**",
+      "zh-Hans": "* \\[ ] **第4步：验证git状态是否干净**"
+    },
+    {
+      "en-US": "Run: `git status`",
+      "zh-Hans": "运行: `git status`"
+    },
+    {
+      "en-US": "Expected: Clean working tree. All changes committed across Tasks 1-4.",
+      "zh-Hans": "预期: 工作树干净。所有更改已通过任务1-4提交。"
+    },
+    {
+      "en-US": "- [ ] **Step 5: Final commit if any fixups needed**",
+      "zh-Hans": "* \\[ ] **第5步：如果需要任何修复，进行最终提交**"
+    },
+    {
+      "en-US": "If manual verification found issues, fix them and commit:",
+      "zh-Hans": "如果手动验证发现了问题，修复它们并提交："
+    },
+    {
+      "en-US": "```bash\ngit add -A\ngit commit -m \"fix: address review findings in worktree skill rewrite (PRI-974)\"\n```",
+      "zh-Hans": "```bash\ngit add -A\ngit commit -m \"fix: address review findings in worktree skill rewrite (PRI-974)\"\n```"
+    },
+    {
+      "en-US": "If no issues found, skip this step.",
+      "zh-Hans": "如果未发现问题，跳过此步骤。"
+    }
+  ]
+}

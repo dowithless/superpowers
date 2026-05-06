@@ -111,8 +111,8 @@
       "zh-Hans": "会话记录存储在 `~/.claude/projects/` 中，工作目录路径被编码："
     },
     {
-      "en-US": "```bash\n# Example for /Users/jesse/Documents/GitHub/superpowers/superpowers\nSESSION_DIR=\"$HOME/.claude/projects/-Users-jesse-Documents-GitHub-superpowers-superpowers\"\n\n# Find recent sessions\nls -lt \"$SESSION_DIR\"/*.jsonl | head -5\n```",
-      "zh-Hans": "```bash\n# Example for /Users/jesse/Documents/GitHub/superpowers/superpowers\nSESSION_DIR=\"$HOME/.claude/projects/-Users-jesse-Documents-GitHub-superpowers-superpowers\"\n\n# Find recent sessions\nls -lt \"$SESSION_DIR\"/*.jsonl | head -5\n```"
+      "en-US": "```bash\n# Example for /Users/yourname/Documents/GitHub/superpowers/superpowers\nSESSION_DIR=\"$HOME/.claude/projects/-Users-yourname-Documents-GitHub-superpowers-superpowers\"\n\n# Find recent sessions\nls -lt \"$SESSION_DIR\"/*.jsonl | head -5\n```",
+      "zh-Hans": "```bash\n# Example for /Users/yourname/Documents/GitHub/superpowers/superpowers\nSESSION_DIR=\"$HOME/.claude/projects/-Users-yourname-Documents-GitHub-superpowers-superpowers\"\n\n# Find recent sessions\nls -lt \"$SESSION_DIR\"/*.jsonl | head -5\n```"
     },
     {
       "en-US": "### What It Shows",

@@ -43,8 +43,8 @@
       "zh-Hans": "### 1. 观察症状"
     },
     {
-      "en-US": "```\nError: git init failed in /Users/jesse/project/packages/core\n```",
-      "zh-Hans": "```\n错误：在 /Users/jesse/project/packages/core 中执行 git init 失败\n```"
+      "en-US": "```\nError: git init failed in ~/project/packages/core\n```",
+      "zh-Hans": "```\n错误：在 ~/project/packages/core 中 git init 失败\n```"
     },
     {
       "en-US": "### 2. Find Immediate Cause",

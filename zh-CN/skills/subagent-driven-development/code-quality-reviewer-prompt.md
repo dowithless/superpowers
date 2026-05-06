@@ -7,14 +7,13 @@
 **仅在规范合规性审查通过后分派。**
 
 ```
-Task tool (superpowers:code-reviewer):
-  使用 requesting-code-review/code-reviewer.md 中的模板
+任务工具（通用）：
+  使用模板 requesting-code-review/code-reviewer.md
 
-  WHAT_WAS_IMPLEMENTED: [来自实施者的报告]
-  PLAN_OR_REQUIREMENTS: Task N from [plan-file]
-  BASE_SHA: [任务前的提交]
-  HEAD_SHA: [当前提交]
-  DESCRIPTION: [任务摘要]
+  描述：[任务摘要，来自实施方报告]
+  计划或需求：规划文件中的任务N
+  基准提交：[任务前的提交]
+  当前提交：[当前提交]
 ```
 
 **除了标准的代码质量问题外，审查员还应检查：**

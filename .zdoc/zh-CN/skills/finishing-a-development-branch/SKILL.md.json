@@ -19,8 +19,8 @@
       "zh-Hans": "通过呈现清晰选项并处理所选工作流，指导完成开发工作。"
     },
     {
-      "en-US": "**Core principle:** Verify tests → Present options → Execute choice → Clean up.",
-      "zh-Hans": "**核心原则：** 验证测试 → 呈现选项 → 执行选择 → 清理。"
+      "en-US": "**Core principle:** Verify tests → Detect environment → Present options → Execute choice → Clean up.",
+      "zh-Hans": "**核心原则：** 验证测试 → 检测环境 → 提供选项 → 执行选择 → 清理。"
     },
     {
       "en-US": "**Announce at start:** \"I'm using the finishing-a-development-branch skill to complete this work.\"",
@@ -59,8 +59,28 @@
       "zh-Hans": "**如果测试通过：** 继续到步骤 2。"
     },
     {
-      "en-US": "### Step 2: Determine Base Branch",
-      "zh-Hans": "### 步骤 2：确定基础分支"
+      "en-US": "### Step 2: Detect Environment",
+      "zh-Hans": "### 步骤 2：检测环境"
+    },
+    {
+      "en-US": "**Determine workspace state before presenting options:**",
+      "zh-Hans": "**在提供选项之前确定工作区状态：**"
+    },
+    {
+      "en-US": "```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\n```",
+      "zh-Hans": "```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\n```"
+    },
+    {
+      "en-US": "This determines which menu to show and how cleanup works:",
+      "zh-Hans": "这将决定显示哪个菜单以及清理工作的方式："
+    },
+    {
+      "en-US": "| State | Menu | Cleanup |\n|-------|------|---------|\n| `GIT_DIR == GIT_COMMON` (normal repo) | Standard 4 options | No worktree to clean up |\n| `GIT_DIR != GIT_COMMON`, named branch | Standard 4 options | Provenance-based (see Step 6) |\n| `GIT_DIR != GIT_COMMON`, detached HEAD | Reduced 3 options (no merge) | No cleanup (externally managed) |",
+      "zh-Hans": "| 状态 | 菜单 | 清理 |\n|-------|------|---------|\n| `GIT_DIR == GIT_COMMON`（正常仓库） | 标准4选项 | 无需清理工作树 |\n| `GIT_DIR != GIT_COMMON`，命名分支 | 标准4选项 | 基于来源（见步骤6） |\n| `GIT_DIR != GIT_COMMON`，分离头指针 | 精简3选项（无合并） | 不清理（外部管理） |"
+    },
+    {
+      "en-US": "### Step 3: Determine Base Branch",
+      "zh-Hans": "### 步骤 3：确定基础分支"
     },
     {
       "en-US": "```bash\n# Try common base branches\ngit merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null\n```",
@@ -71,36 +91,48 @@
       "zh-Hans": "或询问：\"此分支是从 main 分支分出来的 - 是否正确？\""
     },
     {
-      "en-US": "### Step 3: Present Options",
-      "zh-Hans": "### 步骤 3：呈现选项"
+      "en-US": "### Step 4: Present Options",
+      "zh-Hans": "### 步骤 4：提供选项"
     },
     {
-      "en-US": "Present exactly these 4 options:",
-      "zh-Hans": "准确呈现这 4 个选项："
+      "en-US": "**Normal repo and named-branch worktree — present exactly these 4 options:**",
+      "zh-Hans": "**正常仓库和命名分支工作树 — 仅展示以下4个选项：**"
     },
     {
       "en-US": "```\nImplementation complete. What would you like to do?\n\n1. Merge back to <base-branch> locally\n2. Push and create a Pull Request\n3. Keep the branch as-is (I'll handle it later)\n4. Discard this work\n\nWhich option?\n```",
       "zh-Hans": "```\n实施完成。您想做什么？\n\n1. 在本地合并回 <base-branch>\n2. 推送并创建 Pull Request\n3. 保持分支原样（我稍后处理）\n4. 丢弃此项工作\n\n请选择哪个选项？\n```"
     },
     {
+      "en-US": "**Detached HEAD — present exactly these 3 options:**",
+      "zh-Hans": "**分离头指针 — 仅展示以下3个选项：**"
+    },
+    {
+      "en-US": "```\nImplementation complete. You're on a detached HEAD (externally managed workspace).\n\n1. Push as new branch and create a Pull Request\n2. Keep as-is (I'll handle it later)\n3. Discard this work\n\nWhich option?\n```",
+      "zh-Hans": "```\n实现完成。您处于分离头指针状态（外部管理工作区）。\n\n1. 推送为新分支并创建拉取请求\n2. 保持现状（稍后处理）\n3. 放弃本次工作\n\n选择哪个选项？\n```"
+    },
+    {
       "en-US": "**Don't add explanation** - keep options concise.",
       "zh-Hans": "**不要添加解释** - 保持选项简洁。"
     },
     {
-      "en-US": "### Step 4: Execute Choice",
-      "zh-Hans": "### 步骤 4：执行选择"
+      "en-US": "### Step 5: Execute Choice",
+      "zh-Hans": "### 步骤 5：执行选择"
     },
     {
       "en-US": "#### Option 1: Merge Locally",
       "zh-Hans": "#### 选项 1：本地合并"
     },
     {
-      "en-US": "```bash\n# Switch to base branch\ngit checkout <base-branch>\n\n# Pull latest\ngit pull\n\n# Merge feature branch\ngit merge <feature-branch>\n\n# Verify tests on merged result\n<test command>\n\n# If tests pass\ngit branch -d <feature-branch>\n```",
-      "zh-Hans": "```bash\n# Switch to base branch\ngit checkout <base-branch>\n\n# Pull latest\ngit pull\n\n# Merge feature branch\ngit merge <feature-branch>\n\n# Verify tests on merged result\n<test command>\n\n# If tests pass\ngit branch -d <feature-branch>\n```"
+      "en-US": "```bash\n# Get main repo root for CWD safety\nMAIN_ROOT=$(git -C \"$(git rev-parse --git-common-dir)/..\" rev-parse --show-toplevel)\ncd \"$MAIN_ROOT\"\n\n# Merge first — verify success before removing anything\ngit checkout <base-branch>\ngit pull\ngit merge <feature-branch>\n\n# Verify tests on merged result\n<test command>\n\n# Only after merge succeeds: cleanup worktree (Step 6), then delete branch\n```",
+      "zh-Hans": "```bash\n# Get main repo root for CWD safety\nMAIN_ROOT=$(git -C \"$(git rev-parse --git-common-dir)/..\" rev-parse --show-toplevel)\ncd \"$MAIN_ROOT\"\n\n# Merge first — verify success before removing anything\ngit checkout <base-branch>\ngit pull\ngit merge <feature-branch>\n\n# Verify tests on merged result\n<test command>\n\n# Only after merge succeeds: cleanup worktree (Step 6), then delete branch\n```"
     },
     {
-      "en-US": "Then: Cleanup worktree (Step 5)",
-      "zh-Hans": "然后：清理工作树（步骤 5）"
+      "en-US": "Then: Cleanup worktree (Step 6), then delete branch:",
+      "zh-Hans": "然后：清理工作树（步骤6），然后删除分支："
+    },
+    {
+      "en-US": "```bash\ngit branch -d <feature-branch>\n```",
+      "zh-Hans": "```bash\ngit branch -d <feature-branch>\n```"
     },
     {
       "en-US": "#### Option 2: Push and Create PR",
@@ -111,8 +143,8 @@
       "zh-Hans": "```bash\n# Push branch\ngit push -u origin <feature-branch>\n\n# Create PR\ngh pr create --title \"<title>\" --body \"$(cat <<'EOF'\n## Summary\n<2-3 bullets of what changed>\n\n## Test Plan\n- [ ] <verification steps>\nEOF\n)\"\n```"
     },
     {
-      "en-US": "Then: Cleanup worktree (Step 5)",
-      "zh-Hans": "然后：清理工作树（步骤 5）"
+      "en-US": "**Do NOT clean up worktree** — user needs it alive to iterate on PR feedback.",
+      "zh-Hans": "**不要清理工作树** — 用户需要它活跃以迭代 PR 反馈。"
     },
     {
       "en-US": "#### Option 3: Keep As-Is",
@@ -147,48 +179,52 @@
       "zh-Hans": "如果确认："
     },
     {
-      "en-US": "```bash\ngit checkout <base-branch>\ngit branch -D <feature-branch>\n```",
-      "zh-Hans": "```bash\ngit checkout <base-branch>\ngit branch -D <feature-branch>\n```"
+      "en-US": "```bash\nMAIN_ROOT=$(git -C \"$(git rev-parse --git-common-dir)/..\" rev-parse --show-toplevel)\ncd \"$MAIN_ROOT\"\n```",
+      "zh-Hans": "```bash\nMAIN_ROOT=$(git -C \"$(git rev-parse --git-common-dir)/..\" rev-parse --show-toplevel)\ncd \"$MAIN_ROOT\"\n```"
     },
     {
-      "en-US": "Then: Cleanup worktree (Step 5)",
-      "zh-Hans": "然后：清理工作树（步骤 5）"
+      "en-US": "Then: Cleanup worktree (Step 6), then force-delete branch:",
+      "zh-Hans": "然后：清理工作树（步骤6），然后强制删除分支："
     },
     {
-      "en-US": "### Step 5: Cleanup Worktree",
-      "zh-Hans": "### 步骤 5：清理工作树"
+      "en-US": "```bash\ngit branch -D <feature-branch>\n```",
+      "zh-Hans": "```bash\ngit branch -D <feature-branch>\n```"
     },
     {
-      "en-US": "**For Options 1, 2, 4:**",
-      "zh-Hans": "**对于选项 1, 2, 4：**"
+      "en-US": "### Step 6: Cleanup Workspace",
+      "zh-Hans": "### 步骤 6：清理工作区"
     },
     {
-      "en-US": "Check if in worktree:",
-      "zh-Hans": "检查是否在工作树中："
+      "en-US": "**Only runs for Options 1 and 4.** Options 2 and 3 always preserve the worktree.",
+      "zh-Hans": "**仅对选项1和4执行。** 选项2和3始终保留工作树。"
     },
     {
-      "en-US": "```bash\ngit worktree list | grep $(git branch --show-current)\n```",
-      "zh-Hans": "```bash\ngit worktree list | grep $(git branch --show-current)\n```"
+      "en-US": "```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\nWORKTREE_PATH=$(git rev-parse --show-toplevel)\n```",
+      "zh-Hans": "```bash\nGIT_DIR=$(cd \"$(git rev-parse --git-dir)\" 2>/dev/null && pwd -P)\nGIT_COMMON=$(cd \"$(git rev-parse --git-common-dir)\" 2>/dev/null && pwd -P)\nWORKTREE_PATH=$(git rev-parse --show-toplevel)\n```"
     },
     {
-      "en-US": "If yes:",
-      "zh-Hans": "如果是："
+      "en-US": "**If `GIT_DIR == GIT_COMMON`:** Normal repo, no worktree to clean up. Done.",
+      "zh-Hans": "**如果 `GIT_DIR == GIT_COMMON`：** 正常仓库，无需清理工作树。完成。"
     },
     {
-      "en-US": "```bash\ngit worktree remove <worktree-path>\n```",
-      "zh-Hans": "```bash\ngit worktree remove <worktree-path>\n```"
+      "en-US": "**If worktree path is under `.worktrees/`, `worktrees/`, or `~/.config/superpowers/worktrees/`:** Superpowers created this worktree — we own cleanup.",
+      "zh-Hans": "**如果工作树路径位于 `.worktrees/`、`worktrees/` 或 `~/.config/superpowers/worktrees/` 下：** Superpowers 创建了此工作树 — 我们负责清理。"
     },
     {
-      "en-US": "**For Option 3:** Keep worktree.",
-      "zh-Hans": "**对于选项 3：** 保留工作树。"
+      "en-US": "```bash\nMAIN_ROOT=$(git -C \"$(git rev-parse --git-common-dir)/..\" rev-parse --show-toplevel)\ncd \"$MAIN_ROOT\"\ngit worktree remove \"$WORKTREE_PATH\"\ngit worktree prune  # Self-healing: clean up any stale registrations\n```",
+      "zh-Hans": "```bash\nMAIN_ROOT=$(git -C \"$(git rev-parse --git-common-dir)/..\" rev-parse --show-toplevel)\ncd \"$MAIN_ROOT\"\ngit worktree remove \"$WORKTREE_PATH\"\ngit worktree prune  # Self-healing: clean up any stale registrations\n```"
+    },
+    {
+      "en-US": "**Otherwise:** The host environment (harness) owns this workspace. Do NOT remove it. If your platform provides a workspace-exit tool, use it. Otherwise, leave the workspace in place.",
+      "zh-Hans": "**否则：** 主机环境（测试框架）拥有此工作区。**不要**移除它。如果你的平台提供了一个工作区退出工具，请使用它。否则，保持工作区不变。"
     },
     {
       "en-US": "## Quick Reference",
       "zh-Hans": "## 快速参考"
     },
     {
-      "en-US": "| Option | Merge | Push | Keep Worktree | Cleanup Branch |\n|--------|-------|------|---------------|----------------|\n| 1. Merge locally | ✓ | - | - | ✓ |\n| 2. Create PR | - | ✓ | ✓ | - |\n| 3. Keep as-is | - | - | ✓ | - |\n| 4. Discard | - | - | - | ✓ (force) |",
-      "zh-Hans": "| 选项 | 合并 | 推送 | 保留工作树 | 清理分支 |\n|--------|-------|------|---------------|----------------|\n| 1. 本地合并 | ✓ | - | - | ✓ |\n| 2. 创建 PR | - | ✓ | ✓ | - |\n| 3. 保持原样 | - | - | ✓ | - |\n| 4. 丢弃 | - | - | - | ✓ (强制) |"
+      "en-US": "| Option | Merge | Push | Keep Worktree | Cleanup Branch |\n|--------|-------|------|---------------|----------------|\n| 1. Merge locally | yes | - | - | yes |\n| 2. Create PR | - | yes | yes | - |\n| 3. Keep as-is | - | - | yes | - |\n| 4. Discard | - | - | - | yes (force) |",
+      "zh-Hans": "| 选项 | 合并 | 推送 | 保留工作树 | 清理分支 |\n|--------|-------|------|---------------|----------------|\n| 1. 本地合并 | 是 | - | - | 是 |\n| 2. 创建 PR | - | 是 | 是 | - |\n| 3. 保持原样 | - | - | 是 | - |\n| 4. 丢弃 | - | - | - | 是（强制） |"
     },
     {
       "en-US": "## Common Mistakes",
@@ -207,16 +243,40 @@
       "zh-Hans": "**开放式问题**"
     },
     {
-      "en-US": "- **Problem:** \"What should I do next?\" → ambiguous\n- **Fix:** Present exactly 4 structured options",
-      "zh-Hans": "* **问题：** \"接下来我该做什么？\" → 模糊不清\n* **修复：** 准确呈现 4 个结构化选项"
+      "en-US": "- **Problem:** \"What should I do next?\" is ambiguous\n- **Fix:** Present exactly 4 structured options (or 3 for detached HEAD)",
+      "zh-Hans": "* **问题：** “我接下来应该做什么？”表述含糊\n* **修复：** 精确展示4个结构化选项（分离头指针则展示3个）"
     },
     {
-      "en-US": "**Automatic worktree cleanup**",
-      "zh-Hans": "**自动工作树清理**"
+      "en-US": "**Cleaning up worktree for Option 2**",
+      "zh-Hans": "**为选项2清理工作树**"
     },
     {
-      "en-US": "- **Problem:** Remove worktree when might need it (Option 2, 3)\n- **Fix:** Only cleanup for Options 1 and 4",
-      "zh-Hans": "* **问题：** 在可能还需要时移除工作树（选项 2, 3）\n* **修复：** 仅清理选项 1 和 4 的情况"
+      "en-US": "- **Problem:** Remove worktree user needs for PR iteration\n- **Fix:** Only cleanup for Options 1 and 4",
+      "zh-Hans": "* **问题：** 用户迭代 PR 所需的工作树被移除\n* **修复：** 仅对选项1和4进行清理"
+    },
+    {
+      "en-US": "**Deleting branch before removing worktree**",
+      "zh-Hans": "**在移除工作树之前删除分支**"
+    },
+    {
+      "en-US": "- **Problem:** `git branch -d` fails because worktree still references the branch\n- **Fix:** Merge first, remove worktree, then delete branch",
+      "zh-Hans": "* **问题：** 由于工作树仍引用该分支，`git branch -d` 失败\n* **修复：** 先合并，再移除工作树，最后删除分支"
+    },
+    {
+      "en-US": "**Running git worktree remove from inside the worktree**",
+      "zh-Hans": "**从工作树内部运行 git worktree remove**"
+    },
+    {
+      "en-US": "- **Problem:** Command fails silently when CWD is inside the worktree being removed\n- **Fix:** Always `cd` to main repo root before `git worktree remove`",
+      "zh-Hans": "* **问题：** 当当前工作目录位于即将移除的工作树内部时，命令会静默失败\n* **修复：** 在 `git worktree remove` 之前，始终 `cd` 返回主仓库根目录"
+    },
+    {
+      "en-US": "**Cleaning up harness-owned worktrees**",
+      "zh-Hans": "**清理测试框架拥有的工作树**"
+    },
+    {
+      "en-US": "- **Problem:** Removing a worktree the harness created causes phantom state\n- **Fix:** Only clean up worktrees under `.worktrees/`, `worktrees/`, or `~/.config/superpowers/worktrees/`",
+      "zh-Hans": "* **问题：** 移除由测试框架创建工作树会导致幻影状态\n* **修复：** 只清理位于 `.worktrees/`、`worktrees/` 或 `~/.config/superpowers/worktrees/` 下的工作树"
     },
     {
       "en-US": "**No confirmation for discard**",
@@ -235,36 +295,16 @@
       "zh-Hans": "**切勿：**"
     },
     {
-      "en-US": "- Proceed with failing tests\n- Merge without verifying tests on result\n- Delete work without confirmation\n- Force-push without explicit request",
-      "zh-Hans": "* 在测试失败的情况下继续\n* 未验证结果测试就进行合并\n* 未经确认就删除工作\n* 未经明确请求就强制推送"
+      "en-US": "- Proceed with failing tests\n- Merge without verifying tests on result\n- Delete work without confirmation\n- Force-push without explicit request\n- Remove a worktree before confirming merge success\n- Clean up worktrees you didn't create (provenance check)\n- Run `git worktree remove` from inside the worktree",
+      "zh-Hans": "* 在测试失败的情况下继续操作\n* 未在结果上验证测试即进行合并\n* 未经确认删除工作\n* 未经明确请求强制推送\n* 在确认合并成功前移除工作树\n* 清理不是你创建的工作树（来源检查）\n* 从工作树内部运行 `git worktree remove`"
     },
     {
       "en-US": "**Always:**",
       "zh-Hans": "**始终：**"
     },
     {
-      "en-US": "- Verify tests before offering options\n- Present exactly 4 options\n- Get typed confirmation for Option 4\n- Clean up worktree for Options 1 & 4 only",
-      "zh-Hans": "* 在提供选项之前验证测试\n* 准确呈现 4 个选项\n* 获取选项 4 的输入确认\n* 仅清理选项 1 和 4 的工作树"
-    },
-    {
-      "en-US": "## Integration",
-      "zh-Hans": "## 集成"
-    },
-    {
-      "en-US": "**Called by:**",
-      "zh-Hans": "**由以下调用：**"
-    },
-    {
-      "en-US": "- **subagent-driven-development** (Step 7) - After all tasks complete\n- **executing-plans** (Step 5) - After all batches complete",
-      "zh-Hans": "* **subagent-driven-development** (步骤 7) - 所有任务完成后\n* **executing-plans** (步骤 5) - 所有批次完成后"
-    },
-    {
-      "en-US": "**Pairs with:**",
-      "zh-Hans": "**与以下配对：**"
-    },
-    {
-      "en-US": "- **using-git-worktrees** - Cleans up worktree created by that skill",
-      "zh-Hans": "* **using-git-worktrees** - 清理由该技能创建的工作树"
+      "en-US": "- Verify tests before offering options\n- Detect environment before presenting menu\n- Present exactly 4 options (or 3 for detached HEAD)\n- Get typed confirmation for Option 4\n- Clean up worktree for Options 1 & 4 only\n- `cd` to main repo root before worktree removal\n- Run `git worktree prune` after removal",
+      "zh-Hans": "* 提供选项前先验证测试\n* 展示菜单前检测环境\n* 精确展示4个选项（分离头指针则展示3个）\n* 对选项4获取输入确认\n* 仅对选项1和4清理工作树\n* 工作树移除前先 `cd` 到主仓库根目录\n* 移除后运行 `git worktree prune`"
     }
   ]
 }

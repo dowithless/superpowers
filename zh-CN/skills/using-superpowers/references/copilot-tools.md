@@ -2,32 +2,22 @@
 
 技能使用 Claude Code 工具名称。当你在技能中遇到这些时，请使用你平台上的等效工具：
 
-| 技能引用 | Copilot CLI 等效工具 |
+| 技能参考 | Copilot CLI 等效功能 |
 |-----------------|----------------------|
 | `Read`（文件读取） | `view` |
 | `Write`（文件创建） | `create` |
 | `Edit`（文件编辑） | `edit` |
 | `Bash`（运行命令） | `bash` |
 | `Grep`（搜索文件内容） | `grep` |
-| `Glob`（按文件名搜索文件） | `glob` |
+| `Glob`（按名称搜索文件） | `glob` |
 | `Skill` 工具（调用技能） | `skill` |
 | `WebFetch` | `web_fetch` |
-| `Task` 工具（派发子代理） | `task`（参见[代理类型](#代理类型)） |
+| `Task` 工具（分派子代理） | `task` 与 `agent_type: "general-purpose"` 或 `"explore"` 配合使用 |
 | 多个 `Task` 调用（并行） | 多个 `task` 调用 |
-| 任务状态/输出 | `read_agent`, `list_agents` |
-| `TodoWrite`（任务跟踪） | `sql` 及内置的 `todos` 表格 |
-| `WebSearch` | 无等效工具 —— 使用带有搜索引擎 URL 的 `web_fetch` |
-| `EnterPlanMode` / `ExitPlanMode` | 无等效工具 —— 保持在主会话中 |
-
-## 代理类型
-
-Copilot CLI 的 `task` 工具接受一个 `agent_type` 参数：
-
-| Claude Code 代理 | Copilot CLI 等效工具 |
-|-------------------|----------------------|
-| `general-purpose` | `"general-purpose"` |
-| `Explore` | `"explore"` |
-| 命名插件代理（例如 `superpowers:code-reviewer`） | 从已安装的插件中自动发现 |
+| 任务状态/输出 | `read_agent`、`list_agents` |
+| `TodoWrite`（任务跟踪） | `sql` 带有内置的 `todos` 表格 |
+| `WebSearch` | 无等效功能 — 请使用带搜索引擎 URL 的 `web_fetch` |
+| `EnterPlanMode` / `ExitPlanMode` | 无等效功能 — 留在主会话中 |
 
 ## 异步 Shell 会话
 

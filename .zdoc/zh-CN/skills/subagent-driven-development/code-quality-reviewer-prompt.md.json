@@ -19,8 +19,8 @@
       "zh-Hans": "**仅在规范合规性审查通过后分派。**"
     },
     {
-      "en-US": "```\nTask tool (superpowers:code-reviewer):\n  Use template at requesting-code-review/code-reviewer.md\n\n  WHAT_WAS_IMPLEMENTED: [from implementer's report]\n  PLAN_OR_REQUIREMENTS: Task N from [plan-file]\n  BASE_SHA: [commit before task]\n  HEAD_SHA: [current commit]\n  DESCRIPTION: [task summary]\n```",
-      "zh-Hans": "```\nTask tool (superpowers:code-reviewer):\n  使用 requesting-code-review/code-reviewer.md 中的模板\n\n  WHAT_WAS_IMPLEMENTED: [来自实施者的报告]\n  PLAN_OR_REQUIREMENTS: Task N from [plan-file]\n  BASE_SHA: [任务前的提交]\n  HEAD_SHA: [当前提交]\n  DESCRIPTION: [任务摘要]\n```"
+      "en-US": "```\nTask tool (general-purpose):\n  Use template at requesting-code-review/code-reviewer.md\n\n  DESCRIPTION: [task summary, from implementer's report]\n  PLAN_OR_REQUIREMENTS: Task N from [plan-file]\n  BASE_SHA: [commit before task]\n  HEAD_SHA: [current commit]\n```",
+      "zh-Hans": "```\n任务工具（通用）：\n  使用模板 requesting-code-review/code-reviewer.md\n\n  描述：[任务摘要，来自实施方报告]\n  计划或需求：规划文件中的任务N\n  基准提交：[任务前的提交]\n  当前提交：[当前提交]\n```"
     },
     {
       "en-US": "**In addition to standard code quality concerns, the reviewer should check:**",

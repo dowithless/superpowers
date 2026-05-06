@@ -11,8 +11,8 @@
       "zh-Hans": "# 请求代码审查"
     },
     {
-      "en-US": "Dispatch superpowers:code-reviewer subagent to catch issues before they cascade. The reviewer gets precisely crafted context for evaluation — never your session's history. This keeps the reviewer focused on the work product, not your thought process, and preserves your own context for continued work.",
-      "zh-Hans": "调度 superpowers:code-reviewer 子代理以在问题蔓延前将其捕获。审查者会获得精心构建的评估上下文——绝不会是你会话的历史记录。这能让审查者专注于工作成果，而非你的思考过程，并为你自己的后续工作保留上下文。"
+      "en-US": "Dispatch a code reviewer subagent to catch issues before they cascade. The reviewer gets precisely crafted context for evaluation — never your session's history. This keeps the reviewer focused on the work product, not your thought process, and preserves your own context for continued work.",
+      "zh-Hans": "调派代码审查子代理，在问题连锁反应前及时拦截。审查者获得精心构造的评估上下文——绝不包含你的会话历史。这能使审查者专注于工作成果而非你的思维过程，同时保留你自身的工作上下文继续创作。"
     },
     {
       "en-US": "**Core principle:** Review early, review often.",
@@ -51,20 +51,20 @@
       "zh-Hans": "```bash\nBASE_SHA=$(git rev-parse HEAD~1)  # or origin/main\nHEAD_SHA=$(git rev-parse HEAD)\n```"
     },
     {
-      "en-US": "**2. Dispatch code-reviewer subagent:**",
-      "zh-Hans": "**2. 调度 code-reviewer 子代理：**"
+      "en-US": "**2. Dispatch code reviewer subagent:**",
+      "zh-Hans": "**2. 调派代码审查子代理：**"
     },
     {
-      "en-US": "Use Task tool with superpowers:code-reviewer type, fill template at `code-reviewer.md`",
-      "zh-Hans": "使用 Task 工具，类型为 superpowers:code-reviewer，填写位于 `code-reviewer.md` 的模板"
+      "en-US": "Use Task tool with `general-purpose` type, fill template at `code-reviewer.md`",
+      "zh-Hans": "使用 `general-purpose` 类型的 Task 工具，填充位于 `code-reviewer.md` 的模板"
     },
     {
       "en-US": "**Placeholders:**",
       "zh-Hans": "**占位符说明：**"
     },
     {
-      "en-US": "- `{WHAT_WAS_IMPLEMENTED}` - What you just built\n- `{PLAN_OR_REQUIREMENTS}` - What it should do\n- `{BASE_SHA}` - Starting commit\n- `{HEAD_SHA}` - Ending commit\n- `{DESCRIPTION}` - Brief summary",
-      "zh-Hans": "* `{WHAT_WAS_IMPLEMENTED}` - 你刚刚构建了什么\n* `{PLAN_OR_REQUIREMENTS}` - 它应该做什么\n* `{BASE_SHA}` - 起始提交\n* `{HEAD_SHA}` - 结束提交\n* `{DESCRIPTION}` - 简要总结"
+      "en-US": "- `{DESCRIPTION}` - Brief summary of what you built\n- `{PLAN_OR_REQUIREMENTS}` - What it should do\n- `{BASE_SHA}` - Starting commit\n- `{HEAD_SHA}` - Ending commit",
+      "zh-Hans": "* `{DESCRIPTION}` —— 你所构建内容的简要概述\n* `{PLAN_OR_REQUIREMENTS}` —— 应实现的功能\n* `{BASE_SHA}` —— 起始提交\n* `{HEAD_SHA}` —— 结束提交"
     },
     {
       "en-US": "**3. Act on feedback:**",
@@ -79,8 +79,8 @@
       "zh-Hans": "## 示例"
     },
     {
-      "en-US": "```\n[Just completed Task 2: Add verification function]\n\nYou: Let me request code review before proceeding.\n\nBASE_SHA=$(git log --oneline | grep \"Task 1\" | head -1 | awk '{print $1}')\nHEAD_SHA=$(git rev-parse HEAD)\n\n[Dispatch superpowers:code-reviewer subagent]\n  WHAT_WAS_IMPLEMENTED: Verification and repair functions for conversation index\n  PLAN_OR_REQUIREMENTS: Task 2 from docs/superpowers/plans/deployment-plan.md\n  BASE_SHA: a7981ec\n  HEAD_SHA: 3df7661\n  DESCRIPTION: Added verifyIndex() and repairIndex() with 4 issue types\n\n[Subagent returns]:\n  Strengths: Clean architecture, real tests\n  Issues:\n    Important: Missing progress indicators\n    Minor: Magic number (100) for reporting interval\n  Assessment: Ready to proceed\n\nYou: [Fix progress indicators]\n[Continue to Task 3]\n```",
-      "zh-Hans": "```\n[已完成任务 2：添加验证功能]\n\n你：让我在继续之前请求代码审查。\n\nBASE_SHA=$(git log --oneline | grep \"Task 1\" | head -1 | awk '{print $1}')\nHEAD_SHA=$(git rev-parse HEAD)\n\n[调度 superpowers:code-reviewer 子代理]\n  WHAT_WAS_IMPLEMENTED: 对话索引的验证和修复功能\n  PLAN_OR_REQUIREMENTS: 来自 docs/superpowers/plans/deployment-plan.md 的任务 2\n  BASE_SHA: a7981ec\n  HEAD_SHA: 3df7661\n  DESCRIPTION: 添加了包含 4 种问题类型的 verifyIndex() 和 repairIndex()\n\n[子代理返回]：\n  优点：架构清晰，包含真实测试\n  问题：\n    重要：缺少进度指示器\n    次要：报告间隔使用魔数 (100)\n  评估：可以继续\n\n你：[修复进度指示器]\n[继续任务 3]\n```"
+      "en-US": "```\n[Just completed Task 2: Add verification function]\n\nYou: Let me request code review before proceeding.\n\nBASE_SHA=$(git log --oneline | grep \"Task 1\" | head -1 | awk '{print $1}')\nHEAD_SHA=$(git rev-parse HEAD)\n\n[Dispatch code reviewer subagent]\n  DESCRIPTION: Added verifyIndex() and repairIndex() with 4 issue types\n  PLAN_OR_REQUIREMENTS: Task 2 from docs/superpowers/plans/deployment-plan.md\n  BASE_SHA: a7981ec\n  HEAD_SHA: 3df7661\n\n[Subagent returns]:\n  Strengths: Clean architecture, real tests\n  Issues:\n    Important: Missing progress indicators\n    Minor: Magic number (100) for reporting interval\n  Assessment: Ready to proceed\n\nYou: [Fix progress indicators]\n[Continue to Task 3]\n```",
+      "zh-Hans": "```\n[刚刚完成了任务2：添加验证功能]\n\n你: 让我先请求代码审查，然后再继续。\n\nBASE_SHA=$(git log --oneline | grep \"Task 1\" | head -1 | awk '{print $1}')\nHEAD_SHA=$(git rev-parse HEAD)\n\n[分派代码审查助手]\n  描述: 添加了verifyIndex()和repairIndex()以及4种问题类型\n  计划或需求: 来自docs/superpowers/plans/deployment-plan.md的任务2\n  基准提交哈希: a7981ec\n  头部提交哈希: 3df7661\n\n[助手返回]:\n  优点: 架构清晰，有实际测试\n  问题:\n    重要: 缺少进度指示\n    次要: 报告间隔使用了魔数(100)\n  评估: 已准备好继续\n\n你: [修复进度指示]\n[继续执行任务3]\n```"
     },
     {
       "en-US": "## Integration with Workflows",
@@ -99,8 +99,8 @@
       "zh-Hans": "**执行计划时：**"
     },
     {
-      "en-US": "- Review after each batch (3 tasks)\n- Get feedback, apply, continue",
-      "zh-Hans": "* 每批（3项任务）后审查\n* 获取反馈，应用，继续"
+      "en-US": "- Review after each task or at natural checkpoints\n- Get feedback, apply, continue",
+      "zh-Hans": "* 在每项任务完成后或自然检查点进行审查\n* 获取反馈，应用修改，继续推进"
     },
     {
       "en-US": "**Ad-Hoc Development:**",

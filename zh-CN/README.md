@@ -1,6 +1,10 @@
 # Superpowers
 
-Superpowers 是一个为您的编程智能体构建的完整软件开发工作流，它建立在一组可组合的“技能”和一些初始指令之上，确保您的智能体能够正确使用它们。
+Superpowers 是一套针对编码代理的完整软件开发方法论，构建于一组可组合技能和确保代理使用这些技能的初始指令之上。
+
+## 快速上手
+
+为你的代理安装 Superpowers：[Claude Code](#claude-code)、[Codex CLI](#codex-cli)、[Codex App](#codex-app)、[Factory Droid](#factory-droid)、[Gemini CLI](#gemini-cli)、[OpenCode](#opencode)、[Cursor](#cursor)、[GitHub Copilot CLI](#github-copilot-cli)。
 
 ## 工作原理
 
@@ -24,84 +28,125 @@ Superpowers 是一个为您的编程智能体构建的完整软件开发工作�
 
 ## 安装
 
-**注意：** 安装方式因平台而异。Claude Code 或 Cursor 有内置的插件市场。Codex 和 OpenCode 需要手动设置。
+不同工具的安装方式各有差异。如果使用多个工具，请为每个工具分别安装 Superpowers。
 
-### Claude Code 官方市场
+### Claude Code
 
 Superpowers 可通过[官方 Claude 插件市场](https://claude.com/plugins/superpowers)获取
 
-从 Claude 市场安装插件：
+#### 官方市场
 
-```bash
-/plugin install superpowers@claude-plugins-official
-```
+* 通过 Anthropic 官方市场安装插件：
 
-### Claude Code（通过插件市场）
+  ```bash
+  /plugin install superpowers@claude-plugins-official
+  ```
 
-在 Claude Code 中，首先注册市场：
+#### Superpowers 市场
 
-```bash
-/plugin marketplace add obra/superpowers-marketplace
-```
+Superpowers 市场提供 Superpowers 及其他一些与 Claude Code 相关的插件。
 
-然后从此市场安装插件：
+* 注册市场：
 
-```bash
-/plugin install superpowers@superpowers-marketplace
-```
+  ```bash
+  /plugin marketplace add obra/superpowers-marketplace
+  ```
 
-### Cursor（通过插件市场）
+* 从该市场安装插件：
 
-在 Cursor Agent 聊天中，从市场安装：
+  ```bash
+  /plugin install superpowers@superpowers-marketplace
+  ```
 
-```text
-/add-plugin superpowers
-```
+### Codex CLI
 
-或在插件市场中搜索“superpowers”。
+Superpowers 可通过 [官方 Codex 插件市场](https://github.com/openai/plugins) 获取。
 
-### Codex
+* 打开插件搜索界面：
 
-告诉 Codex：
+  ```bash
+  /plugins
+  ```
 
-```
-从 https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.codex/INSTALL.md 获取并遵循说明。
-```
+* 搜索 Superpowers：
 
-**详细文档：** [docs/README.codex.md](docs/README.codex.md)
+  ```bash
+  superpowers
+  ```
 
-### OpenCode
+* 选择 `Install Plugin`。
 
-告诉 OpenCode：
+### Codex App
 
-```
-从 https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md 获取并遵循说明。
-```
+Superpowers 可通过 [官方 Codex 插件市场](https://github.com/openai/plugins) 获取。
 
-**详细文档：** [docs/README.opencode.md](docs/README.opencode.md)
+* 在 Codex 应用中，点击侧边栏的"插件"。
+* 你应在"编码"部分看到 `Superpowers`。
+* 点击 Superpowers 旁的 `+`，然后按照提示操作。
 
-### GitHub Copilot CLI
+### Factory Droid
 
-```bash
-copilot plugin marketplace add obra/superpowers-marketplace
-copilot plugin install superpowers@superpowers-marketplace
-```
+* 注册市场：
+
+  ```bash
+  droid plugin marketplace add https://github.com/obra/superpowers
+  ```
+
+* 安装插件：
+
+  ```bash
+  droid plugin install superpowers@superpowers
+  ```
 
 ### Gemini CLI
 
-```bash
-gemini extensions install https://github.com/obra/superpowers
-```
+* 安装扩展：
 
-要更新：
+  ```bash
+  gemini extensions install https://github.com/obra/superpowers
+  ```
 
-```bash
-gemini extensions update superpowers
-```
+* 后续更新：
 
-### 验证安装
+  ```bash
+  gemini extensions update superpowers
+  ```
 
-在您选择的平台中启动一个新会话，并询问一些应该触发技能的事情（例如，“帮我规划这个功能”或“我们来调试这个问题”）。智能体应该会自动调用相关的 superpowers 技能。
+### OpenCode
+
+OpenCode 使用自己的插件安装系统；即使你已在其他工具中使用，也请为 OpenCode 单独安装 Superpowers。
+
+* 告知 OpenCode：
+
+  ```
+  Fetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md
+  ```
+
+* 详细文档：[docs/README.opencode.md](docs/README.opencode.md)
+
+### Cursor
+
+* 在 Cursor 代理聊天中，通过市场安装：
+
+  ```text
+  /add-plugin superpowers
+  ```
+
+* 或在插件市场中搜索 "superpowers"。
+
+### GitHub Copilot CLI
+
+* 注册市场：
+
+  ```bash
+  copilot plugin marketplace add obra/superpowers-marketplace
+  ```
+
+* 安装插件：
+
+  ```bash
+  copilot plugin install superpowers@superpowers-marketplace
+  ```
 
 ## 基本工作流程
 
@@ -158,26 +203,23 @@ gemini extensions update superpowers
 * **降低复杂性** - 以简洁为主要目标
 * **证据优于断言** - 在宣布成功前进行验证
 
-阅读更多：[适用于 Claude Code 的 Superpowers](https://blog.fsck.com/2025/10/09/superpowers/)
+阅读 [原始发布公告](https://blog.fsck.com/2025/10/09/superpowers/)。
 
 ## 贡献
 
-技能直接存放在此代码库中。要贡献：
+以下是 Superpowers 的一般贡献流程。请注意，我们一般不接受新技能的贡献，且对技能的任何更新都必须在所有支持的编码代理上有效。
 
-1. 分叉此代码库
-2. 为您的技能创建一个分支
-3. 遵循 `writing-skills` 技能来创建和测试新技能
-4. 提交 PR
+1. Fork 仓库
+2. 切换到 'dev' 分支
+3. 为你的工作创建一个分支
+4. 遵循 `writing-skills` 技能来创建并测试新技能或修改技能
+5. 提交 Pull 请求，务必填写拉取请求模板。
 
 查看 `skills/writing-skills/SKILL.md` 获取完整指南。
 
 ## 更新
 
-当您更新插件时，技能会自动更新：
-
-```bash
-/plugin update superpowers
-```
+Superpowers 的更新在一定程度上依赖于编码代理，但通常是自动完成的。
 
 ## 许可证
 

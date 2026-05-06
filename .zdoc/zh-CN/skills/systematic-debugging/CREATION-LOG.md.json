@@ -15,8 +15,8 @@
       "zh-Hans": "## 源材料"
     },
     {
-      "en-US": "Extracted debugging framework from `/Users/jesse/.claude/CLAUDE.md`:",
-      "zh-Hans": "从 `/Users/jesse/.claude/CLAUDE.md` 中提取的调试框架："
+      "en-US": "Extracted debugging framework from `~/.claude/CLAUDE.md`:",
+      "zh-Hans": "从 `~/.claude/CLAUDE.md` 中提取的调试框架："
     },
     {
       "en-US": "- 4-phase systematic process (Investigation → Pattern Analysis → Hypothesis → Implementation)\n- Core mandate: ALWAYS find root cause, NEVER fix symptoms\n- Rules designed to resist time pressure and rationalization",

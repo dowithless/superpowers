@@ -11,6 +11,8 @@ description: 在当前会话中执行具有独立任务的实施计划时使用
 
 **核心原则：** 每个任务使用新的子代理 + 两阶段评审（先规范后质量）= 高质量、快速迭代
 
+**持续执行：** 不要在任务之间暂停与您的搭档验证。不间断地执行计划中的所有任务。唯一的暂停理由有：无法解决的**已阻塞**状态、确实阻碍进展的不明确之处，或所有任务完成。“我应该继续吗？”的提示和进度总结只会浪费他们的时间——他们要求您执行计划，所以执行它。
+
 ## 何时使用
 
 ```dot
@@ -278,10 +280,10 @@ You: "用户级别 (~/.config/superpowers/hooks/)"
 
 **必需的工作流技能：**
 
-* **superpowers:using-git-worktrees** - **必需**：在开始前设置独立的工作空间
+* **superpowers:using-git-worktrees** - 确保隔离工作区（创建新工作区或检查现有工作区）
 * **superpowers:writing-plans** - 创建此技能执行的计划
-* **superpowers:requesting-code-review** - 用于评审者子代理的代码评审模板
-* **superpowers:finishing-a-development-branch** - 在所有任务完成后完成开发
+* **superpowers:requesting-code-review** - 给审核助手的代码审核模板
+* **superpowers:finishing-a-development-branch** - 完成所有任务后完成开发流程
 
 **子代理应使用：**
 

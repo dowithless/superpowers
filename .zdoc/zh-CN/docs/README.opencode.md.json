@@ -23,12 +23,16 @@
       "zh-Hans": "```json\n{\n  \"plugin\": [\"superpowers@git+https://github.com/obra/superpowers.git\"]\n}\n```"
     },
     {
-      "en-US": "Restart OpenCode. The plugin auto-installs via Bun and registers all skills automatically.",
-      "zh-Hans": "重启 OpenCode。插件将通过 Bun 自动安装并自动注册所有技能。"
+      "en-US": "Restart OpenCode. The plugin installs through OpenCode's plugin manager and\nregisters all skills.",
+      "zh-Hans": "重新启动 OpenCode。该插件通过 OpenCode 的插件管理器安装，并将注册所有技能。"
     },
     {
       "en-US": "Verify by asking: \"Tell me about your superpowers\"",
       "zh-Hans": "通过询问以下内容进行验证：“告诉我关于你的 superpowers”"
+    },
+    {
+      "en-US": "OpenCode uses its own plugin install. If you also use Claude Code, Codex, or\nanother harness, install Superpowers separately for each one.",
+      "zh-Hans": "OpenCode 使用其自身的插件安装方式。如果你同时使用 Claude Code、Codex 或其他集成环境，需要为每个工具分别安装 Superpowers。"
     },
     {
       "en-US": "### Migrating from the old symlink-based install",
@@ -107,8 +111,8 @@
       "zh-Hans": "## 更新"
     },
     {
-      "en-US": "Superpowers updates automatically when you restart OpenCode. The plugin is re-installed from the git repository on each launch.",
-      "zh-Hans": "Superpowers 在你重启 OpenCode 时会自动更新。插件在每次启动时都会从 git 仓库重新安装。"
+      "en-US": "OpenCode installs Superpowers through a git-backed package spec. Some OpenCode\nand Bun versions pin that resolved git dependency in a lockfile or cache, so a\nrestart may not pick up the newest Superpowers commit. If updates do not appear,\nclear OpenCode's package cache or reinstall the plugin.",
+      "zh-Hans": "OpenCode 通过基于 Git 的包规范安装 Superpowers。某些 OpenCode 和 Bun 版本会将解析后的 Git 依赖固定到锁定文件或缓存中，因此重新启动可能不会自动获取最新的 Superpowers 提交。如果更新未生效，请清除 OpenCode 的包缓存或重新安装插件。"
     },
     {
       "en-US": "To pin a specific version, use a branch or tag:",
@@ -153,6 +157,26 @@
     {
       "en-US": "1. Check OpenCode logs: `opencode run --print-logs \"hello\" 2>&1 | grep -i superpowers`\n2. Verify the plugin line in your `opencode.json` is correct\n3. Make sure you're running a recent version of OpenCode",
       "zh-Hans": "1. 检查 OpenCode 日志：`opencode run --print-logs \"hello\" 2>&1 | grep -i superpowers`\n2. 验证你的 `opencode.json` 中的插件行是否正确\n3. 确保你运行的是最新版本的 OpenCode"
+    },
+    {
+      "en-US": "### Windows install issues",
+      "zh-Hans": "### Windows 安装问题"
+    },
+    {
+      "en-US": "Some Windows OpenCode builds have upstream installer issues with git-backed\nplugin specs, including cache paths for `git+https` URLs and Bun not finding\n`git.exe` even when it works in a normal terminal. If OpenCode cannot install\nthe plugin, try installing with system npm and pointing OpenCode at the local\npackage:",
+      "zh-Hans": "部分 Windows 版 OpenCode 构建版本存在上游安装器问题，涉及基于 Git 的包规范，包括 `git+https` URL 的缓存路径，以及 Bun 在正常终端中可正常运行但无法找到 `git.exe` 的情况。如果 OpenCode 无法安装该插件，可尝试使用系统 npm 安装，并将 OpenCode 指向本地包："
+    },
+    {
+      "en-US": "```powershell\nnpm install superpowers@git+https://github.com/obra/superpowers.git --prefix \"$HOME\\.config\\opencode\"\n```",
+      "zh-Hans": "```powershell\nnpm install superpowers@git+https://github.com/obra/superpowers.git --prefix \"$HOME\\.config\\opencode\"\n```"
+    },
+    {
+      "en-US": "Then use the installed package path in `opencode.json`:",
+      "zh-Hans": "然后在 `opencode.json` 中使用已安装的包路径："
+    },
+    {
+      "en-US": "```json\n{\n  \"plugin\": [\"~/.config/opencode/node_modules/superpowers\"]\n}\n```",
+      "zh-Hans": "```json\n{\n  \"plugin\": [\"~/.config/opencode/node_modules/superpowers\"]\n}\n```"
     },
     {
       "en-US": "### Skills not found",

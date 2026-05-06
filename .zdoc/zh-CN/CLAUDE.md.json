@@ -127,6 +127,42 @@
       "zh-Hans": "包含多个不相关更改的 PR 将被关闭。请将它们拆分成单独的 PR。"
     },
     {
+      "en-US": "## New Harness Support",
+      "zh-Hans": "## 新环境支持"
+    },
+    {
+      "en-US": "If your PR adds support for a new harness (IDE, CLI tool, agent runner), you MUST include a session transcript proving the integration works end-to-end.",
+      "zh-Hans": "如果你的 PR 增加了对新环境（IDE、CLI 工具、智能体运行器）的支持，则必须包含一份会话记录，证明该集成可端到端工作。"
+    },
+    {
+      "en-US": "A real integration loads the `using-superpowers` bootstrap at session start. The bootstrap is what causes skills to auto-trigger at the right moments. Without it, the skills are dead weight — present on disk but never invoked.",
+      "zh-Hans": "真正的集成会在会话启动时加载 `using-superpowers` 引导程序。引导程序的作用是在正确时机自动触发技能。没有它，技能就只是磁盘上的死代码——存在却永远不被调用。"
+    },
+    {
+      "en-US": "**The acceptance test.** Open a clean session in the new harness and send exactly this user message:",
+      "zh-Hans": "**验收测试。** 在新环境中打开一个干净的会话，并发送以下用户消息："
+    },
+    {
+      "en-US": "> Let's make a react todo list",
+      "zh-Hans": "> 我们来写一个 React 待办事项列表吧"
+    },
+    {
+      "en-US": "A working integration auto-triggers the `brainstorming` skill before any code is written. Paste the complete transcript in the PR.",
+      "zh-Hans": "一个可工作的集成会在任何代码被写出之前自动触发 `brainstorming` 技能。请将完整的会话记录粘贴到 PR 中。"
+    },
+    {
+      "en-US": "**These are not real integrations and will be closed:**",
+      "zh-Hans": "**以下情况视为非真实集成，将被关闭：**"
+    },
+    {
+      "en-US": "- Manually copying skill files into the harness\n- Wrapping with `npx skills` or similar at-runtime shims\n- Anything that requires the user to opt in to skills per-session\n- Anything where `brainstorming` does not auto-trigger on the acceptance test above",
+      "zh-Hans": "* 手动将技能文件拷贝到环境中\n* 使用 `npx skills` 或类似的运行时垫片进行包装\n* 任何需要用户每会话手动启用技能的情况\n* 任何在以上验收测试中 `brainstorming` 不会自动触发的情况"
+    },
+    {
+      "en-US": "If you are not sure whether your integration loads the bootstrap at session start, it does not.",
+      "zh-Hans": "如果你不确定自己的集成是否在会话启动时加载了引导程序，那它一定没有。"
+    },
+    {
       "en-US": "## Skill Changes Require Evaluation",
       "zh-Hans": "## 技能更改需要评估"
     },
